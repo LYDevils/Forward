@@ -1,0 +1,142 @@
+{
+  "title": "Forward Widgets",
+  "description": "Forward widget source",
+  "icon": "",
+  "widgets": [
+    {
+      "id": "forward.jable",
+      "title": "Jable",
+      "description": "Jable video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.6",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/jable.js"
+    },
+    {
+      "id": "forward.91porn",
+      "title": "91Porn",
+      "description": "91Porn video module.",
+      "requiredVersion": "0.0.1",
+      "version": "0.9.4",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/91porn.js"
+    },
+    {
+      "id": "forward.pornhub",
+      "title": "Pornhub",
+      "description": "Pornhub video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.5",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/pornhub.js"
+    },
+    {
+      "id": "forward.javday",
+      "title": "JAVDay",
+      "description": "JAVDay video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/javday.js"
+    },
+    {
+      "id": "forward.javrate",
+      "title": "JAVRate",
+      "description": "JAVRate video module.",
+      "requiredVersion": "0.0.1",
+      "version": "2.1.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/javrate.js"
+    },
+    {
+      "id": "forward.xvideos",
+      "title": "XVideos",
+      "description": "XVideos video module.",
+      "requiredVersion": "0.0.1",
+      "version": "0.9.4",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/xvideos.js"
+    },
+    {
+      "id": "forward.redtube",
+      "title": "RedTube",
+      "description": "RedTube video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/redtube.js"
+    },
+    {
+      "id": "forward.youporn",
+      "title": "YouPorn",
+      "description": "YouPorn video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/youporn.js"
+    },
+    {
+      "id": "forward.spankbang",
+      "title": "SpankBang",
+      "description": "SpankBang video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/spankbang.js"
+    },
+    {
+      "id": "forward.xhamster",
+      "title": "xHamster",
+      "description": "xHamster video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/xhamster.js"
+    },
+    {
+      "id": "forward.tube8",
+      "title": "Tube8",
+      "description": "Tube8 video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/tube8.js"
+    },
+    {
+      "id": "forward.vod",
+      "title": "VOD",
+      "description": "Video on demand module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.1.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/vod.js"
+    },
+    {
+      "id": "forward.podcast",
+      "title": "Podcast",
+      "description": "RSS podcast module.",
+      "requiredVersion": "0.0.1",
+      "version": "2.1.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/podcast.js"
+    },
+    {
+      "id": "forward.live-tv",
+      "title": "直播(电视+网络)",
+      "description": "Live TV module for network and IPTV sources.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.8",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/live-tv.js"
+    },
+    {
+      "id": "forward.tv-stations",
+      "title": "电视台",
+      "description": "TV stations module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/tv-stations.js"
+    }
+  ]
+}
