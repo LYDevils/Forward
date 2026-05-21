@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
-const axios = require('axios');
 
 const DEFAULT_WIDGET_ORDER = [
   'forward.jable',
@@ -27,8 +26,25 @@ function isHttpUrl(value) {
 
 async function loadText(resource) {
   if (isHttpUrl(resource)) {
-    const response = await axios.get(resource, { timeout: 30000 });
-    return response.data;
+    if (typeof fetch !== 'function') {
+      throw new Error('Global fetch is not available in this Node runtime');
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    let response;
+    try {
+      response = await fetch(resource, { signal: controller.signal });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to load ${resource}: ${response.status} ${response.statusText}`);
+    }
+
+    return response.text();
   }
 
   return fs.readFileSync(resource, 'utf8');

@@ -1,17 +1,10 @@
 {
-  "name": "forward-player",
+  "name": "forward-widgets",
   "version": "1.0.0",
-  "description": "A multi-platform video player module",
-  "main": "index.js",
+  "description": "Forward widget source pack",
+  "main": "ForwardWidgetSource.js",
   "scripts": {
-    "test": "node test.js",
-    "demo": "node demo.js",
-    "test:all": "node comprehensiveTest.js",
-    "test:fwd": "node forwardSourceTest.js",
+    "test": "node forwardSourceTest.js",
     "build:fwd": "node generate-widget-index.js --base-url https://raw.githubusercontent.com/your-org/your-repo/main/widgets"
-  },
-  "dependencies": {
-    "axios": "^1.6.0",
-    "cheerio": "^1.0.0-rc.12"
   }
 }
