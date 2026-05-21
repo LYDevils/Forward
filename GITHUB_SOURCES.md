@@ -22,7 +22,7 @@ The official repository shown in the app uses the same structure:
 {
   "title": "Forward Widgets",
   "description": "Forward widget source",
-  "icon": "https://example.com/icon.png",
+  "icon": "",
   "widgets": [
     {
       "id": "forward.jable",
@@ -31,7 +31,7 @@ The official repository shown in the app uses the same structure:
       "requiredVersion": "0.0.1",
       "version": "1.0.6",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/jable.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/jable.js"
     }
   ]
 }
@@ -100,7 +100,7 @@ your-forward-source/
 Generate a `.fwd` file:
 
 ```bash
-node generate-widget-index.js --base-url https://raw.githubusercontent.com/your-org/your-repo/main/widgets
+node generate-widget-index.js --base-url https://raw.githubusercontent.com/LYDevils/Forward/main/widgets
 ```
 
 Run validation:

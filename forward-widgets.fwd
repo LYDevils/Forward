@@ -10,7 +10,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.6",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/jable.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/jable.js"
     },
     {
       "id": "forward.91porn",
@@ -19,7 +19,7 @@
       "requiredVersion": "0.0.1",
       "version": "0.9.4",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/91porn.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/91porn.js"
     },
     {
       "id": "forward.pornhub",
@@ -28,7 +28,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.5",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/pornhub.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/pornhub.js"
     },
     {
       "id": "forward.javday",
@@ -37,7 +37,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/javday.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/javday.js"
     },
     {
       "id": "forward.javrate",
@@ -46,7 +46,7 @@
       "requiredVersion": "0.0.1",
       "version": "2.1.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/javrate.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/javrate.js"
     },
     {
       "id": "forward.xvideos",
@@ -55,7 +55,7 @@
       "requiredVersion": "0.0.1",
       "version": "0.9.4",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/xvideos.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xvideos.js"
     },
     {
       "id": "forward.redtube",
@@ -64,7 +64,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/redtube.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/redtube.js"
     },
     {
       "id": "forward.youporn",
@@ -73,7 +73,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/youporn.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/youporn.js"
     },
     {
       "id": "forward.spankbang",
@@ -82,7 +82,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/spankbang.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/spankbang.js"
     },
     {
       "id": "forward.xhamster",
@@ -91,7 +91,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/xhamster.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xhamster.js"
     },
     {
       "id": "forward.tube8",
@@ -100,7 +100,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/tube8.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tube8.js"
     },
     {
       "id": "forward.vod",
@@ -109,7 +109,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.1.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/vod.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vod.js"
     },
     {
       "id": "forward.podcast",
@@ -118,7 +118,7 @@
       "requiredVersion": "0.0.1",
       "version": "2.1.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/podcast.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/podcast.js"
     },
     {
       "id": "forward.live-tv",
@@ -127,7 +127,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.8",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/live-tv.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/live-tv.js"
     },
     {
       "id": "forward.tv-stations",
@@ -136,7 +136,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "Forward",
-      "url": "https://raw.githubusercontent.com/your-org/your-repo/main/widgets/tv-stations.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tv-stations.js"
     }
   ]
 }

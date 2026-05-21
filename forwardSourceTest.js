@@ -21,7 +21,7 @@ async function run() {
   const generation = await generateSourceIndex({
     widgetsDir: path.join(__dirname, 'widgets'),
     outputFile,
-    baseScriptUrl: 'https://raw.githubusercontent.com/your-org/your-repo/main/widgets',
+    baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/main/widgets',
     title: 'Forward Widgets',
     description: 'Forward widget source'
   });
