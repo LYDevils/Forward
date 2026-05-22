@@ -264,8 +264,8 @@ async function generateSourceIndex(options = {}) {
   });
 
   const index = {
-    title: options.title || 'Forward Widgets',
-    description: options.description || 'Forward widget source',
+    title: options.title || 'LYDevils 模块库',
+    description: options.description || 'LYDevils Forward 模块源',
     icon: options.icon || '',
     widgets: widgetEntries
   };

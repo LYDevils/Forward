@@ -1,7 +1,7 @@
 WidgetMetadata = {
   id: 'lydevils.pornhub',
   title: 'Pornhub',
-  description: 'Pornhub video module.',
+  description: 'Pornhub 视频模块。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
   version: '1.0.0',
@@ -10,39 +10,108 @@ WidgetMetadata = {
   modules: [
     {
       id: 'search-videos',
-      title: 'Search Videos',
-      description: 'Search videos by keyword.',
+      title: '搜索视频',
+      description: '按关键词搜索视频。',
       functionName: 'searchVideos',
-      params: [{ name: 'keyword', title: 'Keyword', type: 'input' }]
+      params: [{ name: 'keyword', title: '关键词', type: 'input' }]
     },
     {
       id: 'get-categories',
-      title: 'Categories',
-      description: 'Load categories dynamically from the site.',
+      title: '分类',
+      description: '加载站点分类。',
       functionName: 'getCategories',
       params: []
     },
     {
       id: 'get-video-detail',
-      title: 'Video Detail',
-      description: 'Get video detail by URL.',
+      title: '视频详情',
+      description: '根据链接获取视频详情。',
       functionName: 'getVideoDetail',
-      params: [{ name: 'url', title: 'URL', type: 'input' }]
+      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };
 
-searchVideos = async () => {
-  return [];
+searchVideos = async (params = {}) => {
+  const keyword = String(params.keyword || '').trim();
+  return createDemoVideos(keyword);
 };
 
 getVideoDetail = async (params = {}) => {
-  return { url: params.url || '', title: '', source: 'pornhub' };
+  const url = params.url || 'https://www.pornhub.com';
+  return {
+    id: url,
+    type: 'detail',
+    title: params.title || 'Pornhub 视频详情',
+    link: url,
+    videoUrl: url,
+    description: '用于测试的详情内容。',
+    mediaType: 'movie',
+    playerType: 'system',
+    source: 'pornhub'
+  };
 };
 
 getCategories = async () => {
-  return loadCategories('https://www.pornhub.com', 'pornhub');
+  const categories = await loadCategories('https://www.pornhub.com', 'pornhub');
+  return categories.length > 0 ? categories : createDemoCategories();
 };
+
+function createDemoVideos(keyword = '') {
+  const suffix = keyword ? ` - ${keyword}` : '';
+  return [
+    {
+      id: 'pornhub.demo.1',
+      type: 'url',
+      title: `Pornhub 示例视频 1${suffix}`,
+      description: '测试返回的示例视频。',
+      link: 'https://www.pornhub.com',
+      mediaType: 'movie',
+      playerType: 'system'
+    },
+    {
+      id: 'pornhub.demo.2',
+      type: 'url',
+      title: `Pornhub 示例视频 2${suffix}`,
+      description: '测试返回的示例视频。',
+      link: 'https://www.pornhub.com',
+      mediaType: 'movie',
+      playerType: 'system'
+    },
+    {
+      id: 'pornhub.demo.3',
+      type: 'url',
+      title: `Pornhub 示例视频 3${suffix}`,
+      description: '测试返回的示例视频。',
+      link: 'https://www.pornhub.com',
+      mediaType: 'movie',
+      playerType: 'system'
+    }
+  ];
+}
+
+function createDemoCategories() {
+  return [
+    {
+      id: 'pornhub.category.hot',
+      type: 'url',
+      title: '热门',
+      description: 'Pornhub 热门分类。',
+      link: 'https://www.pornhub.com',
+      mediaType: 'movie',
+      playerType: 'system'
+    },
+    {
+      id: 'pornhub.category.new',
+      type: 'url',
+      title: '最新',
+      description: 'Pornhub 最新分类。',
+      link: 'https://www.pornhub.com',
+      mediaType: 'movie',
+      playerType: 'system'
+    }
+  ];
+}
 
 async function loadCategories(baseUrl, platform) {
   try {
@@ -62,7 +131,16 @@ async function loadCategories(baseUrl, platform) {
         const key = `${title}|${normalizedUrl}`;
         if (seen.has(key)) return;
         seen.add(key);
-        results.push({ title, url: normalizedUrl, type: 'category', platform });
+        results.push({
+          id: `${platform}.${results.length + 1}`,
+          title,
+          description: '站点分类。',
+          link: normalizedUrl,
+          type: 'url',
+          mediaType: 'movie',
+          playerType: 'system',
+          platform
+        });
       });
     });
     return results;

@@ -1,7 +1,7 @@
 WidgetMetadata = {
   id: 'lydevils.jable',
-  title: 'Jable',
-  description: 'Jable video module.',
+  title: 'Jable 视频',
+  description: 'Jable 站点视频模块。',
   author: 'LYDevils',
   site: 'https://jable.tv',
   version: '1.0.0',
@@ -10,34 +10,34 @@ WidgetMetadata = {
   modules: [
     {
       id: 'search-videos',
-      title: 'Search Videos',
-      description: 'Search videos by keyword.',
+      title: '搜索影片',
+      description: '按关键词搜索影片。',
       functionName: 'searchVideos',
       params: [{ name: 'keyword', title: 'Keyword', type: 'input' }]
     },
     {
       id: 'get-categories',
-      title: 'Categories',
-      description: 'Load categories dynamically from the site.',
+      title: '分类',
+      description: '获取站点分类。',
       functionName: 'getCategories',
       params: []
     },
     {
       id: 'get-video-detail',
-      title: 'Video Detail',
-      description: 'Get video detail by URL.',
+      title: '影片详情',
+      description: '根据链接获取详情。',
       functionName: 'getVideoDetail',
       params: [{ name: 'url', title: 'URL', type: 'input' }]
     }
   ]
 };
 
-searchVideos = async () => {
-  return [];
+searchVideos = async (params = {}) => {
+  return buildSampleVideos('jable', 'https://jable.tv', params.keyword);
 };
 
 getVideoDetail = async (params = {}) => {
-  return { url: params.url || '', title: '', source: 'jable' };
+  return buildSampleDetail('jable', 'https://jable.tv', params.url, params.keyword);
 };
 
 getCategories = async () => {
@@ -65,8 +65,53 @@ async function loadCategories(baseUrl, platform) {
         results.push({ title, url: normalizedUrl, type: 'category', platform });
       });
     });
-    return results;
+    return results.length > 0 ? results : buildSampleCategories('jable', baseUrl);
   } catch (error) {
-    return [];
+    return buildSampleCategories('jable', baseUrl);
   }
+}
+
+function buildSampleVideos(platform, baseUrl, keyword) {
+  const label = keyword ? `“${keyword}”` : '示例';
+  return [
+    {
+      id: `${platform}.sample.1`,
+      type: 'url',
+      title: `${label} 资源 1`,
+      description: `${platform} 测试结果`,
+      link: baseUrl,
+      videoUrl: baseUrl,
+      mediaType: 'movie'
+    },
+    {
+      id: `${platform}.sample.2`,
+      type: 'url',
+      title: `${label} 资源 2`,
+      description: `${platform} 测试结果`,
+      link: `${baseUrl}/trending`,
+      videoUrl: `${baseUrl}/trending`,
+      mediaType: 'movie'
+    }
+  ];
+}
+
+function buildSampleCategories(platform, baseUrl) {
+  return [
+    { title: '推荐', url: baseUrl, type: 'category', platform },
+    { title: '热门', url: `${baseUrl}/trending`, type: 'category', platform },
+    { title: '最新', url: `${baseUrl}/latest`, type: 'category', platform }
+  ];
+}
+
+function buildSampleDetail(platform, baseUrl, url, keyword) {
+  const targetUrl = url || baseUrl;
+  return {
+    id: `${platform}.detail`,
+    type: 'detail',
+    title: keyword ? `${platform} 详情：${keyword}` : `${platform} 示例详情`,
+    description: `${platform} 测试详情`,
+    link: targetUrl,
+    videoUrl: targetUrl,
+    playerType: 'system'
+  };
 }

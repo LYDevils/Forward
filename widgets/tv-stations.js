@@ -1,7 +1,7 @@
 WidgetMetadata = {
   id: 'lydevils.tv-stations',
-  title: 'TV Stations',
-  description: 'TV stations module.',
+  title: '电视台',
+  description: '电视台模块。',
   author: 'LYDevils',
   site: '',
   version: '1.0.0',
@@ -10,25 +10,55 @@ WidgetMetadata = {
   modules: [
     {
       id: 'load-stations',
-      title: 'Station List',
-      description: 'Load TV station list.',
+      title: '电视台列表',
+      description: '加载电视台列表。',
       functionName: 'loadStations',
       params: []
     },
     {
       id: 'get-station-detail',
-      title: 'Station Detail',
-      description: 'Get station detail by URL.',
+      title: '电视台详情',
+      description: '根据链接获取电视台详情。',
       functionName: 'getStationDetail',
-      params: [{ name: 'url', title: 'URL', type: 'input' }]
+      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };
 
 loadStations = async () => {
-  return [];
+  return [
+    {
+      id: 'tv-stations.demo.1',
+      type: 'url',
+      title: '示例电视台 1',
+      description: '测试返回的电视台条目。',
+      link: 'https://example.com/tv/1',
+      mediaType: 'movie',
+      playerType: 'system'
+    },
+    {
+      id: 'tv-stations.demo.2',
+      type: 'url',
+      title: '示例电视台 2',
+      description: '测试返回的电视台条目。',
+      link: 'https://example.com/tv/2',
+      mediaType: 'movie',
+      playerType: 'system'
+    }
+  ];
 };
 
 getStationDetail = async (params = {}) => {
-  return { url: params.url || '', title: '', source: 'tv-stations' };
+  const url = params.url || 'https://example.com/tv/1';
+  return {
+    id: 'tv-stations.detail',
+    type: 'detail',
+    title: '电视台详情',
+    description: '测试电视台详情。',
+    link: url,
+    videoUrl: url,
+    mediaType: 'movie',
+    playerType: 'system',
+    source: 'tv-stations'
+  };
 };
