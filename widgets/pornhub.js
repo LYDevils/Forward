@@ -1,6 +1,6 @@
 WidgetMetadata = {
   id: 'lydevils.pornhub',
-  title: 'Pornhub',
+  title: 'Pornhub 视频',
   description: 'Pornhub 视频模块。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
