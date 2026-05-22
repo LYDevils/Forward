@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.25',
+  version: '1.0.26',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
