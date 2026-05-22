@@ -1,4 +1,4 @@
-const VOD_SOURCE = {
+﻿const VOD_SOURCE = {
   id: 'madou91',
   name: '91麻豆',
   baseUrl: 'https://91md.me/api.php/provide/vod',
@@ -8,50 +8,50 @@ const VOD_SOURCE = {
 WidgetMetadata = {
   id: 'lydevils.vod',
   title: 'VOD',
-  description: 'MacCMS VOD source for real playable videos.',
+  description: 'MacCMS VOD 真实可播放数据源。',
   author: 'LYDevils',
   site: 'https://91md.me',
   version: '1.0.0',
   requiredVersion: '0.0.1',
-  detailCacheDuration: 300,
+  detailCacheDuration:300,
   modules: [
     {
       id: 'latest-videos',
       title: 'VOD',
-      description: 'Load latest videos from the configured source.',
+      description: '加载当前采集源最新影片。',
       functionName: 'loadLatestVideos',
       type: 'list',
-      params: [{ name: 'page', title: 'Page', type: 'page', startPage: 1 }]
+      params: [{ name: 'page', title: '页码', type: 'page', startPage: 1 }]
     },
     {
       id: 'category-videos',
       title: 'VOD',
-      description: 'Load videos by type id. Example: /vod/type/id/27.html maps to type id 27.',
+      description: '按分类 ID 加载影片，例如 /vod/type/id/27.html 对应分类 27。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
-        { name: 'typeId', title: 'Type ID', type: 'input', value: '27' },
-        { name: 'page', title: 'Page', type: 'page', startPage: 1 }
+        { name: 'typeId', title: '分类 ID', type: 'input', value: '27' },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
     {
       id: 'search-videos',
       title: 'VOD',
-      description: 'Search videos by keyword.',
+      description: '按关键词搜索影片。',
       functionName: 'searchVideos',
       type: 'list',
       params: [
-        { name: 'keyword', title: 'Keyword', type: 'input' },
-        { name: 'page', title: 'Page', type: 'page', startPage: 1 }
+        { name: 'keyword', title: '关键词', type: 'input' },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
     {
       id: 'get-video-detail',
       title: 'VOD',
-      description: 'Load video detail by API id or front-end URL.',
+      description: '按 API ID 或前台链接加载影片详情。',
       functionName: 'getVideoDetail',
       type: 'list',
-      params: [{ name: 'url', title: 'ID or URL', type: 'input' }]
+      params: [{ name: 'url', title: 'ID 或链接', type: 'input' }]
     }
   ]
 };
@@ -72,7 +72,7 @@ searchVideos = async (params = {}) => {
 getVideoDetail = async (params = {}) => {
   const value = String(params.url || params.id || params.link || '').trim();
   const vodId = extractVodId(value);
-  if (!vodId) return [createMessage('Missing video id', 'Enter a VOD id or a detail URL.')];
+  if (!vodId) return [createMessage('缺少影片 ID', '请输入 VOD ID 或详情链接。')];
   return [await loadDetail(VOD_SOURCE.id + '|' + vodId)];
 };
 
@@ -81,7 +81,7 @@ async function loadDetail(link) {
   const vodId = parts.length > 1 ? parts[1] : extractVodId(link);
   const data = await requestVod({ ac: 'detail', ids: vodId });
   const item = data.list && data.list[0];
-  if (!item) throw new Error('No detail returned for id ' + vodId);
+  if (!item) throw new Error('未获取到详情 ID ' + vodId);
   return buildDetail(item);
 }
 
@@ -89,10 +89,10 @@ async function loadVodList(extraParams) {
   try {
     const data = await requestVod(Object.assign({ ac: 'detail' }, extraParams || {}));
     const list = Array.isArray(data.list) ? data.list : [];
-    if (list.length === 0) return [createMessage('No videos found', 'The API returned an empty list.')];
+    if (list.length === 0) return [createMessage('未找到视频', '接口返回空列表。')];
     return list.map(buildListItem);
   } catch (error) {
-    return [createMessage('Request failed', String(error.message || error))];
+    return [createMessage('请求失败', String(error.message || error))];
   }
 }
 
@@ -114,7 +114,7 @@ function buildListItem(item) {
   return {
     id: VOD_SOURCE.id + '.' + id,
     type: 'link',
-    title: item.vod_name || 'Untitled',
+    title: item.vod_name || '未命名',
     description: [item.type_name, item.vod_remarks, item.vod_year].filter(Boolean).join(' | '),
     coverUrl: item.vod_pic || '',
     link: VOD_SOURCE.id + '|' + id,
@@ -130,7 +130,7 @@ function buildDetail(item) {
   return {
     id: VOD_SOURCE.id + '.' + item.vod_id,
     type: 'detail',
-    title: item.vod_name || 'Untitled',
+    title: item.vod_name || '未命名',
     description: cleanText(item.vod_content || item.vod_blurb || item.vod_remarks || ''),
     coverUrl: item.vod_pic || '',
     link: VOD_SOURCE.id + '|' + item.vod_id,
@@ -147,13 +147,13 @@ function parseEpisodes(playUrl) {
   const preferred = groups.find((group) => group.indexOf('.m3u8') !== -1 || group.indexOf('.mp4') !== -1) || groups[0] || '';
   return preferred.split('#').map((part, index) => {
     const pieces = part.split('$');
-    const title = pieces.length > 1 ? pieces[0] : 'Episode ' + (index + 1);
+    const title = pieces.length > 1 ? pieces[0] : '第' + (index + 1) + '集';
     const videoUrl = pieces.length > 1 ? pieces.slice(1).join('$') : pieces[0];
     if (!videoUrl) return null;
     return {
       id: videoUrl,
       type: 'url',
-      title: title || 'Episode ' + (index + 1),
+      title: title || '第' + (index + 1) + '集',
       videoUrl,
       mediaType: 'movie',
       playerType: 'system'
@@ -180,3 +180,6 @@ function cleanText(value) {
 function createMessage(title, description) {
   return { id: 'vod.message.' + title, type: 'text', title, description };
 }
+
+
+

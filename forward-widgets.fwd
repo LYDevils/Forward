@@ -6,7 +6,7 @@
     {
       "id": "lydevils.jable",
       "title": "Jable",
-      "description": "Jable real video source.",
+      "description": "Jable 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -15,7 +15,7 @@
     {
       "id": "lydevils.91porn",
       "title": "91Porn",
-      "description": "91Porn real video source.",
+      "description": "91Porn 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -24,7 +24,7 @@
     {
       "id": "lydevils.pornhub",
       "title": "Pornhub",
-      "description": "Pornhub real video source.",
+      "description": "Pornhub 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -33,7 +33,7 @@
     {
       "id": "lydevils.javday",
       "title": "JAVDay",
-      "description": "JAVDay real video source.",
+      "description": "JAVDay 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -42,7 +42,7 @@
     {
       "id": "lydevils.javrate",
       "title": "JAVRate",
-      "description": "JAVRate real video source.",
+      "description": "JAVRate 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -51,7 +51,7 @@
     {
       "id": "lydevils.xvideos",
       "title": "XVideos",
-      "description": "XVideos real video source.",
+      "description": "XVideos 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -60,7 +60,7 @@
     {
       "id": "lydevils.redtube",
       "title": "RedTube",
-      "description": "RedTube real video source.",
+      "description": "RedTube 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -69,7 +69,7 @@
     {
       "id": "lydevils.youporn",
       "title": "YouPorn",
-      "description": "YouPorn real video source.",
+      "description": "YouPorn 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -78,7 +78,7 @@
     {
       "id": "lydevils.spankbang",
       "title": "SpankBang",
-      "description": "SpankBang real video source.",
+      "description": "SpankBang 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -87,7 +87,7 @@
     {
       "id": "lydevils.xhamster",
       "title": "xHamster",
-      "description": "xHamster real video source.",
+      "description": "xHamster 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -96,7 +96,7 @@
     {
       "id": "lydevils.tube8",
       "title": "Tube8",
-      "description": "Tube8 real video source.",
+      "description": "Tube8 真实视频数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -105,7 +105,7 @@
     {
       "id": "lydevils.vod",
       "title": "VOD",
-      "description": "MacCMS VOD source for real playable videos.",
+      "description": "MacCMS VOD 真实可播放数据源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -123,7 +123,7 @@
     {
       "id": "lydevils.podcast",
       "title": "播客",
-      "description": "RSS podcast source.",
+      "description": "RSS 播客源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -132,7 +132,7 @@
     {
       "id": "lydevils.live-tv",
       "title": "直播（电视+网络）",
-      "description": "Real IPTV live streams.",
+      "description": "真实 IPTV 直播源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -141,7 +141,7 @@
     {
       "id": "lydevils.tv-stations",
       "title": "电视台",
-      "description": "Real TV station streams.",
+      "description": "真实电视台直播源。",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",

@@ -1,40 +1,40 @@
-WidgetMetadata = {
+﻿WidgetMetadata = {
   id: 'lydevils.podcast',
   title: '播客',
-  description: 'RSS podcast source.',
+  description: 'RSS 播客源。',
   author: 'LYDevils',
   site: '',
   version: '1.0.0',
   requiredVersion: '0.0.1',
-  detailCacheDuration: 300,
+  detailCacheDuration:300,
   modules: [
     {
       id: 'load-feed',
-      title: 'Podcast',
-      description: 'Load a real RSS feed.',
+      title: '播客',
+      description: '加载真实 RSS 源。',
       functionName: 'loadFeed',
       type: 'list',
-      params: [{ name: 'feedUrl', title: 'RSS URL', type: 'input' }]
+      params: [{ name: 'feedUrl', title: 'RSS 链接', type: 'input' }]
     },
     {
       id: 'get-episode-detail',
-      title: 'Podcast',
-      description: 'Load episode detail by media URL.',
+      title: '播客',
+      description: '根据媒体链接加载单集详情。',
       functionName: 'getEpisodeDetail',
       type: 'list',
-      params: [{ name: 'url', title: 'URL', type: 'input' }]
+      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };
 
 loadFeed = async (params = {}) => {
   const feedUrl = String(params.feedUrl || '').trim();
-  if (!feedUrl) return [message('Missing RSS URL', 'Enter a podcast RSS feed URL.')];
+  if (!feedUrl) return [message('缺少 RSS 链接', '请输入播客 RSS 源链接。')];
   try {
     const xml = await fetchText(feedUrl);
     const items = xml.match(/<item[\s\S]*?<\/item>/gi) || [];
     const results = items.map((item, index) => {
-      const title = textTag(item, 'title') || 'Episode ' + (index + 1);
+      const title = textTag(item, 'title') || '第' + (index + 1) + '集';
       const mediaUrl = enclosureUrl(item) || textTag(item, 'link');
       return {
         id: 'podcast.' + hash(mediaUrl || title),
@@ -49,16 +49,16 @@ loadFeed = async (params = {}) => {
         source: feedUrl
       };
     }).filter((item) => item.link);
-    return results.length > 0 ? results.slice(0, 100) : [message('No episodes found', 'The RSS feed did not include playable enclosures.')];
+    return results.length > 0 ? results.slice(0, 100) : [message('未找到单集', 'RSS 源没有包含可播放媒体链接。')];
   } catch (error) {
-    return [message('Request failed', String(error.message || error))];
+    return [message('请求失败', String(error.message || error))];
   }
 };
 
 getEpisodeDetail = async (params = {}) => {
   const url = String(params.url || params.link || '').trim();
-  if (!url) return [message('Missing URL', 'Enter an episode media URL.')];
-  return [{ id: 'podcast.' + hash(url), type: 'detail', title: 'Podcast', link: url, videoUrl: url, mediaType: 'movie', playerType: 'system' }];
+  if (!url) return [message('缺少链接', '请输入单集媒体链接。')];
+  return [{ id: 'podcast.' + hash(url), type: 'detail', title: '播客', link: url, videoUrl: url, mediaType: 'movie', playerType: 'system' }];
 };
 
 async function fetchText(url) {
@@ -101,3 +101,6 @@ function hash(value) {
 function message(title, description) {
   return { id: 'podcast.message.' + hash(title + description), type: 'text', title, description };
 }
+
+
+

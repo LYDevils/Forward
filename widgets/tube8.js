@@ -1,4 +1,4 @@
-const SITE = {
+﻿const SITE = {
   "file": "tube8.js",
   "key": "tube8",
   "title": "Tube8",
@@ -17,28 +17,28 @@ const DEFAULT_HEADERS = {
 WidgetMetadata = {
   id: 'lydevils.tube8',
   title: 'Tube8',
-  description: 'Tube8 real video source.',
+  description: 'Tube8 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.tube8.com',
   version: '1.0.0',
   requiredVersion: '0.0.1',
-  detailCacheDuration: 300,
+  detailCacheDuration:300,
   modules: [
     {
       id: 'search-videos',
       title: 'Tube8',
-      description: 'Search real videos.',
+      description: '搜索真实视频。',
       functionName: 'searchVideos',
       type: 'list',
       params: [
-        { name: 'keyword', title: 'Keyword', type: 'input' },
-        { name: 'page', title: 'Page', type: 'page', startPage: 1 }
+        { name: 'keyword', title: '关键词', type: 'input' },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
     {
       id: 'get-categories',
       title: 'Tube8',
-      description: 'Load categories from the site navigation.',
+      description: '从站点导航加载分类。',
       functionName: 'getCategories',
       type: 'list',
       params: []
@@ -46,10 +46,10 @@ WidgetMetadata = {
     {
       id: 'get-video-detail',
       title: 'Tube8',
-      description: 'Load video detail by URL.',
+      description: '根据链接加载视频详情。',
       functionName: 'getVideoDetail',
       type: 'list',
-      params: [{ name: 'url', title: 'URL', type: 'input' }]
+      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };
@@ -66,7 +66,7 @@ getCategories = async () => loadCategories();
 getVideoDetail = async (params = {}) => {
   const url = String(params.url || params.link || '').trim();
   if (!url) {
-    return [createMessage('Missing URL', 'Enter or open a real video URL first.')];
+    return [createMessage('缺少链接', '请先输入或打开真实视频链接。')];
   }
   return [await loadDetail(url)];
 };
@@ -142,9 +142,9 @@ async function loadVideoList(url) {
       });
     });
 
-    return results.length > 0 ? results.slice(0, 40) : [createMessage('No videos found', 'The site returned no parseable video entries. Try another keyword or page.')];
+    return results.length > 0 ? results.slice(0, 40) : [createMessage('未找到视频', '站点未返回可解析的视频条目，请换关键词或页码。')];
   } catch (error) {
-    return [createMessage('Request failed', String(error.message || error))];
+    return [createMessage('请求失败', String(error.message || error))];
   }
 }
 
@@ -170,9 +170,9 @@ async function loadCategories() {
         source: SITE.title
       });
     });
-    return results.length > 0 ? results.slice(0, 80) : [createMessage('No categories found', 'The site navigation did not expose category links.')];
+    return results.length > 0 ? results.slice(0, 80) : [createMessage('未找到分类', '站点导航未返回可解析的分类链接。')];
   } catch (error) {
-    return [createMessage('Request failed', String(error.message || error))];
+    return [createMessage('请求失败', String(error.message || error))];
   }
 }
 
@@ -211,7 +211,7 @@ function pickTitle($, element, image) {
 function findDuration($, element) {
   const text = cleanText($(element).parent().text());
   const match = text.match(/\b\d{1,2}:\d{2}(?::\d{2})?\b/);
-  return match ? 'Duration: ' + match[0] : '';
+  return match ? '时长：' + match[0] : '';
 }
 
 function extractVideoUrl(html, pageUrl) {
@@ -290,3 +290,6 @@ function createMessage(title, description) {
     description
   };
 }
+
+
+

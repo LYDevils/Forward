@@ -1,19 +1,19 @@
-const M3U_URL = 'https://iptv-org.github.io/iptv/index.m3u';
+﻿const M3U_URL = 'https://iptv-org.github.io/iptv/index.m3u';
 
 WidgetMetadata = {
   id: 'lydevils.live-tv',
   title: '直播（电视+网络）',
-  description: 'Real IPTV live streams.',
+  description: '真实 IPTV 直播源。',
   author: 'LYDevils',
   site: 'https://iptv-org.github.io',
   version: '1.0.0',
   requiredVersion: '0.0.1',
-  detailCacheDuration: 300,
+  detailCacheDuration:300,
   modules: [
     {
       id: 'load-live-list',
       title: '直播',
-      description: 'Load real M3U streams.',
+      description: '加载真实 M3U 直播流。',
       functionName: 'loadLiveList',
       type: 'list',
       params: []
@@ -21,10 +21,10 @@ WidgetMetadata = {
     {
       id: 'get-live-detail',
       title: '直播',
-      description: 'Load stream detail by URL.',
+      description: '根据链接加载直播详情。',
       functionName: 'getLiveDetail',
       type: 'list',
-      params: [{ name: 'url', title: 'URL', type: 'input' }]
+      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };
@@ -33,7 +33,7 @@ loadLiveList = async () => loadM3uList();
 
 getLiveDetail = async (params = {}) => {
   const url = String(params.url || params.link || '').trim();
-  if (!url) return [message('Missing URL', 'Enter a stream URL.')];
+  if (!url) return [message('缺少链接', '请输入直播流链接。')];
   return [detail(url, params.title || '直播')];
 };
 
@@ -42,9 +42,9 @@ async function loadM3uList() {
     const response = await Widget.http.get(M3U_URL, { timeout: 20000 });
     const text = typeof response === 'string' ? response : String(response.data || response.body || response.html || '');
     const items = parseM3u(text);
-    return items.length > 0 ? items.slice(0, 120) : [message('No streams found', 'The M3U source returned no playable streams.')];
+    return items.length > 0 ? items.slice(0, 120) : [message('未找到直播流', 'M3U 源未返回可播放直播流。')];
   } catch (error) {
-    return [message('Request failed', String(error.message || error))];
+    return [message('请求失败', String(error.message || error))];
   }
 }
 
@@ -56,7 +56,7 @@ function parseM3u(text) {
     if (!line || !line.startsWith('#EXTINF')) continue;
     const streamUrl = String(lines[index + 1] || '').trim();
     if (!/^https?:\/\//i.test(streamUrl)) continue;
-    const title = clean(line.split(',').slice(1).join(',') || 'Stream');
+    const title = clean(line.split(',').slice(1).join(',') || '直播流');
     const logo = attr(line, 'tvg-logo');
     const group = attr(line, 'group-title');
     results.push({
@@ -98,3 +98,6 @@ function hash(value) {
 function message(title, description) {
   return { id: 'live-tv.message.' + hash(title + description), type: 'text', title, description };
 }
+
+
+

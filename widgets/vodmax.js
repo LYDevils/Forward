@@ -1,4 +1,4 @@
-const SOURCES = [
+﻿const SOURCES = [
     { "id": "feifan", "name": "非凡资源", "baseUrl": "http://ffzy5.tv/api.php/provide/vod", "group": "normal" },
     { "id": "wolong", "name": "卧龙资源", "baseUrl": "https://wolongzyw.com/api.php/provide/vod", "group": "normal" },
     { "id": "zuida", "name": "最大资源", "baseUrl": "https://api.zuidapi.com/api.php/provide/vod", "group": "normal" },
@@ -92,14 +92,14 @@ WidgetMetadata = {
     version: "1.0.0",
     requiredVersion: "0.0.1",
     site: "https://t.me/MakkaPakkaOvO",
-    detailCacheDuration: 3600,
+    detailCacheDuration:3600,
     modules: [
         {
             id: "load-cms-list",
             title: "VodMax",
             functionName: "loadCmsList",
             type: "list",
-            cacheDuration: 300,
+            cacheDuration:300,
             params: [
                 {
                     name: "group",
@@ -267,3 +267,7 @@ async function loadDetail(link) {
         throw error;
     }
 }
+
+
+
+
