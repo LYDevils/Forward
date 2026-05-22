@@ -20,7 +20,7 @@ WidgetMetadata = {
   description: 'xHamster 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://xhamster.com',
-  version: '1.0.1',
+  version: '1.0.2',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -68,11 +68,16 @@ getVideoDetail = async (params = {}) => {
   if (!url) {
     return [createMessage('缺少链接', '请先输入或打开真实视频链接。')];
   }
-  return [await loadDetail(url)];
+  const detail = await loadDetail(url);
+  return Array.isArray(detail) ? detail : [detail];
 };
 
 async function loadDetail(link) {
-  const url = normalizeUrl(link, SITE.baseUrl);
+  const rawLink = String(link || '');
+  if (rawLink.startsWith('category|')) {
+    return loadVideoList(rawLink.slice('category|'.length));
+  }
+  const url = normalizeUrl(rawLink, SITE.baseUrl);
   const html = await fetchText(url);
   const $ = Widget.html.load(html);
   const title = cleanText(
@@ -161,10 +166,10 @@ async function loadCategories() {
       seen.add(url);
       results.push({
         id: hashId(url),
-        type: 'url',
+        type: 'link',
         title,
-        description: SITE.title,
-        link: url,
+        description: '点击查看该分类影片',
+        link: 'category|' + url,
         mediaType: 'movie',
         playerType: 'system',
         source: SITE.title
@@ -290,6 +295,8 @@ function createMessage(title, description) {
     description
   };
 }
+
+
 
 
 

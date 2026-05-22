@@ -11,7 +11,7 @@ WidgetMetadata = {
   description: 'MacCMS VOD 真实可播放数据源。',
   author: 'LYDevils',
   site: 'https://91md.me',
-  version: '1.0.1',
+  version: '1.0.2',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -33,6 +33,14 @@ WidgetMetadata = {
         { name: 'typeId', title: '分类 ID', type: 'input', value: '27' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
+    },
+    {
+      id: 'get-categories',
+      title: '分类',
+      description: '加载采集源分类，点分类后显示该分类影片。',
+      functionName: 'getCategories',
+      type: 'list',
+      params: []
     },
     {
       id: 'search-videos',
@@ -63,6 +71,31 @@ loadCategoryVideos = async (params = {}) => {
   return loadVodList({ t: typeId, pg: params.page || 1 });
 };
 
+getCategories = async () => {
+  try {
+    const data = await requestVod({ ac: 'list' });
+    const classes = Array.isArray(data.class) ? data.class : (Array.isArray(data.list) ? data.list : []);
+    const results = classes.map((item) => {
+      const typeId = String(item.type_id || item.id || item.tid || '');
+      const title = item.type_name || item.name || ('分类 ' + typeId);
+      if (!typeId) return null;
+      return {
+        id: VOD_SOURCE.id + '.category.' + typeId,
+        type: 'link',
+        title,
+        description: '点击查看该分类影片',
+        link: 'category|' + typeId,
+        mediaType: 'movie',
+        playerType: 'system',
+        source: VOD_SOURCE.name
+      };
+    }).filter(Boolean);
+    return results.length > 0 ? results : [createMessage('未找到分类', '接口未返回分类列表。')];
+  } catch (error) {
+    return [createMessage('请求失败', String(error.message || error))];
+  }
+};
+
 searchVideos = async (params = {}) => {
   const keyword = String(params.keyword || '').trim();
   if (!keyword) return loadLatestVideos(params);
@@ -77,6 +110,10 @@ getVideoDetail = async (params = {}) => {
 };
 
 async function loadDetail(link) {
+  const rawLink = String(link || '');
+  if (rawLink.startsWith('category|')) {
+    return loadVodList({ t: rawLink.slice('category|'.length), pg: 1 });
+  }
   const parts = String(link || '').split('|');
   const vodId = parts.length > 1 ? parts[1] : extractVodId(link);
   const data = await requestVod({ ac: 'detail', ids: vodId });
@@ -180,6 +217,7 @@ function cleanText(value) {
 function createMessage(title, description) {
   return { id: 'vod.message.' + title, type: 'text', title, description };
 }
+
 
 
 

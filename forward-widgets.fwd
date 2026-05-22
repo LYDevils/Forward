@@ -8,7 +8,7 @@
       "title": "Jable",
       "description": "Jable 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/jable.js"
     },
@@ -17,7 +17,7 @@
       "title": "91Porn",
       "description": "91Porn 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/91porn.js"
     },
@@ -26,7 +26,7 @@
       "title": "Pornhub",
       "description": "Pornhub 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/pornhub.js"
     },
@@ -35,7 +35,7 @@
       "title": "JAVDay",
       "description": "JAVDay 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/javday.js"
     },
@@ -44,7 +44,7 @@
       "title": "JAVRate",
       "description": "JAVRate 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/javrate.js"
     },
@@ -53,7 +53,7 @@
       "title": "XVideos",
       "description": "XVideos 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/xvideos.js"
     },
@@ -62,7 +62,7 @@
       "title": "RedTube",
       "description": "RedTube 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/redtube.js"
     },
@@ -71,7 +71,7 @@
       "title": "YouPorn",
       "description": "YouPorn 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/youporn.js"
     },
@@ -80,7 +80,7 @@
       "title": "SpankBang",
       "description": "SpankBang 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/spankbang.js"
     },
@@ -89,7 +89,7 @@
       "title": "xHamster",
       "description": "xHamster 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/xhamster.js"
     },
@@ -98,7 +98,7 @@
       "title": "Tube8",
       "description": "Tube8 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tube8.js"
     },
@@ -107,7 +107,7 @@
       "title": "VOD",
       "description": "MacCMS VOD 真实可播放数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/vod.js"
     },
@@ -116,7 +116,7 @@
       "title": "VodMax",
       "description": "聚合点播数据源",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/vodmax.js"
     },
@@ -125,7 +125,7 @@
       "title": "播客",
       "description": "RSS 播客源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/podcast.js"
     },
@@ -134,7 +134,7 @@
       "title": "直播（电视+网络）",
       "description": "真实 IPTV 直播源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/live-tv.js"
     },
@@ -143,7 +143,7 @@
       "title": "电视台",
       "description": "真实电视台直播源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tv-stations.js"
     }

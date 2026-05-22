@@ -6,7 +6,7 @@ WidgetMetadata = {
   description: '真实电视台直播源。',
   author: 'LYDevils',
   site: 'https://iptv-org.github.io',
-  version: '1.0.1',
+  version: '1.0.2',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -98,6 +98,7 @@ function hash(value) {
 function message(title, description) {
   return { id: 'tv-stations.message.' + hash(title + description), type: 'text', title, description };
 }
+
 
 
 
