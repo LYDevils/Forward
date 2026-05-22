@@ -136,7 +136,6 @@ const CATEGORY_TITLE_MAP = {
   "striptease": "脱衣秀",
   "tags": "标签总览",
   "tattoos": "纹身",
-  "teen": "18-25",
   "threesome": "3P",
   "top rated": "最高评分",
   "toys": "玩具",
@@ -146,11 +145,8 @@ const CATEGORY_TITLE_MAP = {
   "vintage": "复古",
   "virtual reality": "VR",
   "webcam": "直播摄像",
-  "young (18+) and old": "老少配",
-  "young and old": "老少配",
   "bang bros network": "Bang Bros 官方",
   "brazzers": "Brazzers 官方",
-  "casual teen sex": "Casual Teen Sex 官方",
   "team skeet": "Team Skeet 官方",
   "vixen": "Vixen 官方"
 };
@@ -187,17 +183,54 @@ function localizeCategoryOptions(options) {
   }));
 }
 
-const CATEGORY_OPTIONS = [
+const REGION_OPTIONS = [
   { title: "亚洲", value: "/redtube/asian" },
   { title: "日本", value: "/redtube/japanese" },
   { title: "印度", value: "/redtube/indian" }
 ];
 
-const LANGUAGE_OPTIONS = [
-  { title: "亚洲", value: "/redtube/asian" },
-  { title: "日本", value: "/redtube/japanese" },
-  { title: "印度", value: "/redtube/indian" }
+const PERSON_OPTIONS = [
+  { title: "素人", value: "/redtube/amateur" },
+  { title: "熟女", value: "/redtube/milf" },
+  { title: "辣妹", value: "/redtube/babe" }
 ];
+
+const FEATURE_OPTIONS = [
+  { title: "里番", value: "/redtube/hentai" },
+  { title: "角色扮演", value: "/redtube/cosplay" },
+  { title: "主视角", value: "/redtube/pov" },
+  { title: "女同", value: "/redtube/lesbian" }
+];
+
+const SORT_OPTIONS = [
+
+];
+
+const CHANNEL_OPTIONS = [
+
+];
+
+const CATEGORY_OPTIONS = mergeCategoryOptions(
+  REGION_OPTIONS,
+  PERSON_OPTIONS,
+  FEATURE_OPTIONS,
+  SORT_OPTIONS,
+  CHANNEL_OPTIONS
+);
+
+function mergeCategoryOptions() {
+  const seen = new Set();
+  const output = [];
+  for (const options of arguments) {
+    for (const item of options || []) {
+      const value = String(item.value || '');
+      if (!value || seen.has(value)) continue;
+      seen.add(value);
+      output.push(item);
+    }
+  }
+  return output;
+}
 
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
@@ -210,94 +243,60 @@ WidgetMetadata = {
   description: 'RedTube 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.redtube.com',
-  version: '1.0.8',
+  version: '1.0.13',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
     {
-      id: 'search-videos',
-      title: '搜索影片',
-      description: '搜索真实视频。',
-      functionName: 'searchVideos',
-      type: 'list',
-      params: [
-        { name: 'keyword', title: '关键词', type: 'input' },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
-      ]
-    },
-    {
-      id: 'get-categories',
-      title: '分类列表',
-      description: '显示受控分类列表，点选后加载该分类影片。',
-      functionName: 'getCategories',
-      type: 'list',
-      params: []
-    },
-    {
-      id: 'category-videos',
-      title: '分类影片',
-      description: '从白名单下拉框选择分类加载影片，也可切换为自定义路径。',
+      id: 'region-videos',
+      title: '地区语言',
+      description: '按地区、语言或字幕筛选影片。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
         {
-          name: 'categoryMode',
-          title: '分类选择方式',
-          type: 'enumeration',
-          value: 'preset',
-          enumOptions: [
-            { title: '下拉分类', value: 'preset' },
-            { title: '自定义路径', value: 'custom' }
-          ]
-        },
-        {
           name: 'categoryPreset',
-          title: '选择分类',
+          title: '选择地区/语言',
           type: 'enumeration',
-          value: "/redtube/asian",
-          belongTo: { paramName: 'categoryMode', value: ['preset'] },
-          enumOptions: CATEGORY_OPTIONS
-        },
-        {
-          name: 'categoryId',
-          title: '自定义分类 ID/路径',
-          type: 'input',
-          belongTo: { paramName: 'categoryMode', value: ['custom'] }
-        },
-        {
-          name: 'categoryName',
-          title: '自定义分类名称',
-          type: 'input',
-          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+          value: REGION_OPTIONS[0] ? REGION_OPTIONS[0].value : '',
+          enumOptions: REGION_OPTIONS
         },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
     {
-      id: 'language-videos',
-      title: '语言/分区',
-      description: '从下拉框选择语言、字幕或地区分区加载影片。',
-      functionName: 'loadLanguageVideos',
+      id: 'person-videos',
+      title: '人物分类',
+      description: '按人物身份或出演类型筛选影片。',
+      functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
         {
-          name: 'languagePreset',
-          title: '选择语言/分区',
+          name: 'categoryPreset',
+          title: '选择人物分类',
           type: 'enumeration',
-          value: "/redtube/asian",
-          enumOptions: LANGUAGE_OPTIONS
+          value: PERSON_OPTIONS[0] ? PERSON_OPTIONS[0].value : '',
+          enumOptions: PERSON_OPTIONS
         },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
-
     {
-      id: 'get-video-detail',
-      title: '影片详情',
-      description: '根据链接加载视频详情。',
-      functionName: 'getVideoDetail',
+      id: 'feature-videos',
+      title: '特点分类',
+      description: '按题材、风格或内容特点筛选影片。',
+      functionName: 'loadCategoryVideos',
       type: 'list',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
+      params: [
+        {
+          name: 'categoryPreset',
+          title: '选择特点',
+          type: 'enumeration',
+          value: FEATURE_OPTIONS[0] ? FEATURE_OPTIONS[0].value : '',
+          enumOptions: FEATURE_OPTIONS
+        },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
     }
   ]
 };
@@ -309,26 +308,11 @@ searchVideos = async (params = {}) => {
   return loadVideoList(url);
 };
 
-getCategories = async () => loadCategories();
-
-loadLanguageVideos = async (params = {}) => {
-  const preset = LANGUAGE_OPTIONS.find((item) => item.value === params.languagePreset) || LANGUAGE_OPTIONS[0];
-  if (!preset) {
-    return [createMessage('未配置语言/分区', '当前站点未提供语言、字幕或地区分区。')];
-  }
-  return loadCategoryVideos({
-    categoryMode: 'custom',
-    categoryId: preset.value,
-    categoryName: preset.title,
-    page: params.page || 1
-  });
-};
 
 loadCategoryVideos = async (params = {}) => {
   const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset) || CATEGORY_OPTIONS[0];
-  const usePreset = String(params.categoryMode || 'preset') === 'preset';
-  const categoryId = String(usePreset ? ((preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
-  const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
+  const categoryId = String((preset && preset.value) || params.categoryPreset || params.categoryId || params.categoryUrl || params.url || '').trim();
+  const categoryName = String((preset && preset.title) || params.categoryName || '').trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
   }
@@ -431,24 +415,6 @@ async function loadVideoList(url) {
   } catch (error) {
     return [createMessage('请求失败', String(error.message || error))];
   }
-}
-
-async function loadCategories() {
-  return CATEGORY_OPTIONS.map((item) => buildCategoryEntry(item));
-}
-
-function buildCategoryEntry(item) {
-  const url = buildCategoryUrl(item.value, 1);
-  return {
-    id: hashId(url),
-    type: 'link',
-    title: item.title,
-    description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
-    link: 'category|' + url,
-    mediaType: 'movie',
-    playerType: 'system',
-    source: SITE.title
-  };
 }
 
 function buildCategoryUrl(categoryId, page) {
