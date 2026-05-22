@@ -1,32 +1,34 @@
 WidgetMetadata = {
   id: 'forward.live-tv',
-  title: '直播(电视+网络)',
+  title: 'Live TV (IPTV+Web)',
   description: 'Live TV module for network and IPTV sources.',
   author: 'Forward',
   site: '',
-  version: '1.0.8',
-  requiredVersion: '0.0.1',
+  version: '1.0.0',
+  requiredVersion: '0.0.2',
   detailCacheDuration: 60,
   modules: [
     {
-      title: '直播列表',
-      description: '列出直播源。',
+      id: 'load-live-list',
+      title: 'Live List',
+      description: 'Load live stream list.',
       functionName: 'loadLiveList',
       params: []
     },
     {
-      title: '直播详情',
-      description: '获取直播源详情。',
+      id: 'get-live-detail',
+      title: 'Live Detail',
+      description: 'Get live stream detail by URL.',
       functionName: 'getLiveDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
+      params: [{ name: 'url', title: 'URL', type: 'input' }]
     }
   ]
 };
 
-async function loadLiveList() {
+loadLiveList = async () => {
   return [];
-}
+};
 
-async function getLiveDetail(params = {}) {
+getLiveDetail = async (params = {}) => {
   return { url: params.url || '', title: '', source: 'live-tv' };
-}
+};

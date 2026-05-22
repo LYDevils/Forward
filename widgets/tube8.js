@@ -1,66 +1,72 @@
+const BASE_URL = 'https://www.tube8.com';
+
 WidgetMetadata = {
   id: 'forward.tube8',
   title: 'Tube8',
   description: 'Tube8 video module.',
   author: 'Forward',
-  site: 'https://www.tube8.com',
+  site: BASE_URL,
   version: '1.0.0',
-  requiredVersion: '0.0.1',
+  requiredVersion: '0.0.2',
   detailCacheDuration: 60,
   modules: [
     {
-      title: '搜索视频',
-      description: '按关键词搜索视频。',
+      id: 'search-videos',
+      title: 'Search Videos',
+      description: 'Search videos by keyword.',
       functionName: 'searchVideos',
-      params: [{ name: 'keyword', title: '关键词', type: 'input' }]
+      params: [{ name: 'keyword', title: 'Keyword', type: 'input' }]
     },
     {
-      title: '分类',
-      description: '动态获取分类列表。',
+      id: 'get-categories',
+      title: 'Categories',
+      description: 'Load categories dynamically from the site.',
       functionName: 'getCategories',
       params: []
     },
     {
-      title: '视频详情',
-      description: '获取单个视频信息。',
+      id: 'get-video-detail',
+      title: 'Video Detail',
+      description: 'Get video detail by URL.',
       functionName: 'getVideoDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
+      params: [{ name: 'url', title: 'URL', type: 'input' }]
     }
   ]
 };
 
-async function searchVideos() {
+searchVideos = async () => {
   return [];
-}
+};
 
-async function getVideoDetail(params = {}) {
+getVideoDetail = async (params = {}) => {
   return { url: params.url || '', title: '', source: 'tube8' };
-}
+};
 
-async function getCategories() {
+getCategories = async () => {
+  return loadCategories(BASE_URL, 'tube8');
+};
+
+async function loadCategories(baseUrl, platform) {
   try {
-    const response = await Widget.http.get(BASE_URL);
-    const html = typeof response === 'string'
-      ? response
-      : (response.data || response.body || response.html || '');
+    const response = await Widget.http.get(baseUrl);
+    const html = typeof response === 'string' ? response : (response.data || response.body || response.html || '');
     const $ = Widget.html.load(html);
     const results = [];
     const seen = new Set();
-    const selectors = ['nav a', '.navbar a', '.menu a', '.categories a', '.category a'];
-
-    selectors.forEach((selector) => {
+    ['nav a', '.navbar a', '.menu a', '.categories a', '.category a'].forEach((selector) => {
       $(selector).each((_, element) => {
         const title = $(element).text().trim();
         const url = $(element).attr('href');
         if (!title || !url) return;
-        const normalizedUrl = url.startsWith('http') ? url : BASE_URL.replace(/\/$/, '') + (url.startsWith('/') ? '' : '/') + url.replace(/^\//, '');
+        const normalizedUrl = url.startsWith('http')
+          ? url
+          : baseUrl.replace(/\/$/, '') + (url.startsWith('/') ? '' : '/') + url.replace(/^\//, '');
         const key = `${title}|${normalizedUrl}`;
         if (seen.has(key)) return;
         seen.add(key);
-        results.push({ title, url: normalizedUrl, type: 'category', platform: 'tube8' });
+        results.push({ title, url: normalizedUrl, type: 'category', platform });
       });
     });
-
     return results;
   } catch (error) {
     return [];

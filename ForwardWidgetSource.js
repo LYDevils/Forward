@@ -97,8 +97,8 @@ function validateWidgetMetadata(metadata) {
   }
 
   metadata.modules.forEach((moduleItem, moduleIndex) => {
-    if (!moduleItem.functionName || !moduleItem.title) {
-      throw new Error(`WidgetMetadata.modules[${moduleIndex}] must include title and functionName`);
+    if (!moduleItem.id || !moduleItem.functionName || !moduleItem.title) {
+      throw new Error(`WidgetMetadata.modules[${moduleIndex}] must include id, title and functionName`);
     }
   });
 

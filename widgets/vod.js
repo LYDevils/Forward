@@ -4,29 +4,31 @@ WidgetMetadata = {
   description: 'Video on demand module.',
   author: 'Forward',
   site: '',
-  version: '1.1.0',
-  requiredVersion: '0.0.1',
+  version: '1.0.0',
+  requiredVersion: '0.0.2',
   detailCacheDuration: 60,
   modules: [
     {
-      title: '搜索视频',
-      description: '按关键词搜索视频。',
+      id: 'search-videos',
+      title: 'Search Videos',
+      description: 'Search videos by keyword.',
       functionName: 'searchVideos',
-      params: [{ name: 'keyword', title: '关键词', type: 'input' }]
+      params: [{ name: 'keyword', title: 'Keyword', type: 'input' }]
     },
     {
-      title: '视频详情',
-      description: '获取单个视频信息。',
+      id: 'get-video-detail',
+      title: 'Video Detail',
+      description: 'Get video detail by URL.',
       functionName: 'getVideoDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
+      params: [{ name: 'url', title: 'URL', type: 'input' }]
     }
   ]
 };
 
-async function searchVideos() {
+searchVideos = async () => {
   return [];
-}
+};
 
-async function getVideoDetail(params = {}) {
+getVideoDetail = async (params = {}) => {
   return { url: params.url || '', title: '', source: 'vod' };
-}
+};

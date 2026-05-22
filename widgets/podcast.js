@@ -4,29 +4,31 @@ WidgetMetadata = {
   description: 'RSS podcast module.',
   author: 'Forward',
   site: '',
-  version: '2.1.0',
-  requiredVersion: '0.0.1',
+  version: '1.0.0',
+  requiredVersion: '0.0.2',
   detailCacheDuration: 60,
   modules: [
     {
-      title: '订阅源',
-      description: '加载播客 RSS 订阅。',
+      id: 'load-feed',
+      title: 'Load Feed',
+      description: 'Load podcast RSS feed.',
       functionName: 'loadFeed',
-      params: [{ name: 'feedUrl', title: 'RSS 地址', type: 'input' }]
+      params: [{ name: 'feedUrl', title: 'Feed URL', type: 'input' }]
     },
     {
-      title: '节目详情',
-      description: '获取播客节目详情。',
+      id: 'get-episode-detail',
+      title: 'Episode Detail',
+      description: 'Get episode detail by URL.',
       functionName: 'getEpisodeDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
+      params: [{ name: 'url', title: 'URL', type: 'input' }]
     }
   ]
 };
 
-async function loadFeed() {
+loadFeed = async () => {
   return [];
-}
+};
 
-async function getEpisodeDetail(params = {}) {
+getEpisodeDetail = async (params = {}) => {
   return { url: params.url || '', title: '', source: 'podcast' };
-}
+};

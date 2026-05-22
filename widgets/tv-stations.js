@@ -1,32 +1,34 @@
 WidgetMetadata = {
   id: 'forward.tv-stations',
-  title: '电视台',
+  title: 'TV Stations',
   description: 'TV stations module.',
   author: 'Forward',
   site: '',
   version: '1.0.0',
-  requiredVersion: '0.0.1',
+  requiredVersion: '0.0.2',
   detailCacheDuration: 60,
   modules: [
     {
-      title: '频道列表',
-      description: '列出电视频道。',
+      id: 'load-stations',
+      title: 'Station List',
+      description: 'Load TV station list.',
       functionName: 'loadStations',
       params: []
     },
     {
-      title: '频道详情',
-      description: '获取频道详情。',
+      id: 'get-station-detail',
+      title: 'Station Detail',
+      description: 'Get station detail by URL.',
       functionName: 'getStationDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
+      params: [{ name: 'url', title: 'URL', type: 'input' }]
     }
   ]
 };
 
-async function loadStations() {
+loadStations = async () => {
   return [];
-}
+};
 
-async function getStationDetail(params = {}) {
+getStationDetail = async (params = {}) => {
   return { url: params.url || '', title: '', source: 'tv-stations' };
-}
+};
