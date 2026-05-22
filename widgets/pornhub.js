@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.20',
+  version: '1.0.21',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -413,19 +413,7 @@ async function loadDetail(link) {
   );
   const videoUrl = extractVideoUrl(html, url);
   if (!videoUrl) {
-    return {
-      id: hashId(url),
-      type: 'detail',
-      title,
-      description: [description, '未解析到直链，已保留网页播放链接。'].filter(Boolean).join(' | '),
-      coverUrl,
-      posterPath: coverUrl,
-      link: url,
-      videoUrl: url,
-      mediaType: 'movie',
-      playerType: 'system',
-      source: SITE.title
-    };
+    return createMessage('未解析到播放地址', '详情页已加载，但未找到可直接播放的 m3u8/mp4 地址。可能需要登录、地区可用性受限，或该视频只允许网页播放器播放。链接：' + url);
   }
 
   return {
@@ -539,13 +527,20 @@ function buildFavoriteCandidates(username) {
   }
 
   if (profile.type && profile.slug) {
+    if (profile.origin && /^https:\/\/cn\.pornhub\.com$/i.test(profile.origin)) {
+      add('/' + profile.type + '/' + profile.slug, profile.origin);
+      return candidates;
+    }
+    if (profile.type === 'users') {
+      add('/users/' + profile.slug, 'https://cn.pornhub.com');
+    }
     add('/' + profile.type + '/' + profile.slug, profile.origin);
     return candidates;
   }
 
   if (profile.slug) {
+    add('/users/' + profile.slug, 'https://cn.pornhub.com');
     ['users', 'model', 'pornstar'].forEach((type) => add('/' + type + '/' + profile.slug));
-    add('https://cn.pornhub.com/users/' + profile.slug + '/videos/favorites');
   }
 
   return candidates;
@@ -694,7 +689,14 @@ function parseFavoriteVideoList(html, pageUrl, listLabel) {
   const results = [];
   const seen = new Set();
   const baseUrl = getOrigin(pageUrl) || SITE.baseUrl;
-  const scopes = findFavoriteVideoScopes($, baseUrl);
+  const strictItems = findStrictFavoriteVideoItems($);
+  if (strictItems.length > 0) {
+    strictItems.forEach((element) => {
+      addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel || 'Pornhub 收藏');
+    });
+  }
+
+  const scopes = results.length > 0 ? [] : findFavoriteVideoScopes($, baseUrl);
 
   scopes.forEach((scope) => {
     findFavoriteVideoItems($, scope, baseUrl).forEach((element) => {
@@ -707,6 +709,31 @@ function parseFavoriteVideoList(html, pageUrl, listLabel) {
   }
 
   return results.map((item) => Object.assign({}, item, { source: SITE.title })).slice(0, 40);
+}
+
+function findStrictFavoriteVideoItems($) {
+  const items = [];
+  const seen = new Set();
+  const selectors = [
+    '.profileVids .videoUList li[id^="vfavouriteVideo"]',
+    '.profileVids .videoUList li[data-video-vkey]',
+    '.profileVids ul#moreData li[id^="vfavouriteVideo"]',
+    '.profileVids ul#moreData li[data-video-vkey]',
+    'li[id^="vfavouriteVideo"]'
+  ];
+
+  selectors.forEach((selector) => {
+    $(selector).each((_, element) => {
+      const key = $(element).attr('data-video-vkey') || $(element).attr('data-video-id') || $(element).attr('id') || '';
+      const href = $(element).find('a[href*="view_video.php"]').first().attr('href') || '';
+      const signature = key || href;
+      if (!signature || seen.has(signature)) return;
+      seen.add(signature);
+      items.push(element);
+    });
+  });
+
+  return items;
 }
 
 function findFavoriteVideoScopes($, baseUrl) {
@@ -824,6 +851,14 @@ function countBlockedDescendantVideoLinks($, element, baseUrl) {
 function findFavoriteVideoItems($, scope, baseUrl) {
   const items = [];
   const seen = new Set();
+  $(scope).find('li[id^="vfavouriteVideo"], li[data-video-vkey]').each((_, element) => {
+    if (isInsideBlockedArea($, element, scope)) return;
+    const href = $(element).find('a[href*="view_video.php"]').first().attr('href');
+    const url = normalizeUrl(href, baseUrl || SITE.baseUrl);
+    if (!isLikelyVideoUrl(url) || seen.has(url)) return;
+    seen.add(url);
+    items.push(element);
+  });
   $(scope).find('a[href*="view_video.php"]').each((_, anchor) => {
     if (isInsideBlockedArea($, anchor, scope)) return;
     const url = normalizeUrl($(anchor).attr('href'), baseUrl || SITE.baseUrl);
@@ -1036,16 +1071,27 @@ function extractVideoUrl(html, pageUrl) {
 }
 
 function extractMediaDefinitionUrl(html, pageUrl) {
-  const mediaMatch = String(html || '').match(/mediaDefinitions?\s*[:=]\s*(\[[\s\S]*?\])/i)
-    || String(html || '').match(/mediaDefinition\s*:\s*(\[[\s\S]*?\])/i);
-  if (!mediaMatch || !mediaMatch[1]) return '';
-  const raw = unescapeUrl(mediaMatch[1]);
-  const directMatch = raw.match(/["'](?:videoUrl|url)["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i);
-  return directMatch && directMatch[1] ? normalizeUrl(directMatch[1], pageUrl) : '';
+  const raw = unescapeUrl(String(html || ''));
+  const urls = [];
+  const pattern = /["'](?:videoUrl|url)["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/gi;
+  let match;
+  while ((match = pattern.exec(raw))) {
+    const url = normalizeUrl(match[1], pageUrl);
+    if (isPlayableUrl(url)) urls.push(url);
+  }
+
+  if (urls.length === 0) return '';
+  const hlsUrls = urls.filter((url) => /\.m3u8(?:[?#].*)?$/i.test(url));
+  const preferred = hlsUrls.find((url) => /720P|720/i.test(url))
+    || hlsUrls.find((url) => /480P|480/i.test(url))
+    || hlsUrls[0]
+    || urls.find((url) => /\.mp4(?:[?#].*)?$/i.test(url))
+    || urls[0];
+  return preferred || '';
 }
 
 function isPlayableUrl(value) {
-  return /\.(?:m3u8|mp4)(?:[?#].*)?$/i.test(String(value || ''));
+  return /\.(?:m3u8|mp4)(?:\/[^?#]*)?(?:[?#].*)?$/i.test(String(value || ''));
 }
 
 function isLikelyVideoUrl(url) {
