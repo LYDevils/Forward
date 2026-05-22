@@ -245,9 +245,9 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.26',
+  version: '1.0.27',
   requiredVersion: '0.0.1',
-  detailCacheDuration:300,
+  detailCacheDuration:1,
   modules: [
     {
       id: 'region-videos',
@@ -431,15 +431,16 @@ loadResource = async (params = {}) => {
   }
 
   const url = normalizeUrl(target, SITE.baseUrl);
-  const html = await fetchText(url);
-  const title = extractDetailTitle(html);
-  const description = extractDetailDescription(html);
-  const sourceItems = buildStreamSourceItems(extractVideoSources(html, url), title, description);
-  if (sourceItems.length === 0) {
+  const detail = await loadDetail(url);
+  if (!detail || detail.type === 'text' || !detail.videoUrl) {
     return [];
   }
 
-  return sourceItems;
+  return [{
+    name: detail.title || SITE.title,
+    description: detail.description || '',
+    url: detail.videoUrl
+  }];
 };
 
 async function loadDetail(link) {
@@ -1180,72 +1181,137 @@ function buildStreamSourceItems(urls, title, description) {
 
 function extractVideoSources(html, pageUrl) {
   const raw = unescapeUrl(String(html || ''));
-  const buckets = {
-    direct: [],
-    mp4: [],
-    hls: []
-  };
+  const entries = [];
   const seen = new Set();
 
-  function add(url) {
+  function add(url, meta) {
     const normalized = normalizeUrl(url, pageUrl);
-    if (!isPlayableUrl(normalized) || seen.has(normalized)) return;
+    if (!isPlayableUrl(normalized) || isPreviewAssetUrl(normalized) || seen.has(normalized)) return;
     seen.add(normalized);
-    if (isGetMediaUrl(normalized)) {
-      buckets.direct.push(normalized);
-      return;
-    }
-    if (/\.mp4(?:[?#].*)?$/i.test(normalized)) {
-      buckets.mp4.push(normalized);
-      return;
-    }
-    if (/\.m3u8(?:[?#].*)?$/i.test(normalized)) {
-      buckets.hls.push(normalized);
-    }
+    entries.push({
+      url: normalized,
+      format: String(meta && meta.format || ''),
+      quality: String(meta && meta.quality || ''),
+      defaultQuality: Boolean(meta && meta.defaultQuality),
+      remote: Boolean(meta && meta.remote)
+    });
   }
+
+  extractMediaDefinitionItems(raw).forEach((item) => {
+    add(item.videoUrl, item);
+  });
 
   const getMediaPattern = /https?:\/\/[^"'\\\s]+\/video\/get_media\?[^"'\\\s]+/gi;
   let match;
   while ((match = getMediaPattern.exec(raw))) {
-    add(match[0]);
+    add(match[0], { format: 'mp4', remote: true });
   }
 
-  extractMediaDefinitionUrls(raw).forEach(add);
-
   const patterns = [
-    /html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/ig,
-    /html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/ig,
-    /html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/ig,
-    /<source[^>]+src=["']([^"']+)["']/ig,
-    /["'](?:contentUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+)["']/ig,
-    /(?:contentUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+)["']/ig
+    { format: 'hls', pattern: /html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/ig },
+    { format: 'mp4', pattern: /html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/ig },
+    { format: 'mp4', pattern: /html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/ig }
   ];
 
-  patterns.forEach((pattern) => {
+  patterns.forEach(({ format, pattern }) => {
     let localMatch;
     while ((localMatch = pattern.exec(raw))) {
-      if (localMatch[1]) add(localMatch[1]);
+      if (localMatch[1]) add(localMatch[1], { format });
     }
   });
 
-  return sortHlsSources(buckets.hls)
-    .concat(buckets.mp4)
-    .concat(buckets.direct);
-}
-
-function extractMediaDefinitionUrls(rawHtml) {
-  const raw = String(rawHtml || '');
-  const urls = [];
-  const pattern = /["'](?:videoUrl|url)["']\s*:\s*["']([^"']+)["']/gi;
-  let match;
-  while ((match = pattern.exec(raw))) {
-    urls.push(match[1]);
-  }
-  return urls;
+  return entries
+    .sort(comparePlayableEntry)
+    .map((item) => item.url);
 }
 
 function sortHlsSources(urls) {
   return (urls || []).slice().sort((left, right) => getPlayablePriority(left) - getPlayablePriority(right));
+}
+
+function comparePlayableEntry(left, right) {
+  return getPlayableEntryPriority(left) - getPlayableEntryPriority(right);
+}
+
+function getPlayableEntryPriority(item) {
+  const format = String(item && item.format || '').toLowerCase();
+  const quality = String(item && item.quality || '');
+  const url = String(item && item.url || '');
+  if (format === 'hls' && item && item.defaultQuality) return 0;
+  if (format === 'hls' && /720/i.test(quality || url)) return 10;
+  if (format === 'hls' && /480/i.test(quality || url)) return 20;
+  if (format === 'hls' && /1080/i.test(quality || url)) return 30;
+  if (format === 'hls' && /240/i.test(quality || url)) return 40;
+  if (format === 'hls') return 50;
+  if (format === 'mp4' && !isGetMediaUrl(url)) return 60;
+  if (isGetMediaUrl(url)) return 70;
+  return 100;
+}
+
+function extractMediaDefinitionItems(rawHtml) {
+  const raw = String(rawHtml || '');
+  const markerPattern = /(?:["']mediaDefinitions["']|mediaDefinitions)\s*:\s*\[/ig;
+  let match;
+  while ((match = markerPattern.exec(raw))) {
+    const arrayStart = raw.indexOf('[', match.index);
+    if (arrayStart === -1) continue;
+    const literal = extractJsonArrayLiteral(raw, arrayStart);
+    if (!literal) continue;
+    try {
+      const parsed = JSON.parse(literal);
+      if (Array.isArray(parsed)) {
+        return parsed
+          .filter((item) => item && typeof item === 'object' && item.videoUrl)
+          .map((item) => ({
+            format: item.format,
+            quality: item.quality,
+            defaultQuality: item.defaultQuality,
+            remote: item.remote,
+            videoUrl: item.videoUrl
+          }));
+      }
+    } catch (error) {
+    }
+  }
+  return [];
+}
+
+function extractJsonArrayLiteral(text, startIndex) {
+  const raw = String(text || '');
+  let depth = 0;
+  let quote = '';
+  let escaped = false;
+  for (let index = startIndex; index < raw.length; index += 1) {
+    const char = raw[index];
+    if (quote) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === '\\') {
+        escaped = true;
+      } else if (char === quote) {
+        quote = '';
+      }
+      continue;
+    }
+
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+
+    if (char === '[') {
+      depth += 1;
+      continue;
+    }
+
+    if (char === ']') {
+      depth -= 1;
+      if (depth === 0) {
+        return raw.slice(startIndex, index + 1);
+      }
+    }
+  }
+  return '';
 }
 
 function getPlayablePriority(url) {
@@ -1276,7 +1342,17 @@ function isGetMediaUrl(value) {
 
 function isPlayableUrl(value) {
   return /\/video\/get_media\b/i.test(String(value || ''))
-    || /\.(?:m3u8|mp4)(?:\/[^?#]*)?(?:[?#].*)?$/i.test(String(value || ''));
+    || /\.m3u8(?:[?#].*)?$/i.test(String(value || ''))
+    || /\.mp4(?:[?#].*)?$/i.test(String(value || ''));
+}
+
+function isPreviewAssetUrl(value) {
+  const lower = String(value || '').toLowerCase();
+  return /\/pics\/gifs\//i.test(lower)
+    || /\/plain\//i.test(lower)
+    || /\/thumb\//i.test(lower)
+    || /(?:[?&]|\/)vts:/i.test(lower)
+    || /(?:[?&]|\/)rs:/i.test(lower);
 }
 
 function isLikelyVideoUrl(url) {
