@@ -1,7 +1,7 @@
 const BASE_URL = 'https://jable.tv';
 
 WidgetMetadata = {
-  id: 'forward.jable',
+  id: 'lydevils.jable',
   title: 'Jable',
   description: 'Jable video module.',
   author: 'Forward',

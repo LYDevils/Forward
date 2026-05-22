@@ -1,7 +1,7 @@
 const BASE_URL = 'https://www.redtube.com';
 
 WidgetMetadata = {
-  id: 'forward.redtube',
+  id: 'lydevils.redtube',
   title: 'RedTube',
   description: 'RedTube video module.',
   author: 'Forward',

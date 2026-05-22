@@ -1,7 +1,7 @@
 const BASE_URL = 'https://www.youporn.com';
 
 WidgetMetadata = {
-  id: 'forward.youporn',
+  id: 'lydevils.youporn',
   title: 'YouPorn',
   description: 'YouPorn video module.',
   author: 'Forward',

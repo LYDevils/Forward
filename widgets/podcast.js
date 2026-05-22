@@ -1,5 +1,5 @@
 WidgetMetadata = {
-  id: 'forward.podcast',
+  id: 'lydevils.podcast',
   title: 'Podcast',
   description: 'RSS podcast module.',
   author: 'Forward',

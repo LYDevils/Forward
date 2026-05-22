@@ -1,5 +1,5 @@
 WidgetMetadata = {
-  id: 'forward.tv-stations',
+  id: 'lydevils.tv-stations',
   title: 'TV Stations',
   description: 'TV stations module.',
   author: 'Forward',

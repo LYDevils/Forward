@@ -1,7 +1,7 @@
 const BASE_URL = 'https://www.xvideos.com';
 
 WidgetMetadata = {
-  id: 'forward.xvideos',
+  id: 'lydevils.xvideos',
   title: 'XVideos',
   description: 'XVideos video module.',
   author: 'Forward',

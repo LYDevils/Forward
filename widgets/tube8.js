@@ -1,7 +1,7 @@
 const BASE_URL = 'https://www.tube8.com';
 
 WidgetMetadata = {
-  id: 'forward.tube8',
+  id: 'lydevils.tube8',
   title: 'Tube8',
   description: 'Tube8 video module.',
   author: 'Forward',

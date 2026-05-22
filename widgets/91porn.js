@@ -1,7 +1,7 @@
 const BASE_URL = 'https://91porn.com';
 
 WidgetMetadata = {
-  id: 'forward.91porn',
+  id: 'lydevils.91porn',
   title: '91Porn',
   description: '91Porn video module.',
   author: 'Forward',

@@ -20,8 +20,8 @@ The official repository shown in the app uses the same structure:
 
 ```json
 {
-  "title": "Forward Widgets",
-  "description": "Forward widget source",
+  "title": "LYDevils Widgets",
+  "description": "LYDevils Forward widget source",
   "icon": "",
   "widgets": [
     {

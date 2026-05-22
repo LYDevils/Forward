@@ -22,8 +22,8 @@ async function run() {
     widgetsDir: path.join(__dirname, 'widgets'),
     outputFile,
     baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/main/widgets',
-    title: 'Forward Widgets',
-    description: 'Forward widget source'
+    title: 'LYDevils Widgets',
+    description: 'LYDevils Forward widget source'
   });
   console.log(`   output: ${generation.outputFile}`);
   console.log(`   widgets: ${generation.index.widgets.length}\n`);

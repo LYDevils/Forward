@@ -1,7 +1,7 @@
 const BASE_URL = 'https://www.pornhub.com';
 
 WidgetMetadata = {
-  id: 'forward.pornhub',
+  id: 'lydevils.pornhub',
   title: 'Pornhub',
   description: 'Pornhub video module.',
   author: 'Forward',

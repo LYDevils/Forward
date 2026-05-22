@@ -1,7 +1,7 @@
 const BASE_URL = 'https://xhamster.com';
 
 WidgetMetadata = {
-  id: 'forward.xhamster',
+  id: 'lydevils.xhamster',
   title: 'xHamster',
   description: 'xHamster video module.',
   author: 'Forward',

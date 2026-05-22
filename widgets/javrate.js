@@ -1,7 +1,7 @@
 const BASE_URL = 'https://javrate.com';
 
 WidgetMetadata = {
-  id: 'forward.javrate',
+  id: 'lydevils.javrate',
   title: 'JAVRate',
   description: 'JAVRate video module.',
   author: 'Forward',

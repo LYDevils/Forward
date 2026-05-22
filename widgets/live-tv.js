@@ -1,5 +1,5 @@
 WidgetMetadata = {
-  id: 'forward.live-tv',
+  id: 'lydevils.live-tv',
   title: 'Live TV (IPTV+Web)',
   description: 'Live TV module for network and IPTV sources.',
   author: 'Forward',

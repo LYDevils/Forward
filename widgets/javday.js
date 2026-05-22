@@ -1,7 +1,7 @@
 const BASE_URL = 'https://javday.tv';
 
 WidgetMetadata = {
-  id: 'forward.javday',
+  id: 'lydevils.javday',
   title: 'JAVDay',
   description: 'JAVDay video module.',
   author: 'Forward',

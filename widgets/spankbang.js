@@ -1,7 +1,7 @@
 const BASE_URL = 'https://spankbang.com';
 
 WidgetMetadata = {
-  id: 'forward.spankbang',
+  id: 'lydevils.spankbang',
   title: 'SpankBang',
   description: 'SpankBang video module.',
   author: 'Forward',

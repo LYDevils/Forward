@@ -1,5 +1,5 @@
 WidgetMetadata = {
-  id: 'forward.vod',
+  id: 'lydevils.vod',
   title: 'VOD',
   description: 'Video on demand module.',
   author: 'Forward',
