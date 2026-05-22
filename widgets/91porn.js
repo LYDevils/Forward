@@ -1,13 +1,11 @@
-const BASE_URL = 'https://91porn.com';
-
 WidgetMetadata = {
   id: 'lydevils.91porn',
   title: '91Porn',
   description: '91Porn video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://91porn.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, '91porn');
+  return loadCategories('https://91porn.com', '91porn');
 };
 
 async function loadCategories(baseUrl, platform) {

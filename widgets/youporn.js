@@ -1,13 +1,11 @@
-const BASE_URL = 'https://www.youporn.com';
-
 WidgetMetadata = {
   id: 'lydevils.youporn',
   title: 'YouPorn',
   description: 'YouPorn video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://www.youporn.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'youporn');
+  return loadCategories('https://www.youporn.com', 'youporn');
 };
 
 async function loadCategories(baseUrl, platform) {

@@ -4,139 +4,139 @@
   "icon": "",
   "widgets": [
     {
-      "id": "lydevils.91porn",
-      "title": "91Porn",
-      "description": "91Porn video module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/91porn.js"
-    },
-    {
       "id": "lydevils.jable",
       "title": "Jable",
       "description": "Jable video module.",
-      "requiredVersion": "0.0.2",
+      "requiredVersion": "0.0.1",
       "version": "1.0.0",
-      "author": "Forward",
+      "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/jable.js"
+    },
+    {
+      "id": "lydevils.91porn",
+      "title": "91Porn",
+      "description": "91Porn video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/91porn.js"
+    },
+    {
+      "id": "lydevils.pornhub",
+      "title": "Pornhub",
+      "description": "Pornhub video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/pornhub.js"
     },
     {
       "id": "lydevils.javday",
       "title": "JAVDay",
       "description": "JAVDay video module.",
-      "requiredVersion": "0.0.2",
+      "requiredVersion": "0.0.1",
       "version": "1.0.0",
-      "author": "Forward",
+      "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/javday.js"
     },
     {
       "id": "lydevils.javrate",
       "title": "JAVRate",
       "description": "JAVRate video module.",
-      "requiredVersion": "0.0.2",
+      "requiredVersion": "0.0.1",
       "version": "1.0.0",
-      "author": "Forward",
+      "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/javrate.js"
-    },
-    {
-      "id": "lydevils.live-tv",
-      "title": "Live TV (IPTV+Web)",
-      "description": "Live TV module for network and IPTV sources.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/live-tv.js"
-    },
-    {
-      "id": "lydevils.podcast",
-      "title": "Podcast",
-      "description": "RSS podcast module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/podcast.js"
-    },
-    {
-      "id": "lydevils.pornhub",
-      "title": "Pornhub",
-      "description": "Pornhub video module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/pornhub.js"
-    },
-    {
-      "id": "lydevils.redtube",
-      "title": "RedTube",
-      "description": "RedTube video module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/redtube.js"
-    },
-    {
-      "id": "lydevils.spankbang",
-      "title": "SpankBang",
-      "description": "SpankBang video module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/spankbang.js"
-    },
-    {
-      "id": "lydevils.tube8",
-      "title": "Tube8",
-      "description": "Tube8 video module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tube8.js"
-    },
-    {
-      "id": "lydevils.tv-stations",
-      "title": "TV Stations",
-      "description": "TV stations module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tv-stations.js"
-    },
-    {
-      "id": "lydevils.vod",
-      "title": "VOD",
-      "description": "Video on demand module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vod.js"
-    },
-    {
-      "id": "lydevils.xhamster",
-      "title": "xHamster",
-      "description": "xHamster video module.",
-      "requiredVersion": "0.0.2",
-      "version": "1.0.0",
-      "author": "Forward",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xhamster.js"
     },
     {
       "id": "lydevils.xvideos",
       "title": "XVideos",
       "description": "XVideos video module.",
-      "requiredVersion": "0.0.2",
+      "requiredVersion": "0.0.1",
       "version": "1.0.0",
-      "author": "Forward",
+      "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xvideos.js"
+    },
+    {
+      "id": "lydevils.redtube",
+      "title": "RedTube",
+      "description": "RedTube video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/redtube.js"
     },
     {
       "id": "lydevils.youporn",
       "title": "YouPorn",
       "description": "YouPorn video module.",
-      "requiredVersion": "0.0.2",
+      "requiredVersion": "0.0.1",
       "version": "1.0.0",
-      "author": "Forward",
+      "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/youporn.js"
+    },
+    {
+      "id": "lydevils.spankbang",
+      "title": "SpankBang",
+      "description": "SpankBang video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/spankbang.js"
+    },
+    {
+      "id": "lydevils.xhamster",
+      "title": "xHamster",
+      "description": "xHamster video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xhamster.js"
+    },
+    {
+      "id": "lydevils.tube8",
+      "title": "Tube8",
+      "description": "Tube8 video module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tube8.js"
+    },
+    {
+      "id": "lydevils.vod",
+      "title": "VOD",
+      "description": "Video on demand module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vod.js"
+    },
+    {
+      "id": "lydevils.podcast",
+      "title": "Podcast",
+      "description": "RSS podcast module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/podcast.js"
+    },
+    {
+      "id": "lydevils.live-tv",
+      "title": "Live TV (IPTV+Web)",
+      "description": "Live TV module for network and IPTV sources.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/live-tv.js"
+    },
+    {
+      "id": "lydevils.tv-stations",
+      "title": "TV Stations",
+      "description": "TV stations module.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tv-stations.js"
     }
   ]
 }

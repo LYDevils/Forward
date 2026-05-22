@@ -1,13 +1,11 @@
-const BASE_URL = 'https://www.redtube.com';
-
 WidgetMetadata = {
   id: 'lydevils.redtube',
   title: 'RedTube',
   description: 'RedTube video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://www.redtube.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'redtube');
+  return loadCategories('https://www.redtube.com', 'redtube');
 };
 
 async function loadCategories(baseUrl, platform) {

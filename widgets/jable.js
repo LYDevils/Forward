@@ -1,13 +1,11 @@
-const BASE_URL = 'https://jable.tv';
-
 WidgetMetadata = {
   id: 'lydevils.jable',
   title: 'Jable',
   description: 'Jable video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://jable.tv',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'jable');
+  return loadCategories('https://jable.tv', 'jable');
 };
 
 async function loadCategories(baseUrl, platform) {

@@ -2,10 +2,10 @@ WidgetMetadata = {
   id: 'lydevils.podcast',
   title: 'Podcast',
   description: 'RSS podcast module.',
-  author: 'Forward',
+  author: 'LYDevils',
   site: '',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {

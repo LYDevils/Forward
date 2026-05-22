@@ -1,13 +1,11 @@
-const BASE_URL = 'https://javrate.com';
-
 WidgetMetadata = {
   id: 'lydevils.javrate',
   title: 'JAVRate',
   description: 'JAVRate video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://javrate.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'javrate');
+  return loadCategories('https://javrate.com', 'javrate');
 };
 
 async function loadCategories(baseUrl, platform) {

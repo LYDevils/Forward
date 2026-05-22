@@ -2,10 +2,10 @@ WidgetMetadata = {
   id: 'lydevils.live-tv',
   title: 'Live TV (IPTV+Web)',
   description: 'Live TV module for network and IPTV sources.',
-  author: 'Forward',
+  author: 'LYDevils',
   site: '',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {

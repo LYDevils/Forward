@@ -1,13 +1,11 @@
-const BASE_URL = 'https://www.xvideos.com';
-
 WidgetMetadata = {
   id: 'lydevils.xvideos',
   title: 'XVideos',
   description: 'XVideos video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://www.xvideos.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'xvideos');
+  return loadCategories('https://www.xvideos.com', 'xvideos');
 };
 
 async function loadCategories(baseUrl, platform) {

@@ -3,21 +3,21 @@ const path = require('path');
 const vm = require('vm');
 
 const DEFAULT_WIDGET_ORDER = [
-  'forward.jable',
-  'forward.91porn',
-  'forward.pornhub',
-  'forward.javday',
-  'forward.javrate',
-  'forward.xvideos',
-  'forward.redtube',
-  'forward.youporn',
-  'forward.spankbang',
-  'forward.xhamster',
-  'forward.tube8',
-  'forward.vod',
-  'forward.podcast',
-  'forward.live-tv',
-  'forward.tv-stations'
+  'lydevils.jable',
+  'lydevils.91porn',
+  'lydevils.pornhub',
+  'lydevils.javday',
+  'lydevils.javrate',
+  'lydevils.xvideos',
+  'lydevils.redtube',
+  'lydevils.youporn',
+  'lydevils.spankbang',
+  'lydevils.xhamster',
+  'lydevils.tube8',
+  'lydevils.vod',
+  'lydevils.podcast',
+  'lydevils.live-tv',
+  'lydevils.tv-stations'
 ];
 
 function isHttpUrl(value) {

@@ -1,13 +1,11 @@
-const BASE_URL = 'https://www.tube8.com';
-
 WidgetMetadata = {
   id: 'lydevils.tube8',
   title: 'Tube8',
   description: 'Tube8 video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://www.tube8.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'tube8');
+  return loadCategories('https://www.tube8.com', 'tube8');
 };
 
 async function loadCategories(baseUrl, platform) {

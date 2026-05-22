@@ -18,8 +18,8 @@ async function main() {
 
   const widgetsDir = getArgValue('--widgets-dir') || path.join(__dirname, 'widgets');
   const outputFile = getArgValue('--out') || path.join(__dirname, 'forward-widgets.fwd');
-  const title = getArgValue('--title') || 'Forward Widgets';
-  const description = getArgValue('--description') || 'Forward widget source';
+  const title = getArgValue('--title') || 'LYDevils Widgets';
+  const description = getArgValue('--description') || 'LYDevils Forward widget source';
   const icon = getArgValue('--icon') || '';
 
   const result = await generateSourceIndex({

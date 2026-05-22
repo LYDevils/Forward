@@ -1,13 +1,11 @@
-const BASE_URL = 'https://javday.tv';
-
 WidgetMetadata = {
   id: 'lydevils.javday',
   title: 'JAVDay',
   description: 'JAVDay video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://javday.tv',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'javday');
+  return loadCategories('https://javday.tv', 'javday');
 };
 
 async function loadCategories(baseUrl, platform) {

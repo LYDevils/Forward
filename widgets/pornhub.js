@@ -1,13 +1,11 @@
-const BASE_URL = 'https://www.pornhub.com';
-
 WidgetMetadata = {
   id: 'lydevils.pornhub',
   title: 'Pornhub',
   description: 'Pornhub video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://www.pornhub.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'pornhub');
+  return loadCategories('https://www.pornhub.com', 'pornhub');
 };
 
 async function loadCategories(baseUrl, platform) {

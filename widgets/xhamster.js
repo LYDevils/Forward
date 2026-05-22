@@ -1,13 +1,11 @@
-const BASE_URL = 'https://xhamster.com';
-
 WidgetMetadata = {
   id: 'lydevils.xhamster',
   title: 'xHamster',
   description: 'xHamster video module.',
-  author: 'Forward',
-  site: BASE_URL,
+  author: 'LYDevils',
+  site: 'https://xhamster.com',
   version: '1.0.0',
-  requiredVersion: '0.0.2',
+  requiredVersion: '0.0.1',
   detailCacheDuration: 60,
   modules: [
     {
@@ -43,7 +41,7 @@ getVideoDetail = async (params = {}) => {
 };
 
 getCategories = async () => {
-  return loadCategories(BASE_URL, 'xhamster');
+  return loadCategories('https://xhamster.com', 'xhamster');
 };
 
 async function loadCategories(baseUrl, platform) {
