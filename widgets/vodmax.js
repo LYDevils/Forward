@@ -96,7 +96,7 @@ WidgetMetadata = {
     modules: [
         {
             id: "load-cms-list",
-            title: "VodMax",
+            title: "资源列表",
             functionName: "loadCmsList",
             type: "list",
             cacheDuration:300,
@@ -267,6 +267,7 @@ async function loadDetail(link) {
         throw error;
     }
 }
+
 
 
 

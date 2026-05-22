@@ -12,7 +12,7 @@ WidgetMetadata = {
   modules: [
     {
       id: 'load-stations',
-      title: '电视台',
+      title: '电视台列表',
       description: '加载真实 M3U 直播流。',
       functionName: 'loadStations',
       type: 'list',
@@ -20,7 +20,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-station-detail',
-      title: '电视台',
+      title: '电视台详情',
       description: '根据链接加载直播详情。',
       functionName: 'getStationDetail',
       type: 'list',
@@ -98,6 +98,7 @@ function hash(value) {
 function message(title, description) {
   return { id: 'tv-stations.message.' + hash(title + description), type: 'text', title, description };
 }
+
 
 
 

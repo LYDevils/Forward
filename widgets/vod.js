@@ -17,7 +17,7 @@ WidgetMetadata = {
   modules: [
     {
       id: 'latest-videos',
-      title: 'VOD',
+      title: '最新影片',
       description: '加载当前采集源最新影片。',
       functionName: 'loadLatestVideos',
       type: 'list',
@@ -25,7 +25,7 @@ WidgetMetadata = {
     },
     {
       id: 'category-videos',
-      title: 'VOD',
+      title: '分类影片',
       description: '按分类 ID 加载影片，例如 /vod/type/id/27.html 对应分类 27。',
       functionName: 'loadCategoryVideos',
       type: 'list',
@@ -36,7 +36,7 @@ WidgetMetadata = {
     },
     {
       id: 'search-videos',
-      title: 'VOD',
+      title: '搜索影片',
       description: '按关键词搜索影片。',
       functionName: 'searchVideos',
       type: 'list',
@@ -47,7 +47,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-video-detail',
-      title: 'VOD',
+      title: '影片详情',
       description: '按 API ID 或前台链接加载影片详情。',
       functionName: 'getVideoDetail',
       type: 'list',
@@ -180,6 +180,7 @@ function cleanText(value) {
 function createMessage(title, description) {
   return { id: 'vod.message.' + title, type: 'text', title, description };
 }
+
 
 
 

@@ -27,7 +27,7 @@ WidgetMetadata = {
   modules: [
     {
       id: 'search-videos',
-      title: 'RedTube',
+      title: '搜索影片',
       description: '搜索真实视频。',
       functionName: 'searchVideos',
       type: 'list',
@@ -38,7 +38,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-categories',
-      title: 'RedTube',
+      title: '分类',
       description: '从站点导航加载分类。',
       functionName: 'getCategories',
       type: 'list',
@@ -46,7 +46,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-video-detail',
-      title: 'RedTube',
+      title: '影片详情',
       description: '根据链接加载视频详情。',
       functionName: 'getVideoDetail',
       type: 'list',
@@ -291,6 +291,7 @@ function createMessage(title, description) {
     description
   };
 }
+
 
 
 

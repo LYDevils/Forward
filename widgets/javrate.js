@@ -30,7 +30,7 @@ WidgetMetadata = {
   modules: [
     {
       id: 'search-videos',
-      title: 'JAVRate',
+      title: '搜索影片',
       description: '搜索真实视频。',
       functionName: 'searchVideos',
       type: 'list',
@@ -41,7 +41,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-categories',
-      title: 'JAVRate',
+      title: '分类',
       description: '从站点导航加载分类。',
       functionName: 'getCategories',
       type: 'list',
@@ -49,7 +49,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-video-detail',
-      title: 'JAVRate',
+      title: '影片详情',
       description: '根据链接加载视频详情。',
       functionName: 'getVideoDetail',
       type: 'list',
@@ -294,6 +294,7 @@ function createMessage(title, description) {
     description
   };
 }
+
 
 
 

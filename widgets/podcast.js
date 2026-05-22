@@ -10,7 +10,7 @@
   modules: [
     {
       id: 'load-feed',
-      title: '播客',
+      title: '播客列表',
       description: '加载真实 RSS 源。',
       functionName: 'loadFeed',
       type: 'list',
@@ -18,7 +18,7 @@
     },
     {
       id: 'get-episode-detail',
-      title: '播客',
+      title: '单集详情',
       description: '根据媒体链接加载单集详情。',
       functionName: 'getEpisodeDetail',
       type: 'list',
@@ -101,6 +101,7 @@ function hash(value) {
 function message(title, description) {
   return { id: 'podcast.message.' + hash(title + description), type: 'text', title, description };
 }
+
 
 
 

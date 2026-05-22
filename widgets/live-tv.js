@@ -12,7 +12,7 @@ WidgetMetadata = {
   modules: [
     {
       id: 'load-live-list',
-      title: '直播',
+      title: '直播列表',
       description: '加载真实 M3U 直播流。',
       functionName: 'loadLiveList',
       type: 'list',
@@ -20,7 +20,7 @@ WidgetMetadata = {
     },
     {
       id: 'get-live-detail',
-      title: '直播',
+      title: '直播详情',
       description: '根据链接加载直播详情。',
       functionName: 'getLiveDetail',
       type: 'list',
@@ -98,6 +98,7 @@ function hash(value) {
 function message(title, description) {
   return { id: 'live-tv.message.' + hash(title + description), type: 'text', title, description };
 }
+
 
 
 
