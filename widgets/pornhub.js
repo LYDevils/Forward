@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.22',
+  version: '1.0.23',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -338,6 +338,12 @@ WidgetMetadata = {
         { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://cn.pornhub.com/model/nana_taipei' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
+    },
+    {
+      id: 'loadResource',
+      title: '加载资源',
+      type: 'stream',
+      functionName: 'loadResource'
     }
   ]
 };
@@ -415,6 +421,27 @@ getVideoDetail = async (params = {}) => {
   return Array.isArray(detail) ? detail : [detail];
 };
 
+loadResource = async (params = {}) => {
+  const candidates = [params.id, params.link, params.videoUrl]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean);
+  const target = candidates.find(isLikelyVideoUrl) || candidates.find(isPornhubUrl) || '';
+  if (!target) {
+    return [];
+  }
+
+  const detail = await loadDetail(target);
+  if (!detail || detail.type === 'text' || !detail.videoUrl) {
+    return [];
+  }
+
+  return [{
+    name: detail.title || 'Pornhub',
+    description: detail.description || '',
+    url: detail.videoUrl
+  }];
+};
+
 async function loadDetail(link) {
   const rawLink = String(link || '');
   if (rawLink.startsWith('category|')) {
@@ -442,16 +469,13 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const playableSources = extractVideoSources(html, url);
-  const videoUrl = playableSources[0] || '';
+  const videoUrl = extractPrimaryVideoUrl(html, url);
   if (!videoUrl) {
     return createMessage('未解析到播放地址', '详情页已加载，但未找到可直接播放的 m3u8/mp4 地址。可能需要登录、地区可用性受限，或该视频只允许网页播放器播放。链接：' + url);
   }
 
-  const childItems = buildPlayableChildItems(playableSources, title);
-
   return {
-    id: hashId(url),
+    id: url,
     type: 'detail',
     title,
     description,
@@ -459,8 +483,6 @@ async function loadDetail(link) {
     posterPath: coverUrl,
     link: url,
     videoUrl,
-    childItems,
-    episodeItems: childItems,
     mediaType: 'movie',
     playerType: 'system',
     source: SITE.title
@@ -487,7 +509,7 @@ async function loadVideoList(url) {
       const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'data-lazy-src', 'data-thumb_url', 'data-mediumthumb', 'src']), SITE.baseUrl);
       const description = findDuration($, element) || SITE.title;
       results.push({
-        id: hashId(videoUrl),
+        id: videoUrl,
         type: 'link',
         title,
         description,
@@ -968,7 +990,7 @@ function addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel) {
   const description = findDuration($, element) || listLabel || 'Pornhub 收藏';
   seen.add(videoUrl);
   results.push({
-    id: hashId('favorite.' + videoUrl),
+    id: videoUrl,
     type: 'link',
     title,
     description,
@@ -1013,7 +1035,7 @@ function parseFavoriteAnchorsFromHtml(html, baseUrl, listLabel, seen, results) {
     const durationMatch = context.match(/\b\d{1,2}:\d{2}(?::\d{2})?\b/);
     seen.add(videoUrl);
     results.push({
-      id: hashId('favorite.' + videoUrl),
+      id: videoUrl,
       type: 'link',
       title,
       description: durationMatch ? '时长：' + durationMatch[0] : listLabel || 'Pornhub 收藏',
@@ -1110,6 +1132,10 @@ function findDuration($, element) {
 }
 
 function extractVideoUrl(html, pageUrl) {
+  return extractPrimaryVideoUrl(html, pageUrl);
+}
+
+function extractPrimaryVideoUrl(html, pageUrl) {
   const sources = extractVideoSources(html, pageUrl);
   return sources[0] || '';
 }
@@ -1164,9 +1190,9 @@ function extractVideoSources(html, pageUrl) {
     }
   });
 
-  return buckets.direct
+  return sortHlsSources(buckets.hls)
     .concat(buckets.mp4)
-    .concat(sortHlsSources(buckets.hls));
+    .concat(buckets.direct);
 }
 
 function extractMediaDefinitionUrls(rawHtml) {
@@ -1186,36 +1212,14 @@ function sortHlsSources(urls) {
 
 function getPlayablePriority(url) {
   const value = String(url || '');
-  if (isGetMediaUrl(value)) return 0;
-  if (/\.mp4(?:[?#].*)?$/i.test(value)) return 10;
-  if (/720P|720/i.test(value)) return 20;
-  if (/480P|480/i.test(value)) return 30;
-  if (/240P|240/i.test(value)) return 40;
-  if (/1080P|1080/i.test(value)) return 50;
-  if (/\.m3u8(?:[?#].*)?$/i.test(value)) return 60;
+  if (/720P|720/i.test(value)) return 0;
+  if (/480P|480/i.test(value)) return 10;
+  if (/1080P|1080/i.test(value)) return 20;
+  if (/240P|240/i.test(value)) return 30;
+  if (/\.m3u8(?:[?#].*)?$/i.test(value)) return 40;
+  if (/\.mp4(?:[?#].*)?$/i.test(value)) return 60;
+  if (isGetMediaUrl(value)) return 80;
   return 100;
-}
-
-function buildPlayableChildItems(urls, baseTitle) {
-  return (urls || []).slice(0, 3).map((url, index) => ({
-    id: url,
-    type: 'url',
-    title: buildPlayableSourceTitle(url, baseTitle, index),
-    link: url,
-    videoUrl: url,
-    mediaType: 'movie',
-    playerType: 'system'
-  }));
-}
-
-function buildPlayableSourceTitle(url, baseTitle, index) {
-  const title = String(baseTitle || '视频');
-  if (isGetMediaUrl(url)) return title + ' - 直连';
-  const qualityMatch = String(url || '').match(/(1080|720|480|240)P?/i);
-  if (qualityMatch && qualityMatch[1]) return title + ' - ' + qualityMatch[1] + 'P';
-  if (/\.m3u8(?:[?#].*)?$/i.test(String(url || ''))) return title + ' - HLS';
-  if (/\.mp4(?:[?#].*)?$/i.test(String(url || ''))) return title + ' - MP4';
-  return title + ' - 源' + (index + 1);
 }
 
 function isGetMediaUrl(value) {
