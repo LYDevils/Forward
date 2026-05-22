@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.19',
+  version: '1.0.20',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -624,6 +624,7 @@ function normalizeProfileSlug(value) {
 function inspectFavoritePage(html, url) {
   const raw = String(html || '');
   const text = cleanText(raw).toLowerCase();
+  const titleText = extractPageTitleText(raw).toLowerCase();
   const canonicalUrl = extractCanonicalUrl(raw);
   const ogUrl = extractMetaUrl(raw, 'og:url');
   const routeUrls = [canonicalUrl, ogUrl].filter(Boolean);
@@ -631,7 +632,9 @@ function inspectFavoritePage(html, url) {
   const requestedFavoriteRoute = isFavoriteRoute(url);
   const favoriteHeading = hasFavoriteHeading(raw);
   const favoriteListMarker = hasFavoriteListMarker(raw);
-  const pageUnavailable = /\b(?:404|page not found|profile not found|user not found|not available|removed)\b/i.test(text);
+  const pageUnavailable = /\b(?:404|page not found|profile not found|user not found|user does not exist|this profile does not exist|removed)\b/i.test(titleText)
+    || /<(?:h1|h2)[^>]*>\s*(?:404|page not found|profile not found|user not found|user does not exist|this profile does not exist|removed)\s*<\/(?:h1|h2)>/i.test(raw)
+    || /class=["'][^"']*(?:error|notFound|not-found)[^"']*["'][^>]*>\s*(?:404|page not found|profile not found|user not found)/i.test(raw);
   const loginBlocked = /\b(?:please log in|login required|you must be logged in|age verification|verify your age)\b/i.test(text);
   const privateBlocked = /(?:private|hidden)[^。.!?]{0,80}(?:favorite|favorites|收藏)|(?:favorite|favorites|收藏)[^。.!?]{0,80}(?:private|hidden)|this page is private/i.test(text);
 
@@ -655,6 +658,12 @@ function extractCanonicalUrl(html) {
   if (direct && direct[1]) return direct[1];
   const reversed = raw.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["']/i);
   return reversed && reversed[1] ? reversed[1] : '';
+}
+
+function extractPageTitleText(html) {
+  const raw = String(html || '');
+  const match = raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return match && match[1] ? cleanText(match[1]) : '';
 }
 
 function extractMetaUrl(html, propertyName) {
