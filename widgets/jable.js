@@ -9,6 +9,29 @@
     "/videos/"
   ]
 };
+const CATEGORY_OPTIONS = [
+  { title: "新片優先", value: "/latest-updates/" },
+  { title: "按主題", value: "/categories/" },
+  { title: "按女優", value: "/models/" },
+  { title: "黑絲", value: "/tags/black-pantyhose/" },
+  { title: "過膝襪", value: "/tags/knee-socks/" },
+  { title: "運動裝", value: "/tags/sportswear/" },
+  { title: "肉絲", value: "/tags/flesh-toned-pantyhose/" },
+  { title: "絲襪", value: "/tags/pantyhose/" },
+  { title: "眼鏡娘", value: "/tags/glasses/" },
+  { title: "獸耳", value: "/tags/kemonomimi/" },
+  { title: "漁網", value: "/tags/fishnets/" },
+  { title: "水着", value: "/tags/swimsuit/" },
+  { title: "校服", value: "/tags/school-uniform/" },
+  { title: "旗袍", value: "/tags/cheongsam/" },
+  { title: "女僕", value: "/tags/maid/" },
+  { title: "和服", value: "/tags/kimono/" },
+  { title: "巨乳", value: "/tags/big-tits/" },
+  { title: "美腿", value: "/tags/beautiful-leg/" },
+  { title: "美尻", value: "/tags/beautiful-butt/" },
+  { title: "Cosplay", value: "/tags/Cosplay/" }
+];
+
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
@@ -20,7 +43,7 @@ WidgetMetadata = {
   description: 'Jable 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://jable.tv',
-  version: '1.0.4',
+  version: '1.0.5',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -46,12 +69,61 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '按分类 ID、路径或完整分类链接加载影片。',
+      description: '从下拉框选择分类加载影片，也可切换为自定义路径。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
-        { name: 'categoryId', title: '分类 ID/路径', type: 'input' },
-        { name: 'categoryName', title: '分类名称', type: 'input' },
+        {
+          name: 'categoryMode',
+          title: '分类选择方式',
+          type: 'enumeration',
+          value: 'preset',
+          enumOptions: [
+            { title: '下拉分类', value: 'preset' },
+            { title: '自定义路径', value: 'custom' }
+          ]
+        },
+        {
+          name: 'categoryPreset',
+          title: '选择分类',
+          type: 'enumeration',
+          value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
+          belongTo: { paramName: 'categoryMode', value: ['preset'] },
+          enumOptions: [
+  { title: "新片優先", value: "/latest-updates/" },
+  { title: "按主題", value: "/categories/" },
+  { title: "按女優", value: "/models/" },
+  { title: "黑絲", value: "/tags/black-pantyhose/" },
+  { title: "過膝襪", value: "/tags/knee-socks/" },
+  { title: "運動裝", value: "/tags/sportswear/" },
+  { title: "肉絲", value: "/tags/flesh-toned-pantyhose/" },
+  { title: "絲襪", value: "/tags/pantyhose/" },
+  { title: "眼鏡娘", value: "/tags/glasses/" },
+  { title: "獸耳", value: "/tags/kemonomimi/" },
+  { title: "漁網", value: "/tags/fishnets/" },
+  { title: "水着", value: "/tags/swimsuit/" },
+  { title: "校服", value: "/tags/school-uniform/" },
+  { title: "旗袍", value: "/tags/cheongsam/" },
+  { title: "女僕", value: "/tags/maid/" },
+  { title: "和服", value: "/tags/kimono/" },
+  { title: "巨乳", value: "/tags/big-tits/" },
+  { title: "美腿", value: "/tags/beautiful-leg/" },
+  { title: "美尻", value: "/tags/beautiful-butt/" },
+  { title: "Cosplay", value: "/tags/Cosplay/" }
+]
+        },
+        {
+          name: 'categoryId',
+          title: '自定义分类 ID/路径',
+          type: 'input',
+          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+        },
+        {
+          name: 'categoryName',
+          title: '自定义分类名称',
+          type: 'input',
+          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+        },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
@@ -76,8 +148,10 @@ searchVideos = async (params = {}) => {
 getCategories = async () => loadCategories();
 
 loadCategoryVideos = async (params = {}) => {
-  const categoryId = String(params.categoryId || params.categoryUrl || params.url || '').trim();
-  const categoryName = String(params.categoryName || '').trim();
+  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset);
+  const usePreset = String(params.categoryMode || 'preset') === 'preset';
+  const categoryId = String(usePreset ? (params.categoryPreset || (preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
+  const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
   }
@@ -207,10 +281,15 @@ async function loadCategories() {
 
 function buildCategoryUrl(categoryId, page) {
   const value = String(categoryId || '').trim();
-  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return normalizeUrl(value, SITE.baseUrl);
+  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return appendPageParam(normalizeUrl(value, SITE.baseUrl), page);
   const normalized = value.replace(/^\/+/, '');
   const suffix = page && Number(page) > 1 ? (normalized.indexOf('?') === -1 ? '?page=' + page : '&page=' + page) : '';
   return normalizeUrl('/' + normalized + suffix, SITE.baseUrl);
+}
+
+function appendPageParam(url, page) {
+  if (!page || Number(page) <= 1 || /[?&]page=/i.test(url)) return url;
+  return url + (url.indexOf('?') === -1 ? '?page=' : '&page=') + page;
 }
 
 function buildSearchUrl(keyword, page) {

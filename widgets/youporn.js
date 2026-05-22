@@ -9,6 +9,35 @@
     "/watch/"
   ]
 };
+const CATEGORY_OPTIONS = [
+  { title: "最新", value: "/browse/time/" },
+  { title: "全部分类", value: "/categories/" },
+  { title: "Squirting", value: "/category/squirting/" },
+  { title: "Interracial", value: "/category/interracial/" },
+  { title: "Masturbation", value: "/category/masturbation/" },
+  { title: "Blonde", value: "/category/blonde/" },
+  { title: "Creampie", value: "/category/creampie/" },
+  { title: "POV", value: "/category/pov/" },
+  { title: "Redhead", value: "/category/redhead/" },
+  { title: "Compilation", value: "/category/compilation/" },
+  { title: "BBW", value: "/category/bbw/" },
+  { title: "Massage", value: "/category/massage/" },
+  { title: "Brunette", value: "/category/brunette/" },
+  { title: "Transgender", value: "/category/transgender/" },
+  { title: "18-25", value: "/category/teens/" },
+  { title: "Lesbian", value: "/category/lesbian/" },
+  { title: "Amateur", value: "/category/amateur/" },
+  { title: "Mature", value: "/category/mature/" },
+  { title: "Anal", value: "/category/anal/" },
+  { title: "MILF", value: "/category/milf/" },
+  { title: "Big Tits", value: "/category/bigtits/" },
+  { title: "Japanese", value: "/category/japanese/" },
+  { title: "Gangbang", value: "/category/gangbang/" },
+  { title: "Hentai", value: "/category/hentai/" },
+  { title: "Blowjob", value: "/category/blowjob/" },
+  { title: "Asian", value: "/category/asian/" }
+];
+
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
@@ -20,7 +49,7 @@ WidgetMetadata = {
   description: 'YouPorn 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.youporn.com',
-  version: '1.0.4',
+  version: '1.0.5',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -46,12 +75,67 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '按分类 ID、路径或完整分类链接加载影片。',
+      description: '从下拉框选择分类加载影片，也可切换为自定义路径。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
-        { name: 'categoryId', title: '分类 ID/路径', type: 'input' },
-        { name: 'categoryName', title: '分类名称', type: 'input' },
+        {
+          name: 'categoryMode',
+          title: '分类选择方式',
+          type: 'enumeration',
+          value: 'preset',
+          enumOptions: [
+            { title: '下拉分类', value: 'preset' },
+            { title: '自定义路径', value: 'custom' }
+          ]
+        },
+        {
+          name: 'categoryPreset',
+          title: '选择分类',
+          type: 'enumeration',
+          value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
+          belongTo: { paramName: 'categoryMode', value: ['preset'] },
+          enumOptions: [
+  { title: "最新", value: "/browse/time/" },
+  { title: "全部分类", value: "/categories/" },
+  { title: "Squirting", value: "/category/squirting/" },
+  { title: "Interracial", value: "/category/interracial/" },
+  { title: "Masturbation", value: "/category/masturbation/" },
+  { title: "Blonde", value: "/category/blonde/" },
+  { title: "Creampie", value: "/category/creampie/" },
+  { title: "POV", value: "/category/pov/" },
+  { title: "Redhead", value: "/category/redhead/" },
+  { title: "Compilation", value: "/category/compilation/" },
+  { title: "BBW", value: "/category/bbw/" },
+  { title: "Massage", value: "/category/massage/" },
+  { title: "Brunette", value: "/category/brunette/" },
+  { title: "Transgender", value: "/category/transgender/" },
+  { title: "18-25", value: "/category/teens/" },
+  { title: "Lesbian", value: "/category/lesbian/" },
+  { title: "Amateur", value: "/category/amateur/" },
+  { title: "Mature", value: "/category/mature/" },
+  { title: "Anal", value: "/category/anal/" },
+  { title: "MILF", value: "/category/milf/" },
+  { title: "Big Tits", value: "/category/bigtits/" },
+  { title: "Japanese", value: "/category/japanese/" },
+  { title: "Gangbang", value: "/category/gangbang/" },
+  { title: "Hentai", value: "/category/hentai/" },
+  { title: "Blowjob", value: "/category/blowjob/" },
+  { title: "Asian", value: "/category/asian/" }
+]
+        },
+        {
+          name: 'categoryId',
+          title: '自定义分类 ID/路径',
+          type: 'input',
+          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+        },
+        {
+          name: 'categoryName',
+          title: '自定义分类名称',
+          type: 'input',
+          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+        },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
@@ -76,8 +160,10 @@ searchVideos = async (params = {}) => {
 getCategories = async () => loadCategories();
 
 loadCategoryVideos = async (params = {}) => {
-  const categoryId = String(params.categoryId || params.categoryUrl || params.url || '').trim();
-  const categoryName = String(params.categoryName || '').trim();
+  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset);
+  const usePreset = String(params.categoryMode || 'preset') === 'preset';
+  const categoryId = String(usePreset ? (params.categoryPreset || (preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
+  const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
   }
@@ -207,10 +293,15 @@ async function loadCategories() {
 
 function buildCategoryUrl(categoryId, page) {
   const value = String(categoryId || '').trim();
-  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return normalizeUrl(value, SITE.baseUrl);
+  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return appendPageParam(normalizeUrl(value, SITE.baseUrl), page);
   const normalized = value.replace(/^\/+/, '');
   const suffix = page && Number(page) > 1 ? (normalized.indexOf('?') === -1 ? '?page=' + page : '&page=' + page) : '';
   return normalizeUrl('/' + normalized + suffix, SITE.baseUrl);
+}
+
+function appendPageParam(url, page) {
+  if (!page || Number(page) <= 1 || /[?&]page=/i.test(url)) return url;
+  return url + (url.indexOf('?') === -1 ? '?page=' : '&page=') + page;
 }
 
 function buildSearchUrl(keyword, page) {

@@ -12,6 +12,17 @@
     "/detail/"
   ]
 };
+const CATEGORY_OPTIONS = [
+  { title: "最近更新", value: "/label/new/" },
+  { title: "新作上市", value: "/category/new-release/" },
+  { title: "有碼", value: "/category/censored/" },
+  { title: "無碼", value: "/category/uncensored/" },
+  { title: "國產AV", value: "/category/chinese-av/" },
+  { title: "無碼流出", value: "/category/uncensored-leaked/" },
+  { title: "杏吧", value: "/category/sex8/" },
+  { title: "HongKongDoll", value: "/category/hongkongdoll/" }
+];
+
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
@@ -23,7 +34,7 @@ WidgetMetadata = {
   description: 'JAVDay 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://javday.tv',
-  version: '1.0.4',
+  version: '1.0.5',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -49,12 +60,49 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '按分类 ID、路径或完整分类链接加载影片。',
+      description: '从下拉框选择分类加载影片，也可切换为自定义路径。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
-        { name: 'categoryId', title: '分类 ID/路径', type: 'input' },
-        { name: 'categoryName', title: '分类名称', type: 'input' },
+        {
+          name: 'categoryMode',
+          title: '分类选择方式',
+          type: 'enumeration',
+          value: 'preset',
+          enumOptions: [
+            { title: '下拉分类', value: 'preset' },
+            { title: '自定义路径', value: 'custom' }
+          ]
+        },
+        {
+          name: 'categoryPreset',
+          title: '选择分类',
+          type: 'enumeration',
+          value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
+          belongTo: { paramName: 'categoryMode', value: ['preset'] },
+          enumOptions: [
+  { title: "最近更新", value: "/label/new/" },
+  { title: "新作上市", value: "/category/new-release/" },
+  { title: "有碼", value: "/category/censored/" },
+  { title: "無碼", value: "/category/uncensored/" },
+  { title: "國產AV", value: "/category/chinese-av/" },
+  { title: "無碼流出", value: "/category/uncensored-leaked/" },
+  { title: "杏吧", value: "/category/sex8/" },
+  { title: "HongKongDoll", value: "/category/hongkongdoll/" }
+]
+        },
+        {
+          name: 'categoryId',
+          title: '自定义分类 ID/路径',
+          type: 'input',
+          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+        },
+        {
+          name: 'categoryName',
+          title: '自定义分类名称',
+          type: 'input',
+          belongTo: { paramName: 'categoryMode', value: ['custom'] }
+        },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
@@ -79,8 +127,10 @@ searchVideos = async (params = {}) => {
 getCategories = async () => loadCategories();
 
 loadCategoryVideos = async (params = {}) => {
-  const categoryId = String(params.categoryId || params.categoryUrl || params.url || '').trim();
-  const categoryName = String(params.categoryName || '').trim();
+  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset);
+  const usePreset = String(params.categoryMode || 'preset') === 'preset';
+  const categoryId = String(usePreset ? (params.categoryPreset || (preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
+  const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
   }
@@ -210,10 +260,15 @@ async function loadCategories() {
 
 function buildCategoryUrl(categoryId, page) {
   const value = String(categoryId || '').trim();
-  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return normalizeUrl(value, SITE.baseUrl);
+  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return appendPageParam(normalizeUrl(value, SITE.baseUrl), page);
   const normalized = value.replace(/^\/+/, '');
   const suffix = page && Number(page) > 1 ? (normalized.indexOf('?') === -1 ? '?page=' + page : '&page=' + page) : '';
   return normalizeUrl('/' + normalized + suffix, SITE.baseUrl);
+}
+
+function appendPageParam(url, page) {
+  if (!page || Number(page) <= 1 || /[?&]page=/i.test(url)) return url;
+  return url + (url.indexOf('?') === -1 ? '?page=' : '&page=') + page;
 }
 
 function buildSearchUrl(keyword, page) {

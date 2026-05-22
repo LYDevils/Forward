@@ -5,13 +5,36 @@
   defaultTypeId: '27'
 };
 
+const VOD_CATEGORY_OPTIONS = [
+  { title: "麻豆视频", value: "1" },
+  { title: "91制片厂", value: "2" },
+  { title: "天美传媒", value: "3" },
+  { title: "蜜桃传媒", value: "4" },
+  { title: "皇家华人", value: "5" },
+  { title: "星空传媒", value: "6" },
+  { title: "精东影业", value: "7" },
+  { title: "乐播传媒", value: "8" },
+  { title: "成人头条", value: "9" },
+  { title: "乌鸦传媒", value: "10" },
+  { title: "兔子先生", value: "20" },
+  { title: "杏吧原创", value: "21" },
+  { title: "玩偶姐姐", value: "22" },
+  { title: "mini传媒", value: "23" },
+  { title: "大象传媒", value: "24" },
+  { title: "开心鬼传媒", value: "25" },
+  { title: "PsychoPorn", value: "26" },
+  { title: "糖心Vlog", value: "27" },
+  { title: "萝莉社", value: "29" },
+  { title: "性视界", value: "30" }
+];
+
 WidgetMetadata = {
   id: 'lydevils.vod',
   title: 'VOD',
   description: 'MacCMS VOD 真实可播放数据源。',
   author: 'LYDevils',
   site: 'https://91md.me',
-  version: '1.0.4',
+  version: '1.0.5',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -26,12 +49,62 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '按分类 ID 加载影片；分类 ID 和名称可先从“分类列表”点选查看。',
+      description: '从下拉框选择 API 分类加载影片，也可切换为自定义分类 ID。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
-        { name: 'typeId', title: '分类 ID', type: 'input', value: '27' },
-        { name: 'typeName', title: '分类名称', type: 'input' },
+        {
+          name: 'typeMode',
+          title: '分类选择方式',
+          type: 'enumeration',
+          value: 'preset',
+          enumOptions: [
+            { title: '下拉分类', value: 'preset' },
+            { title: '自定义 ID', value: 'custom' }
+          ]
+        },
+        {
+          name: 'typePreset',
+          title: '选择分类',
+          type: 'enumeration',
+          value: '27',
+          belongTo: { paramName: 'typeMode', value: ['preset'] },
+          enumOptions: [
+  { title: "麻豆视频", value: "1" },
+  { title: "91制片厂", value: "2" },
+  { title: "天美传媒", value: "3" },
+  { title: "蜜桃传媒", value: "4" },
+  { title: "皇家华人", value: "5" },
+  { title: "星空传媒", value: "6" },
+  { title: "精东影业", value: "7" },
+  { title: "乐播传媒", value: "8" },
+  { title: "成人头条", value: "9" },
+  { title: "乌鸦传媒", value: "10" },
+  { title: "兔子先生", value: "20" },
+  { title: "杏吧原创", value: "21" },
+  { title: "玩偶姐姐", value: "22" },
+  { title: "mini传媒", value: "23" },
+  { title: "大象传媒", value: "24" },
+  { title: "开心鬼传媒", value: "25" },
+  { title: "PsychoPorn", value: "26" },
+  { title: "糖心Vlog", value: "27" },
+  { title: "萝莉社", value: "29" },
+  { title: "性视界", value: "30" }
+]
+        },
+        {
+          name: 'typeId',
+          title: '自定义分类 ID',
+          type: 'input',
+          value: '27',
+          belongTo: { paramName: 'typeMode', value: ['custom'] }
+        },
+        {
+          name: 'typeName',
+          title: '自定义分类名称',
+          type: 'input',
+          belongTo: { paramName: 'typeMode', value: ['custom'] }
+        },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
@@ -68,8 +141,10 @@ WidgetMetadata = {
 loadLatestVideos = async (params = {}) => loadVodList({ pg: params.page || 1 });
 
 loadCategoryVideos = async (params = {}) => {
-  const typeId = extractTypeId(params.typeId || params.url) || VOD_SOURCE.defaultTypeId;
-  const typeName = String(params.typeName || '').trim();
+  const preset = VOD_CATEGORY_OPTIONS.find((item) => item.value === String(params.typePreset || ''));
+  const usePreset = String(params.typeMode || 'preset') === 'preset';
+  const typeId = extractTypeId(usePreset ? (params.typePreset || (preset && preset.value)) : (params.typeId || params.url)) || VOD_SOURCE.defaultTypeId;
+  const typeName = String(usePreset ? ((preset && preset.title) || '') : (params.typeName || '')).trim();
   const results = await loadVodList({ t: typeId, pg: params.page || 1 });
   if (!typeName) return results;
   return addCategoryPrefix(results, typeId, typeName);
