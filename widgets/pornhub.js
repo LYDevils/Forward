@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.23',
+  version: '1.0.24',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -430,16 +430,16 @@ loadResource = async (params = {}) => {
     return [];
   }
 
-  const detail = await loadDetail(target);
-  if (!detail || detail.type === 'text' || !detail.videoUrl) {
+  const url = normalizeUrl(target, SITE.baseUrl);
+  const html = await fetchText(url);
+  const title = extractDetailTitle(html);
+  const description = extractDetailDescription(html);
+  const sourceItems = buildStreamSourceItems(extractVideoSources(html, url), title, description);
+  if (sourceItems.length === 0) {
     return [];
   }
 
-  return [{
-    name: detail.title || 'Pornhub',
-    description: detail.description || '',
-    url: detail.videoUrl
-  }];
+  return sourceItems;
 };
 
 async function loadDetail(link) {
@@ -450,7 +450,7 @@ async function loadDetail(link) {
   const url = normalizeUrl(rawLink, SITE.baseUrl);
   const html = await fetchText(url);
   const $ = Widget.html.load(html);
-  const title = cleanText(
+  const title = extractDetailTitle(html) || cleanText(
     $('meta[property="og:title"]').attr('content') ||
     $('meta[name="twitter:title"]').attr('content') ||
     $('h1').first().text() ||
@@ -464,7 +464,7 @@ async function loadDetail(link) {
     '',
     url
   );
-  const description = cleanText(
+  const description = extractDetailDescription(html) || cleanText(
     $('meta[property="og:description"]').attr('content') ||
     $('meta[name="description"]').attr('content') ||
     ''
@@ -495,30 +495,45 @@ async function loadVideoList(url) {
     const $ = Widget.html.load(html);
     const results = [];
     const seen = new Set();
+    const selectors = [
+      '#moreData li',
+      '.videoUList li',
+      '.videos.row-3-thumbs li',
+      '.videos li.pcVideoListItem',
+      'li.pcVideoListItem',
+      'li.videoblock'
+    ];
 
-    $('a[href]').each((_, element) => {
-      const href = $(element).attr('href');
-      const videoUrl = normalizeUrl(href, SITE.baseUrl);
-      if (!isLikelyVideoUrl(videoUrl) || seen.has(videoUrl)) return;
+    selectors.forEach((selector) => {
+      $(selector).each((_, element) => {
+        if (isBlockedVideoContainer($, element)) return;
 
-      const image = $(element).find('img').first();
-      const title = pickTitle($, element, image);
-      if (!title || title.length < 2) return;
+        const container = $(element);
+        const anchor = container.find('a[href*="view_video.php"]').first();
+        if (!anchor.length) return;
 
-      seen.add(videoUrl);
-      const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'data-lazy-src', 'data-thumb_url', 'data-mediumthumb', 'src']), SITE.baseUrl);
-      const description = findDuration($, element) || SITE.title;
-      results.push({
-        id: videoUrl,
-        type: 'link',
-        title,
-        description,
-        coverUrl,
-        posterPath: coverUrl,
-        link: videoUrl,
-        mediaType: 'movie',
-        playerType: 'system',
-        source: SITE.title
+        const videoUrl = normalizeUrl(anchor.attr('href'), SITE.baseUrl);
+        if (!isLikelyVideoUrl(videoUrl) || seen.has(videoUrl)) return;
+
+        const image = container.find('img').first();
+        const title = pickTitle($, anchor[0], image);
+        if (!title || title.length < 2) return;
+
+        seen.add(videoUrl);
+        const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'data-lazy-src', 'data-thumb_url', 'data-mediumthumb', 'src']), SITE.baseUrl);
+        const description = findDuration($, element) || SITE.title;
+        results.push({
+          id: videoUrl,
+          type: 'link',
+          title,
+          description,
+          coverUrl,
+          posterPath: coverUrl,
+          link: videoUrl,
+          mediaType: 'movie',
+          playerType: 'system',
+          source: SITE.title
+        });
       });
     });
 
@@ -1131,6 +1146,21 @@ function findDuration($, element) {
   return match ? '时长：' + match[0] : '';
 }
 
+function extractDetailTitle(html) {
+  const raw = String(html || '');
+  const titleMatch = raw.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
+    || raw.match(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i)
+    || raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  return titleMatch && titleMatch[1] ? cleanText(titleMatch[1].replace(/\s*-\s*Pornhub(?:\.com)?$/i, '')) : '';
+}
+
+function extractDetailDescription(html) {
+  const raw = String(html || '');
+  const descMatch = raw.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
+    || raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+  return descMatch && descMatch[1] ? cleanText(descMatch[1]) : '';
+}
+
 function extractVideoUrl(html, pageUrl) {
   return extractPrimaryVideoUrl(html, pageUrl);
 }
@@ -1138,6 +1168,14 @@ function extractVideoUrl(html, pageUrl) {
 function extractPrimaryVideoUrl(html, pageUrl) {
   const sources = extractVideoSources(html, pageUrl);
   return sources[0] || '';
+}
+
+function buildStreamSourceItems(urls, title, description) {
+  return (urls || []).slice(0, 4).map((url, index) => ({
+    name: buildPlayableSourceTitle(url, title, index),
+    description: description || '',
+    url
+  }));
 }
 
 function extractVideoSources(html, pageUrl) {
@@ -1222,6 +1260,16 @@ function getPlayablePriority(url) {
   return 100;
 }
 
+function buildPlayableSourceTitle(url, baseTitle, index) {
+  const title = String(baseTitle || SITE.title || '视频');
+  const qualityMatch = String(url || '').match(/(1080|720|480|240)P?/i);
+  if (qualityMatch && qualityMatch[1]) return title + ' - ' + qualityMatch[1] + 'P';
+  if (/\.m3u8(?:[?#].*)?$/i.test(String(url || ''))) return title + ' - HLS';
+  if (/\.mp4(?:[?#].*)?$/i.test(String(url || ''))) return title + ' - MP4';
+  if (isGetMediaUrl(url)) return title + ' - 直连';
+  return title + ' - 源' + (index + 1);
+}
+
 function isGetMediaUrl(value) {
   return /\/video\/get_media\b/i.test(String(value || ''));
 }
@@ -1234,8 +1282,13 @@ function isPlayableUrl(value) {
 function isLikelyVideoUrl(url) {
   const lower = String(url || '').toLowerCase();
   if (!isPornhubUrl(url)) return false;
+  if (/[?&]pkey=/i.test(lower)) return false;
   if ((SITE.videoPathKeywords || []).some((keyword) => lower.includes(String(keyword).toLowerCase()))) return true;
   return Boolean(SITE.numericVideoPaths && /^https?:\/\/[^/]+\/\d+(?:[/?#]|$)/i.test(lower));
+}
+
+function isBlockedVideoContainer($, element) {
+  return $(element).closest('#dropdownHeaderSubMenu, .headerSubMenu, header, nav, .relatedVideosWrapper, .recommendedVideos, .sidebar, .playlistThumb, .playlist-wrapper, .playlistSection').length > 0;
 }
 
 function isLikelyCategoryUrl(url) {
