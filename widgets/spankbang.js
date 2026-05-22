@@ -9,20 +9,211 @@
     "/video/"
   ]
 };
-const CATEGORY_OPTIONS = [
-  { title: "Latest", value: "/new_videos/" },
-  { title: "Popular", value: "/s/popular/" },
-  { title: "Amateur", value: "/category/amateur/" },
-  { title: "Anal", value: "/category/anal/" },
-  { title: "Asian", value: "/category/asian/" },
-  { title: "Big Tits", value: "/category/big-tits/" },
-  { title: "Blowjob", value: "/category/blowjob/" },
-  { title: "Creampie", value: "/category/creampie/" },
-  { title: "Hentai", value: "/category/hentai/" },
-  { title: "MILF", value: "/category/milf/" },
-  { title: "POV", value: "/category/pov/" },
-  { title: "Teen", value: "/category/teen/" }
-];
+
+const CATEGORY_TITLE_MAP = {
+  "18 25": "18-25",
+  "18-25": "18-25",
+  "ai": "AI",
+  "all": "全部",
+  "all categories": "全部分类",
+  "amateur": "素人",
+  "anal": "肛交",
+  "arab": "阿拉伯",
+  "asian": "亚洲",
+  "asian woman": "亚洲",
+  "asmr": "ASMR",
+  "ass": "美臀",
+  "babe": "辣妹",
+  "best": "精选",
+  "bbw": "丰满",
+  "bi": "双性",
+  "bi sexual": "双性",
+  "bisexual": "双性",
+  "big ass": "巨臀",
+  "big cock": "巨根",
+  "big dick": "巨根",
+  "big tits": "巨乳",
+  "black": "黑人",
+  "black woman": "黑人",
+  "blonde": "金发",
+  "blowjob": "口交",
+  "bondage": "捆绑",
+  "brazilian": "巴西",
+  "brunette": "黑发",
+  "bts": "幕后",
+  "bukkake": "群射",
+  "cam porn": "摄像头",
+  "cartoon": "卡通",
+  "casting": "试镜",
+  "categories": "分类总览",
+  "celebrity": "名人",
+  "channels": "频道总览",
+  "cock competition": "比根",
+  "college": "学院(18+)",
+  "college (18+)": "学院(18+)",
+  "compilation": "合集",
+  "cosplay": "角色扮演",
+  "creampie": "中出",
+  "cuckold": "绿帽",
+  "cuckold hotwife": "绿帽/换妻",
+  "cumshot": "射精",
+  "double penetration": "双插",
+  "ebony": "黑人",
+  "erotic": "情色",
+  "european": "欧美",
+  "facials": "颜射",
+  "family strokes": "Family Strokes 官方",
+  "feet": "足交",
+  "female orgasm": "女性高潮",
+  "femdom": "女王",
+  "fetish": "恋物",
+  "fingering": "手指",
+  "fisting": "拳交",
+  "freaks of cock": "Freaks Of Cock 官方",
+  "french": "法式",
+  "fucked up family": "乱伦剧情",
+  "funny": "搞笑",
+  "gangav": "GangAV 官方",
+  "gangbang": "群交",
+  "gapes": "扩张",
+  "german": "德国",
+  "group": "群体",
+  "handjob": "手交",
+  "hardcore": "重口",
+  "hd": "高清",
+  "hentai": "里番",
+  "hot": "热门",
+  "indian": "印度",
+  "interracial": "跨种族",
+  "japanese": "日本",
+  "javhd": "JavHD 官方",
+  "latina": "拉丁",
+  "lesbian": "女同",
+  "lingerie": "内衣",
+  "long": "长片",
+  "magic asian pussy": "Magic Asian Pussy 官方",
+  "massage": "按摩",
+  "masturbation": "自慰",
+  "mature": "熟女",
+  "milf": "熟女",
+  "moms teach sex": "Moms Teach Sex 官方",
+  "monthly hot": "本月热门",
+  "most subscribed": "最多订阅",
+  "most viewed": "最多观看",
+  "muscle": "肌肉",
+  "newest": "最新",
+  "oiled": "抹油",
+  "orgy": "乱交",
+  "parody": "恶搞",
+  "party": "派对",
+  "pissing": "排尿",
+  "popular": "热门",
+  "popular with women": "女性热门",
+  "pornstar": "明星演员",
+  "pornstars": "演员总览",
+  "pov": "主视角",
+  "public": "户外",
+  "pure taboo": "Pure Taboo 官方",
+  "pussy licking": "舔阴",
+  "reality": "真实",
+  "recommended": "推荐",
+  "redhead": "红发",
+  "refined": "精选",
+  "recently updated": "最近更新",
+  "romantic": "浪漫",
+  "rough": "粗暴",
+  "shemale": "人妖",
+  "small tits": "贫乳",
+  "solo": "单人",
+  "solo and masturbation": "单人/自慰",
+  "solo girl": "女生单人",
+  "solo male": "男生单人",
+  "squirting": "潮吹",
+  "step fantasy": "继亲剧情",
+  "stockings": "丝袜",
+  "strip": "脱衣",
+  "striptease": "脱衣秀",
+  "tags": "标签总览",
+  "tattoos": "纹身",
+  "teen": "18-25",
+  "threesome": "3P",
+  "top rated": "最高评分",
+  "toys": "玩具",
+  "trans": "跨性别",
+  "transgender": "跨性别",
+  "verified amateurs": "认证素人",
+  "vintage": "复古",
+  "virtual reality": "VR",
+  "webcam": "直播摄像",
+  "young (18+) and old": "老少配",
+  "young and old": "老少配",
+  "bang bros network": "Bang Bros 官方",
+  "brazzers": "Brazzers 官方",
+  "casual teen sex": "Casual Teen Sex 官方",
+  "team skeet": "Team Skeet 官方",
+  "vixen": "Vixen 官方"
+};
+
+function normalizeCategoryTitle(value) {
+  return String(value || '')
+    .replace(/\b\d[\d,.KMB]*\s+Videos?\b/gi, '')
+    .replace(/\s+Category$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeCategoryKey(value) {
+  return normalizeCategoryTitle(value)
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[\/_]+/g, ' ')
+    .replace(/\s*-\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function localizeCategoryTitle(value) {
+  const normalized = normalizeCategoryTitle(value);
+  if (!normalized) return '';
+  const key = normalizeCategoryKey(normalized);
+  return CATEGORY_TITLE_MAP[key] || normalized;
+}
+
+function localizeCategoryOptions(options) {
+  return (options || []).map((item) => ({
+    title: localizeCategoryTitle(item.title),
+    value: item.value
+  }));
+}
+
+const CATEGORY_OPTIONS = localizeCategoryOptions([
+  { title: "最新", value: "/new_videos/" },
+  { title: "热门", value: "/s/popular/" },
+  { title: "素人", value: "/category/amateur/" },
+  { title: "肛交", value: "/category/anal/" },
+  { title: "亚洲", value: "/category/asian/" },
+  { title: "丰满", value: "/category/bbw/" },
+  { title: "巨臀", value: "/category/big-ass/" },
+  { title: "巨乳", value: "/category/big-tits/" },
+  { title: "口交", value: "/category/blowjob/" },
+  { title: "捆绑", value: "/category/bondage/" },
+  { title: "中出", value: "/category/creampie/" },
+  { title: "黑人", value: "/category/ebony/" },
+  { title: "恋物", value: "/category/fetish/" },
+  { title: "群交", value: "/category/gangbang/" },
+  { title: "重口", value: "/category/hardcore/" },
+  { title: "里番", value: "/category/hentai/" },
+  { title: "跨种族", value: "/category/interracial/" },
+  { title: "日本", value: "/category/japanese/" },
+  { title: "拉丁", value: "/category/latina/" },
+  { title: "女同", value: "/category/lesbian/" },
+  { title: "熟女", value: "/category/milf/" },
+  { title: "主视角", value: "/category/pov/" },
+  { title: "户外", value: "/category/public/" },
+  { title: "18-25", value: "/category/teen/" },
+  { title: "3P", value: "/category/threesome/" },
+  { title: "跨性别", value: "/category/transgender/" }
+]);
 
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
@@ -81,20 +272,7 @@ WidgetMetadata = {
           type: 'enumeration',
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
-          enumOptions: [
-  { title: "Latest", value: "/new_videos/" },
-  { title: "Popular", value: "/s/popular/" },
-  { title: "Amateur", value: "/category/amateur/" },
-  { title: "Anal", value: "/category/anal/" },
-  { title: "Asian", value: "/category/asian/" },
-  { title: "Big Tits", value: "/category/big-tits/" },
-  { title: "Blowjob", value: "/category/blowjob/" },
-  { title: "Creampie", value: "/category/creampie/" },
-  { title: "Hentai", value: "/category/hentai/" },
-  { title: "MILF", value: "/category/milf/" },
-  { title: "POV", value: "/category/pov/" },
-  { title: "Teen", value: "/category/teen/" }
-]
+          enumOptions: CATEGORY_OPTIONS
         },
         {
           name: 'categoryId',
@@ -242,7 +420,7 @@ async function loadCategories() {
     const results = [];
     const seen = new Set();
     $('a[href]').each((_, element) => {
-      const title = cleanText($(element).text() || $(element).attr('title') || '');
+      const title = localizeCategoryTitle(cleanText($(element).text() || $(element).attr('title') || ''));
       const url = normalizeUrl($(element).attr('href'), SITE.baseUrl);
       if (!title || seen.has(url) || !isLikelyCategoryUrl(url)) return;
       seen.add(url);
