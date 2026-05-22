@@ -24,10 +24,10 @@ async function run() {
   const generation = await generateSourceIndex({
     widgetsDir: path.join(__dirname, 'widgets'),
     outputFile,
-    baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/main/widgets',
+    baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
     title: 'LYDevils 模块库',
     description: 'LYDevils Forward 模块源',
-    icon: 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png'
+    icon: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/icon.png'
   });
   console.log(`   output: ${generation.outputFile}`);
   console.log(`   widgets: ${generation.index.widgets.length}\n`);

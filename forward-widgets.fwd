@@ -1,7 +1,7 @@
 {
   "title": "LYDevils 模块库",
   "description": "LYDevils Forward 模块源",
-  "icon": "https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png",
+  "icon": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/icon.png",
   "widgets": [
     {
       "id": "lydevils.jable",
@@ -10,7 +10,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/jable.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/jable.js"
     },
     {
       "id": "lydevils.91porn",
@@ -19,7 +19,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/91porn.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/91porn.js"
     },
     {
       "id": "lydevils.pornhub",
@@ -28,7 +28,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/pornhub.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/pornhub.js"
     },
     {
       "id": "lydevils.javday",
@@ -37,7 +37,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/javday.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/javday.js"
     },
     {
       "id": "lydevils.javrate",
@@ -46,7 +46,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/javrate.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/javrate.js"
     },
     {
       "id": "lydevils.xvideos",
@@ -55,7 +55,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xvideos.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/xvideos.js"
     },
     {
       "id": "lydevils.redtube",
@@ -64,7 +64,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/redtube.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/redtube.js"
     },
     {
       "id": "lydevils.youporn",
@@ -73,7 +73,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/youporn.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/youporn.js"
     },
     {
       "id": "lydevils.spankbang",
@@ -82,7 +82,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/spankbang.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/spankbang.js"
     },
     {
       "id": "lydevils.xhamster",
@@ -91,7 +91,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/xhamster.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/xhamster.js"
     },
     {
       "id": "lydevils.tube8",
@@ -100,7 +100,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tube8.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tube8.js"
     },
     {
       "id": "lydevils.vod",
@@ -109,7 +109,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vod.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/vod.js"
     },
     {
       "id": "lydevils.vodmax",
@@ -118,7 +118,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vodmax.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/vodmax.js"
     },
     {
       "id": "lydevils.podcast",
@@ -127,7 +127,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/podcast.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/podcast.js"
     },
     {
       "id": "lydevils.live-tv",
@@ -136,7 +136,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/live-tv.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/live-tv.js"
     },
     {
       "id": "lydevils.tv-stations",
@@ -145,7 +145,7 @@
       "requiredVersion": "0.0.1",
       "version": "1.0.1",
       "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/tv-stations.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tv-stations.js"
     }
   ]
 }
