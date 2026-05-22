@@ -89,7 +89,7 @@ WidgetMetadata = {
     title: "VodMax",
     description: "聚合点播数据源",
     author: "LYDevils",
-    version: "1.0.0",
+    version: "1.0.1",
     requiredVersion: "0.0.1",
     site: "https://t.me/MakkaPakkaOvO",
     detailCacheDuration:3600,
@@ -267,6 +267,7 @@ async function loadDetail(link) {
         throw error;
     }
 }
+
 
 
 

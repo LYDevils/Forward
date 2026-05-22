@@ -20,7 +20,7 @@ WidgetMetadata = {
   description: 'SpankBang 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://spankbang.com',
-  version: '1.0.0',
+  version: '1.0.1',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -290,6 +290,7 @@ function createMessage(title, description) {
     description
   };
 }
+
 
 
 

@@ -11,7 +11,7 @@ WidgetMetadata = {
   description: 'MacCMS VOD 真实可播放数据源。',
   author: 'LYDevils',
   site: 'https://91md.me',
-  version: '1.0.0',
+  version: '1.0.1',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -180,6 +180,7 @@ function cleanText(value) {
 function createMessage(title, description) {
   return { id: 'vod.message.' + title, type: 'text', title, description };
 }
+
 
 
 
