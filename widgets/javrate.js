@@ -35,7 +35,7 @@ WidgetMetadata = {
   description: 'JAVRate 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.javrate.com',
-  version: '1.0.8',
+  version: '1.0.9',
   requiredVersion: '0.0.1',
   detailCacheDuration: 300,
   modules: [
@@ -203,7 +203,10 @@ async function loadDetail(link) {
     $('.mt-3').first().text() ||
     ''
   );
-  const videoUrl = extractVideoUrl(html, url) || url;
+  const videoUrl = extractVideoUrl(html, url);
+  if (!videoUrl) {
+    return createMessage('未解析到播放地址', '详情页已加载，但未找到 mp4/m3u8 播放地址。可能需要登录、WebView 或当前网络受限。链接：' + url);
+  }
 
   return {
     id: hashId(url),
@@ -211,6 +214,7 @@ async function loadDetail(link) {
     title,
     description,
     coverUrl,
+    posterPath: coverUrl,
     link: url,
     videoUrl,
     mediaType: 'movie',
@@ -256,6 +260,7 @@ async function loadVideoList(url) {
         title,
         description,
         coverUrl,
+        posterPath: coverUrl,
         link: videoUrl,
         mediaType: 'movie',
         playerType: 'system',
@@ -308,6 +313,9 @@ async function fetchText(url) {
 }
 
 function extractVideoUrl(html, pageUrl) {
+  const mediaUrl = extractMediaDefinitionUrl(html, pageUrl);
+  if (mediaUrl) return mediaUrl;
+
   const patterns = [
     /["'](?:contentUrl|embedUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+)["']/i,
     /(?:contentUrl|embedUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+)["']/i
@@ -317,10 +325,23 @@ function extractVideoUrl(html, pageUrl) {
     const match = html.match(pattern);
     if (match && match[1]) {
       const value = normalizeUrl(unescapeUrl(match[1]), pageUrl);
-      if (/\.m3u8|\.mp4|\/embed\//i.test(value)) return value;
+      if (isPlayableUrl(value)) return value;
     }
   }
   return '';
+}
+
+function extractMediaDefinitionUrl(html, pageUrl) {
+  const mediaMatch = String(html || '').match(/mediaDefinitions?\s*[:=]\s*(\[[\s\S]*?\])/i)
+    || String(html || '').match(/mediaDefinition\s*:\s*(\[[\s\S]*?\])/i);
+  if (!mediaMatch || !mediaMatch[1]) return '';
+  const raw = unescapeUrl(mediaMatch[1]);
+  const directMatch = raw.match(/["'](?:videoUrl|url)["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i);
+  return directMatch && directMatch[1] ? normalizeUrl(directMatch[1], pageUrl) : '';
+}
+
+function isPlayableUrl(value) {
+  return /\.(?:m3u8|mp4)(?:[?#].*)?$/i.test(String(value || ''));
 }
 
 function isLikelyVideoUrl(url) {

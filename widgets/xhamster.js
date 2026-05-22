@@ -208,7 +208,7 @@ WidgetMetadata = {
   description: 'xHamster 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://xhamster.com',
-  version: '1.0.7',
+  version: '1.0.8',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -372,7 +372,10 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const videoUrl = extractVideoUrl(html, url) || url;
+  const videoUrl = extractVideoUrl(html, url);
+  if (!videoUrl) {
+    return createMessage('未解析到播放地址', '详情页已加载，但未找到 mp4/m3u8 播放地址。可能需要登录、WebView 或当前网络受限。链接：' + url);
+  }
 
   return {
     id: hashId(url),
@@ -380,6 +383,7 @@ async function loadDetail(link) {
     title,
     description,
     coverUrl,
+    posterPath: coverUrl,
     link: url,
     videoUrl,
     mediaType: 'movie',
@@ -413,6 +417,7 @@ async function loadVideoList(url) {
         title,
         description,
         coverUrl,
+        posterPath: coverUrl,
         link: videoUrl,
         mediaType: 'movie',
         playerType: 'system',
@@ -516,11 +521,16 @@ function findDuration($, element) {
 }
 
 function extractVideoUrl(html, pageUrl) {
+  const mediaUrl = extractMediaDefinitionUrl(html, pageUrl);
+  if (mediaUrl) return mediaUrl;
+
   const patterns = [
     /html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/i,
     /html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/i,
     /html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/i,
     /<source[^>]+src=["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i,
+    /<iframe[^>]+src=["']([^"']+)["']/i,
+    /<embed[^>]+src=["']([^"']+)["']/i,
     /["'](?:contentUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i,
     /(?:contentUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i
   ];
@@ -528,10 +538,24 @@ function extractVideoUrl(html, pageUrl) {
   for (const pattern of patterns) {
     const match = html.match(pattern);
     if (match && match[1]) {
-      return normalizeUrl(unescapeUrl(match[1]), pageUrl);
+      const value = normalizeUrl(unescapeUrl(match[1]), pageUrl);
+      if (isPlayableUrl(value)) return value;
     }
   }
   return '';
+}
+
+function extractMediaDefinitionUrl(html, pageUrl) {
+  const mediaMatch = String(html || '').match(/mediaDefinitions?\s*[:=]\s*(\[[\s\S]*?\])/i)
+    || String(html || '').match(/mediaDefinition\s*:\s*(\[[\s\S]*?\])/i);
+  if (!mediaMatch || !mediaMatch[1]) return '';
+  const raw = unescapeUrl(mediaMatch[1]);
+  const directMatch = raw.match(/["'](?:videoUrl|url)["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i);
+  return directMatch && directMatch[1] ? normalizeUrl(directMatch[1], pageUrl) : '';
+}
+
+function isPlayableUrl(value) {
+  return /\.(?:m3u8|mp4)(?:[?#].*)?$/i.test(String(value || ''));
 }
 
 function isLikelyVideoUrl(url) {
@@ -571,7 +595,7 @@ function cleanText(value) {
 }
 
 function unescapeUrl(value) {
-  return String(value || '').replace(/\\\//g, '/').replace(/\\u0026/g, '&');
+  return String(value || '').replace(/\\\//g, '/').replace(/\\u0026/g, '&').replace(/\\"/g, '"');
 }
 
 function hashId(value) {
