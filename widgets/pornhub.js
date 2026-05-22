@@ -234,7 +234,9 @@ function mergeCategoryOptions() {
 
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+  'Cache-Control': 'no-cache'
 };
 
 WidgetMetadata = {
@@ -243,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.17',
+  version: '1.0.18',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -476,8 +478,10 @@ async function loadFavoritePage(username, page) {
 
   let lastError = null;
   let privateError = null;
+  const attemptedUrls = [];
   for (const candidate of candidates) {
     const url = appendPageParam(normalizeUrl(candidate, SITE.baseUrl), page);
+    attemptedUrls.push(url);
     try {
       const html = await fetchText(url);
       const check = inspectFavoritePage(html, url);
@@ -488,11 +492,13 @@ async function loadFavoritePage(username, page) {
       if (check.valid) return { url, html };
       lastError = new Error(check.reason || '未找到该用户的公开收藏页面。');
     } catch (error) {
-      lastError = error;
+      lastError = new Error('请求收藏页失败：' + url + '；' + String(error.message || error));
     }
   }
 
-  throw privateError || lastError || new Error('未找到该用户的公开收藏页面。');
+  const fallbackError = lastError || new Error('未找到该用户的公开收藏页面。');
+  fallbackError.message = fallbackError.message + ' 已尝试：' + attemptedUrls.join('，');
+  throw privateError || fallbackError;
 }
 
 function buildFavoriteCandidates(username) {
@@ -606,6 +612,7 @@ function inspectFavoritePage(html, url) {
   const requestedFavoriteRoute = isFavoriteRoute(url);
   const favoriteHeading = hasFavoriteHeading(raw);
   const favoriteListMarker = hasFavoriteListMarker(raw);
+  const hasVideoLinks = /view_video\.php/i.test(raw);
   const pageUnavailable = /\b(?:404|page not found|profile not found|user not found|not available|removed)\b/i.test(text);
   const loginBlocked = /\b(?:please log in|login required|you must be logged in|age verification|verify your age)\b/i.test(text);
   const privateBlocked = /(?:private|hidden)[^。.!?]{0,80}(?:favorite|favorites|收藏)|(?:favorite|favorites|收藏)[^。.!?]{0,80}(?:private|hidden)|this page is private/i.test(text);
@@ -613,7 +620,7 @@ function inspectFavoritePage(html, url) {
   if (privateBlocked) return { valid: false, private: true };
   if (loginBlocked) return { valid: false, reason: '当前网络返回登录或年龄验证页面，无法确认公开收藏。' };
   if (pageUnavailable) return { valid: false, reason: '该用户收藏页不可访问或不存在。' };
-  if (!routeInMetadata && !(requestedFavoriteRoute && (favoriteHeading || favoriteListMarker))) {
+  if (!routeInMetadata && !(requestedFavoriteRoute && (favoriteHeading || favoriteListMarker || hasVideoLinks))) {
     return { valid: false, reason: '当前返回内容不是收藏页。' };
   }
 
@@ -668,6 +675,10 @@ function parseFavoriteVideoList(html, pageUrl, listLabel) {
     });
   });
 
+  if (results.length === 0) {
+    parseFavoriteAnchorsFromHtml(html, baseUrl, listLabel || 'Pornhub 收藏', seen, results);
+  }
+
   return results.map((item) => Object.assign({}, item, { source: SITE.title })).slice(0, 40);
 }
 
@@ -711,7 +722,17 @@ function findFavoriteVideoScopes($, baseUrl) {
   });
 
   const best = candidates[0];
-  return best && best.score >= 20 ? [best.element] : [];
+  if (best && best.score >= 20) return [best.element];
+
+  const fallback = [];
+  ['main', '#content', '#profileContent', '.profileContent', 'body'].forEach((selector) => {
+    $(selector).each((_, element) => {
+      const scope = scoreFavoriteScope($, element, baseUrl);
+      if (!scope.blocked && scope.videoCount > 0) fallback.push(Object.assign({ element }, scope));
+    });
+  });
+  fallback.sort((left, right) => right.videoCount - left.videoCount);
+  return fallback[0] ? [fallback[0].element] : [];
 }
 
 function addScopeCandidate($, element, candidates, seen, baseUrl) {
@@ -832,6 +853,63 @@ function addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel) {
     playerType: 'system',
     source: SITE.title
   });
+}
+
+function parseFavoriteAnchorsFromHtml(html, baseUrl, listLabel, seen, results) {
+  const raw = String(html || '');
+  const anchorPattern = /<a\b[^>]*href=["']([^"']*view_video\.php[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+  while ((match = anchorPattern.exec(raw)) && results.length < 40) {
+    const context = raw.slice(Math.max(0, match.index - 500), Math.min(raw.length, match.index + match[0].length + 500));
+    if (/(recommend|related|suggest|premium|advert|sidebar)/i.test(context)) continue;
+
+    const videoUrl = normalizeUrl(match[1], baseUrl || SITE.baseUrl);
+    if (!isLikelyVideoUrl(videoUrl) || seen.has(videoUrl)) continue;
+
+    const title = normalizeTitleCandidate(
+      readHtmlAttr(match[0], 'title') ||
+      readHtmlAttr(match[0], 'aria-label') ||
+      readHtmlAttr(match[0], 'data-title') ||
+      readHtmlAttr(match[2], 'alt') ||
+      stripHtml(match[2])
+    );
+    if (!title || title.length < 2) continue;
+
+    const coverUrl = normalizeUrl(
+      readHtmlAttr(match[2], 'data-src') ||
+      readHtmlAttr(match[2], 'data-original') ||
+      readHtmlAttr(match[2], 'data-lazy-src') ||
+      readHtmlAttr(match[2], 'data-thumb_url') ||
+      readHtmlAttr(match[2], 'data-mediumthumb') ||
+      readHtmlAttr(match[2], 'src'),
+      baseUrl || SITE.baseUrl
+    );
+    const durationMatch = context.match(/\b\d{1,2}:\d{2}(?::\d{2})?\b/);
+    seen.add(videoUrl);
+    results.push({
+      id: hashId('favorite.' + videoUrl),
+      type: 'link',
+      title,
+      description: durationMatch ? '时长：' + durationMatch[0] : listLabel || 'Pornhub 收藏',
+      coverUrl,
+      posterPath: coverUrl,
+      link: videoUrl,
+      mediaType: 'movie',
+      playerType: 'system',
+      source: SITE.title
+    });
+  }
+}
+
+function readHtmlAttr(html, name) {
+  const escapedName = String(name || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const pattern = new RegExp('\\b' + escapedName + '\\s*=\\s*(["\\\'])(.*?)\\1', 'i');
+  const match = pattern.exec(String(html || ''));
+  return match && match[2] ? match[2].replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"') : '';
+}
+
+function stripHtml(value) {
+  return cleanText(String(value || '').replace(/<[^>]+>/g, ' '));
 }
 
 function buildCategoryUrl(categoryId, page) {
