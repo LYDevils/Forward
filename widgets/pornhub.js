@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.24',
+  version: '1.0.25',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -524,7 +524,7 @@ async function loadVideoList(url) {
         const description = findDuration($, element) || SITE.title;
         results.push({
           id: videoUrl,
-          type: 'link',
+          type: 'url',
           title,
           description,
           coverUrl,
@@ -1006,7 +1006,7 @@ function addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel) {
   seen.add(videoUrl);
   results.push({
     id: videoUrl,
-    type: 'link',
+    type: 'url',
     title,
     description,
     coverUrl,
@@ -1051,7 +1051,7 @@ function parseFavoriteAnchorsFromHtml(html, baseUrl, listLabel, seen, results) {
     seen.add(videoUrl);
     results.push({
       id: videoUrl,
-      type: 'link',
+      type: 'url',
       title,
       description: durationMatch ? '时长：' + durationMatch[0] : listLabel || 'Pornhub 收藏',
       coverUrl,
