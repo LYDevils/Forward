@@ -20,7 +20,7 @@ async function main() {
   const outputFile = getArgValue('--out') || path.join(__dirname, 'forward-widgets.fwd');
   const title = getArgValue('--title') || 'LYDevils 模块库';
   const description = getArgValue('--description') || 'LYDevils Forward 模块源';
-  const icon = getArgValue('--icon') || '';
+  const icon = getArgValue('--icon') || 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png';
 
   const result = await generateSourceIndex({
     baseScriptUrl,

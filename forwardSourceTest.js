@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const {
   extractWidgetMetadata,
@@ -9,6 +10,8 @@ const {
 async function run() {
   const widgetFile = path.join(__dirname, 'widgets', 'jable.js');
   const inspection = await inspectWidget(widgetFile);
+  const widgetsDir = path.join(__dirname, 'widgets');
+  const widgetFiles = fs.readdirSync(widgetsDir).filter((fileName) => fileName.endsWith('.js'));
 
   console.log('=== Forward Source Test ===\n');
   console.log('1. Widget metadata');
@@ -23,7 +26,8 @@ async function run() {
     outputFile,
     baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/main/widgets',
     title: 'LYDevils 模块库',
-    description: 'LYDevils Forward 模块源'
+    description: 'LYDevils Forward 模块源',
+    icon: 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png'
   });
   console.log(`   output: ${generation.outputFile}`);
   console.log(`   widgets: ${generation.index.widgets.length}\n`);
@@ -34,14 +38,28 @@ async function run() {
   console.log(`   first widget url: ${sourceIndex.widgets[0].url}\n`);
 
   console.log('4. Direct metadata extraction');
-  const metadata = extractWidgetMetadata(require('fs').readFileSync(widgetFile, 'utf8'), {
+  const metadata = extractWidgetMetadata(fs.readFileSync(widgetFile, 'utf8'), {
     filename: widgetFile
   });
   console.log(`   extracted title: ${metadata.metadata.title}`);
 
-  if (generation.index.widgets.length !== 15) {
-    throw new Error(`Expected 15 widgets, got ${generation.index.widgets.length}`);
+  if (generation.index.widgets.length !== 16) {
+    throw new Error(`Expected 16 widgets, got ${generation.index.widgets.length}`);
   }
+
+  console.log('\n5. Placeholder scan');
+  const forbiddenPatterns = [/example\.com/i, /示例/, /测试/, /\bdemo\b/i, /\bsample\b/i, /buildSample/, /createDemo/];
+  for (const fileName of widgetFiles) {
+    const fullPath = path.join(widgetsDir, fileName);
+    const content = fs.readFileSync(fullPath, 'utf8');
+    const hit = forbiddenPatterns.find((pattern) => pattern.test(content));
+    if (hit) {
+      throw new Error(`Placeholder content remains in ${fileName}: ${hit}`);
+    }
+
+    extractWidgetMetadata(content, { filename: fullPath });
+  }
+  console.log(`   scanned widgets: ${widgetFiles.length}`);
 }
 
 run().catch((error) => {

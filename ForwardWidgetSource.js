@@ -15,6 +15,7 @@ const DEFAULT_WIDGET_ORDER = [
   'lydevils.xhamster',
   'lydevils.tube8',
   'lydevils.vod',
+  'lydevils.vodmax',
   'lydevils.podcast',
   'lydevils.live-tv',
   'lydevils.tv-stations'

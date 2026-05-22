@@ -1,12 +1,12 @@
 {
   "title": "LYDevils 模块库",
   "description": "LYDevils Forward 模块源",
-  "icon": "",
+  "icon": "https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png",
   "widgets": [
     {
       "id": "lydevils.jable",
-      "title": "Jable 视频",
-      "description": "Jable 站点视频模块。",
+      "title": "Jable",
+      "description": "Jable real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -14,8 +14,8 @@
     },
     {
       "id": "lydevils.91porn",
-      "title": "91Porn 视频",
-      "description": "91Porn 站点视频模块。",
+      "title": "91Porn",
+      "description": "91Porn real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -23,8 +23,8 @@
     },
     {
       "id": "lydevils.pornhub",
-      "title": "Pornhub 视频",
-      "description": "Pornhub 视频模块。",
+      "title": "Pornhub",
+      "description": "Pornhub real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -32,8 +32,8 @@
     },
     {
       "id": "lydevils.javday",
-      "title": "JAVDay 视频",
-      "description": "JAVDay 站点视频模块。",
+      "title": "JAVDay",
+      "description": "JAVDay real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -41,8 +41,8 @@
     },
     {
       "id": "lydevils.javrate",
-      "title": "JAVRate 视频",
-      "description": "JAVRate 站点视频模块。",
+      "title": "JAVRate",
+      "description": "JAVRate real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -50,8 +50,8 @@
     },
     {
       "id": "lydevils.xvideos",
-      "title": "XVideos 视频",
-      "description": "XVideos 站点视频模块。",
+      "title": "XVideos",
+      "description": "XVideos real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -59,8 +59,8 @@
     },
     {
       "id": "lydevils.redtube",
-      "title": "RedTube 视频",
-      "description": "RedTube 站点视频模块。",
+      "title": "RedTube",
+      "description": "RedTube real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -68,8 +68,8 @@
     },
     {
       "id": "lydevils.youporn",
-      "title": "YouPorn 视频",
-      "description": "YouPorn 站点视频模块。",
+      "title": "YouPorn",
+      "description": "YouPorn real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -77,8 +77,8 @@
     },
     {
       "id": "lydevils.spankbang",
-      "title": "SpankBang 视频",
-      "description": "SpankBang 站点视频模块。",
+      "title": "SpankBang",
+      "description": "SpankBang real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -86,8 +86,8 @@
     },
     {
       "id": "lydevils.xhamster",
-      "title": "xHamster 视频",
-      "description": "xHamster 站点视频模块。",
+      "title": "xHamster",
+      "description": "xHamster real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -95,8 +95,8 @@
     },
     {
       "id": "lydevils.tube8",
-      "title": "Tube8 视频",
-      "description": "Tube8 站点视频模块。",
+      "title": "Tube8",
+      "description": "Tube8 real video source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -104,17 +104,26 @@
     },
     {
       "id": "lydevils.vod",
-      "title": "点播视频",
-      "description": "视频点播模块。",
+      "title": "VOD",
+      "description": "MacCMS VOD source for real playable videos.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vod.js"
     },
     {
+      "id": "lydevils.vodmax",
+      "title": "VodMax",
+      "description": "聚合点播数据源",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/main/widgets/vodmax.js"
+    },
+    {
       "id": "lydevils.podcast",
       "title": "播客",
-      "description": "RSS 播客模块。",
+      "description": "RSS podcast source.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -123,7 +132,7 @@
     {
       "id": "lydevils.live-tv",
       "title": "直播（电视+网络）",
-      "description": "网络和 IPTV 直播模块。",
+      "description": "Real IPTV live streams.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
@@ -132,7 +141,7 @@
     {
       "id": "lydevils.tv-stations",
       "title": "电视台",
-      "description": "电视台模块。",
+      "description": "Real TV station streams.",
       "requiredVersion": "0.0.1",
       "version": "1.0.0",
       "author": "LYDevils",
