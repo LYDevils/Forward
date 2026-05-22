@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.18',
+  version: '1.0.19',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -347,7 +347,7 @@ loadFavoriteVideos = async (params = {}) => {
   }
 
   try {
-    const favoritePage = await loadFavoritePage(username, page);
+    const favoritePage = await loadFavoritePage(username, page, true);
     const results = parseFavoriteVideoList(favoritePage.html, favoritePage.url, 'Pornhub 收藏');
     if (results.length === 0) {
       return [createMessage('未找到公开收藏', '已打开该用户收藏页，但没有解析到公开收藏视频。可能收藏为空、收藏私密，或当前网络返回了受限页面。')];
@@ -413,7 +413,19 @@ async function loadDetail(link) {
   );
   const videoUrl = extractVideoUrl(html, url);
   if (!videoUrl) {
-    return createMessage('未解析到播放地址', '详情页已加载，但未找到 mp4/m3u8 播放地址。可能需要登录、WebView 或当前网络受限。链接：' + url);
+    return {
+      id: hashId(url),
+      type: 'detail',
+      title,
+      description: [description, '未解析到直链，已保留网页播放链接。'].filter(Boolean).join(' | '),
+      coverUrl,
+      posterPath: coverUrl,
+      link: url,
+      videoUrl: url,
+      mediaType: 'movie',
+      playerType: 'system',
+      source: SITE.title
+    };
   }
 
   return {
@@ -470,7 +482,7 @@ async function loadVideoList(url) {
   }
 }
 
-async function loadFavoritePage(username, page) {
+async function loadFavoritePage(username, page, requireParsedVideos) {
   const candidates = buildFavoriteCandidates(username);
   if (candidates.length === 0) {
     throw new Error('请输入 Pornhub 用户名、用户主页链接或收藏页链接。');
@@ -478,6 +490,7 @@ async function loadFavoritePage(username, page) {
 
   let lastError = null;
   let privateError = null;
+  let emptyPageError = null;
   const attemptedUrls = [];
   for (const candidate of candidates) {
     const url = appendPageParam(normalizeUrl(candidate, SITE.baseUrl), page);
@@ -489,14 +502,20 @@ async function loadFavoritePage(username, page) {
         privateError = new Error('该用户收藏列表是私有的，无法公开读取。');
         continue;
       }
-      if (check.valid) return { url, html };
+      if (check.valid) {
+        if (!requireParsedVideos) return { url, html };
+        const preview = parseFavoriteVideoList(html, url, 'Pornhub 收藏');
+        if (preview.length > 0) return { url, html, preview };
+        emptyPageError = new Error('收藏页可访问但没有解析到公开收藏视频：' + url);
+        continue;
+      }
       lastError = new Error(check.reason || '未找到该用户的公开收藏页面。');
     } catch (error) {
       lastError = new Error('请求收藏页失败：' + url + '；' + String(error.message || error));
     }
   }
 
-  const fallbackError = lastError || new Error('未找到该用户的公开收藏页面。');
+  const fallbackError = emptyPageError || lastError || new Error('未找到该用户的公开收藏页面。');
   fallbackError.message = fallbackError.message + ' 已尝试：' + attemptedUrls.join('，');
   throw privateError || fallbackError;
 }
@@ -525,8 +544,8 @@ function buildFavoriteCandidates(username) {
   }
 
   if (profile.slug) {
-    add('https://cn.pornhub.com/users/' + profile.slug + '/videos/favorites');
     ['users', 'model', 'pornstar'].forEach((type) => add('/' + type + '/' + profile.slug));
+    add('https://cn.pornhub.com/users/' + profile.slug + '/videos/favorites');
   }
 
   return candidates;
@@ -612,7 +631,6 @@ function inspectFavoritePage(html, url) {
   const requestedFavoriteRoute = isFavoriteRoute(url);
   const favoriteHeading = hasFavoriteHeading(raw);
   const favoriteListMarker = hasFavoriteListMarker(raw);
-  const hasVideoLinks = /view_video\.php/i.test(raw);
   const pageUnavailable = /\b(?:404|page not found|profile not found|user not found|not available|removed)\b/i.test(text);
   const loginBlocked = /\b(?:please log in|login required|you must be logged in|age verification|verify your age)\b/i.test(text);
   const privateBlocked = /(?:private|hidden)[^。.!?]{0,80}(?:favorite|favorites|收藏)|(?:favorite|favorites|收藏)[^。.!?]{0,80}(?:private|hidden)|this page is private/i.test(text);
@@ -620,7 +638,7 @@ function inspectFavoritePage(html, url) {
   if (privateBlocked) return { valid: false, private: true };
   if (loginBlocked) return { valid: false, reason: '当前网络返回登录或年龄验证页面，无法确认公开收藏。' };
   if (pageUnavailable) return { valid: false, reason: '该用户收藏页不可访问或不存在。' };
-  if (!routeInMetadata && !(requestedFavoriteRoute && (favoriteHeading || favoriteListMarker || hasVideoLinks))) {
+  if (!routeInMetadata && !(requestedFavoriteRoute && (favoriteHeading || favoriteListMarker))) {
     return { valid: false, reason: '当前返回内容不是收藏页。' };
   }
 
