@@ -10,8 +10,8 @@
   ]
 };
 const CATEGORY_OPTIONS = [
-  { title: "最新", value: "/newest" },
-  { title: "全部分类", value: "/categories" },
+  { title: "Newest", value: "/newest" },
+  { title: "All Categories", value: "/categories" },
   { title: "Amateur", value: "/categories/amateur" },
   { title: "Anal", value: "/categories/anal" },
   { title: "Asian", value: "/categories/asian" },
@@ -38,7 +38,7 @@ WidgetMetadata = {
   description: 'xHamster 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://xhamster.com',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -85,8 +85,8 @@ WidgetMetadata = {
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: [
-  { title: "最新", value: "/newest" },
-  { title: "全部分类", value: "/categories" },
+  { title: "Newest", value: "/newest" },
+  { title: "All Categories", value: "/categories" },
   { title: "Amateur", value: "/categories/amateur" },
   { title: "Anal", value: "/categories/anal" },
   { title: "Asian", value: "/categories/asian" },

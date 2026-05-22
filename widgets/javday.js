@@ -14,13 +14,15 @@
 };
 const CATEGORY_OPTIONS = [
   { title: "最近更新", value: "/label/new/" },
+  { title: "人氣系列", value: "/label/hot/" },
   { title: "新作上市", value: "/category/new-release/" },
   { title: "有碼", value: "/category/censored/" },
   { title: "無碼", value: "/category/uncensored/" },
   { title: "國產AV", value: "/category/chinese-av/" },
   { title: "無碼流出", value: "/category/uncensored-leaked/" },
   { title: "杏吧", value: "/category/sex8/" },
-  { title: "HongKongDoll", value: "/category/hongkongdoll/" }
+  { title: "HongKongDoll", value: "/category/hongkongdoll/" },
+  { title: "國產AV廠商", value: "/label/groups/" }
 ];
 
 const DEFAULT_HEADERS = {
@@ -34,7 +36,7 @@ WidgetMetadata = {
   description: 'JAVDay 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://javday.tv',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -82,13 +84,15 @@ WidgetMetadata = {
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: [
   { title: "最近更新", value: "/label/new/" },
+  { title: "人氣系列", value: "/label/hot/" },
   { title: "新作上市", value: "/category/new-release/" },
   { title: "有碼", value: "/category/censored/" },
   { title: "無碼", value: "/category/uncensored/" },
   { title: "國產AV", value: "/category/chinese-av/" },
   { title: "無碼流出", value: "/category/uncensored-leaked/" },
   { title: "杏吧", value: "/category/sex8/" },
-  { title: "HongKongDoll", value: "/category/hongkongdoll/" }
+  { title: "HongKongDoll", value: "/category/hongkongdoll/" },
+  { title: "國產AV廠商", value: "/label/groups/" }
 ]
         },
         {

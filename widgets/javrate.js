@@ -14,12 +14,12 @@
   ]
 };
 const CATEGORY_OPTIONS = [
-  { title: "首页", value: "/" },
-  { title: "有码", value: "/category/censored/" },
-  { title: "无码", value: "/category/uncensored/" },
+  { title: "Home", value: "/" },
+  { title: "Censored", value: "/category/censored/" },
+  { title: "Uncensored", value: "/category/uncensored/" },
   { title: "JAV", value: "/jav/" },
-  { title: "影片", value: "/movie/" },
-  { title: "最新", value: "/?orderby=date" }
+  { title: "Movie", value: "/movie/" },
+  { title: "Latest", value: "/?orderby=date" }
 ];
 
 const DEFAULT_HEADERS = {
@@ -33,7 +33,7 @@ WidgetMetadata = {
   description: 'JAVRate 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://javrate.com',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -80,12 +80,12 @@ WidgetMetadata = {
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: [
-  { title: "首页", value: "/" },
-  { title: "有码", value: "/category/censored/" },
-  { title: "无码", value: "/category/uncensored/" },
+  { title: "Home", value: "/" },
+  { title: "Censored", value: "/category/censored/" },
+  { title: "Uncensored", value: "/category/uncensored/" },
   { title: "JAV", value: "/jav/" },
-  { title: "影片", value: "/movie/" },
-  { title: "最新", value: "/?orderby=date" }
+  { title: "Movie", value: "/movie/" },
+  { title: "Latest", value: "/?orderby=date" }
 ]
         },
         {

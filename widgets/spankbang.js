@@ -10,8 +10,8 @@
   ]
 };
 const CATEGORY_OPTIONS = [
-  { title: "最新", value: "/new_videos/" },
-  { title: "热门", value: "/s/popular/" },
+  { title: "Latest", value: "/new_videos/" },
+  { title: "Popular", value: "/s/popular/" },
   { title: "Amateur", value: "/category/amateur/" },
   { title: "Anal", value: "/category/anal/" },
   { title: "Asian", value: "/category/asian/" },
@@ -35,7 +35,7 @@ WidgetMetadata = {
   description: 'SpankBang 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://spankbang.com',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -82,8 +82,8 @@ WidgetMetadata = {
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: [
-  { title: "最新", value: "/new_videos/" },
-  { title: "热门", value: "/s/popular/" },
+  { title: "Latest", value: "/new_videos/" },
+  { title: "Popular", value: "/s/popular/" },
   { title: "Amateur", value: "/category/amateur/" },
   { title: "Anal", value: "/category/anal/" },
   { title: "Asian", value: "/category/asian/" },

@@ -10,11 +10,11 @@
   ]
 };
 const CATEGORY_OPTIONS = [
-  { title: "最新影片", value: "/v.php" },
-  { title: "最近加精", value: "/v.php?category=rf" },
-  { title: "热门影片", value: "/v.php?category=hot" },
-  { title: "长片", value: "/v.php?category=long" },
-  { title: "本月热门", value: "/v.php?category=md" }
+  { title: "Latest", value: "/v.php" },
+  { title: "Refined", value: "/v.php?category=rf" },
+  { title: "Hot", value: "/v.php?category=hot" },
+  { title: "Long", value: "/v.php?category=long" },
+  { title: "Monthly Hot", value: "/v.php?category=md" }
 ];
 
 const DEFAULT_HEADERS = {
@@ -28,7 +28,7 @@ WidgetMetadata = {
   description: '91Porn 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://91porn.com',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -75,11 +75,11 @@ WidgetMetadata = {
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: [
-  { title: "最新影片", value: "/v.php" },
-  { title: "最近加精", value: "/v.php?category=rf" },
-  { title: "热门影片", value: "/v.php?category=hot" },
-  { title: "长片", value: "/v.php?category=long" },
-  { title: "本月热门", value: "/v.php?category=md" }
+  { title: "Latest", value: "/v.php" },
+  { title: "Refined", value: "/v.php?category=rf" },
+  { title: "Hot", value: "/v.php?category=hot" },
+  { title: "Long", value: "/v.php?category=long" },
+  { title: "Monthly Hot", value: "/v.php?category=md" }
 ]
         },
         {

@@ -10,20 +10,17 @@
   ]
 };
 const CATEGORY_OPTIONS = [
-  { title: "推荐视频", value: "/recommended" },
-  { title: "热门类别", value: "/categories" },
+  { title: "Recommended", value: "/recommended" },
+  { title: "Categories", value: "/categories" },
+  { title: "Channels", value: "/channels" },
   { title: "18-25", value: "/categories/teen" },
   { title: "Hentai", value: "/categories/hentai" },
+  { title: "Magic Asian Pussy", value: "/channels/magic-asian-pussy" },
+  { title: "Family Strokes", value: "/channels/family-strokes" },
+  { title: "Pure Taboo", value: "/channels/pure-taboo" },
   { title: "Babe", value: "/categories/babe" },
-  { title: "College 18+", value: "/categories/college" },
-  { title: "Pornstar", value: "/categories/pornstar" },
-  { title: "频道", value: "/channels" },
-  { title: "Moms Teach Sex", value: "/channels/momsteachsex" },
-  { title: "Fake Taxi", value: "/channels/faketaxi" },
-  { title: "JAV Hub", value: "/channels/jav-hub" },
-  { title: "Jav HD", value: "/channels/javhd" },
-  { title: "Hormone Tokyo", value: "/channels/hormonetokyo" },
-  { title: "Paco Paco", value: "/channels/paco-paco" }
+  { title: "College (18+)", value: "/categories/college" },
+  { title: "Pornstar", value: "/categories/pornstar" }
 ];
 
 const DEFAULT_HEADERS = {
@@ -37,7 +34,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -84,20 +81,17 @@ WidgetMetadata = {
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: [
-  { title: "推荐视频", value: "/recommended" },
-  { title: "热门类别", value: "/categories" },
+  { title: "Recommended", value: "/recommended" },
+  { title: "Categories", value: "/categories" },
+  { title: "Channels", value: "/channels" },
   { title: "18-25", value: "/categories/teen" },
   { title: "Hentai", value: "/categories/hentai" },
+  { title: "Magic Asian Pussy", value: "/channels/magic-asian-pussy" },
+  { title: "Family Strokes", value: "/channels/family-strokes" },
+  { title: "Pure Taboo", value: "/channels/pure-taboo" },
   { title: "Babe", value: "/categories/babe" },
-  { title: "College 18+", value: "/categories/college" },
-  { title: "Pornstar", value: "/categories/pornstar" },
-  { title: "频道", value: "/channels" },
-  { title: "Moms Teach Sex", value: "/channels/momsteachsex" },
-  { title: "Fake Taxi", value: "/channels/faketaxi" },
-  { title: "JAV Hub", value: "/channels/jav-hub" },
-  { title: "Jav HD", value: "/channels/javhd" },
-  { title: "Hormone Tokyo", value: "/channels/hormonetokyo" },
-  { title: "Paco Paco", value: "/channels/paco-paco" }
+  { title: "College (18+)", value: "/categories/college" },
+  { title: "Pornstar", value: "/categories/pornstar" }
 ]
         },
         {
