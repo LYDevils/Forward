@@ -187,86 +187,16 @@ function localizeCategoryOptions(options) {
   }));
 }
 
-const CATEGORY_OPTIONS = localizeCategoryOptions([
-  { title: "最新", value: "/newest.html/" },
-  { title: "全部分类", value: "/categories.html" },
-  { title: "3P", value: "/cat/threesome/" },
-  { title: "巨根", value: "/cat/bigdick/" },
-  { title: "18-25", value: "/cat/teens/" },
-  { title: "女同", value: "/cat/lesbian/" },
-  { title: "素人", value: "/cat/amateur/" },
-  { title: "熟女", value: "/cat/mature/" },
-  { title: "肛交", value: "/cat/anal/" },
-  { title: "熟女", value: "/cat/milf/" },
-  { title: "中出", value: "/cat/creampie/" },
-  { title: "里番", value: "/cat/hentai/" },
-  { title: "口交", value: "/cat/blowjob/" },
+const CATEGORY_OPTIONS = [
   { title: "亚洲", value: "/cat/asian/" },
-  { title: "户外", value: "/cat/public/" },
-  { title: "黑人", value: "/cat/ebony/" },
-  { title: "恋物", value: "/cat/fetish/" },
-  { title: "拉丁", value: "/cat/latina/" },
-  { title: "重口", value: "/cat/hardcore/" },
-  { title: "阿拉伯", value: "/cat/arab/" },
-  { title: "丰满", value: "/cat/bbw/" },
-  { title: "巨臀", value: "/cat/bigass/" },
-  { title: "巨乳", value: "/cat/bigtits/" },
-  { title: "金发", value: "/cat/blonde/" },
-  { title: "捆绑", value: "/cat/bondage/" },
-  { title: "巴西", value: "/cat/brazilian/" },
-  { title: "黑发", value: "/cat/brunette/" },
-  { title: "群射", value: "/cat/bukkake/" },
-  { title: "卡通", value: "/cat/cartoon/" },
-  { title: "试镜", value: "/cat/casting/" },
-  { title: "名人", value: "/cat/celebrity/" },
-  { title: "学院(18+)", value: "/cat/college/" },
-  { title: "合集", value: "/cat/compilation/" },
-  { title: "角色扮演", value: "/cat/cosplay/" },
-  { title: "绿帽", value: "/cat/cuckold/" },
-  { title: "射精", value: "/cat/cumshot/" },
-  { title: "双插", value: "/cat/doublepenetration/" },
-  { title: "情色", value: "/cat/erotic/" },
-  { title: "足交", value: "/cat/feet/" },
-  { title: "女性高潮", value: "/cat/femaleorgasm/" },
-  { title: "手指", value: "/cat/fingering/" },
-  { title: "拳交", value: "/cat/fisting/" },
-  { title: "法式", value: "/cat/french/" },
-  { title: "搞笑", value: "/cat/funny/" },
-  { title: "群交", value: "/cat/gangbang/" },
-  { title: "德国", value: "/cat/german/" },
-  { title: "群体", value: "/cat/group/" },
-  { title: "手交", value: "/cat/handjob/" },
-  { title: "高清", value: "/cat/hd/" },
-  { title: "印度", value: "/cat/indian/" },
-  { title: "跨种族", value: "/cat/interracial/" },
   { title: "日本", value: "/cat/japanese/" },
-  { title: "按摩", value: "/cat/massage/" },
-  { title: "自慰", value: "/cat/masturbation/" },
-  { title: "乱交", value: "/cat/orgy/" },
-  { title: "恶搞", value: "/cat/parody/" },
-  { title: "派对", value: "/cat/party/" },
-  { title: "排尿", value: "/cat/pissing/" },
-  { title: "女性热门", value: "/cat/popular-with-women/" },
-  { title: "主视角", value: "/cat/pov/" },
-  { title: "舔阴", value: "/cat/pussy-licking/" },
-  { title: "真实", value: "/cat/reality/" },
-  { title: "红发", value: "/cat/redhead/" },
-  { title: "粗暴", value: "/cat/rough/" },
-  { title: "人妖", value: "/cat/shemale/" },
-  { title: "贫乳", value: "/cat/small-tits/" },
-  { title: "男生单人", value: "/cat/solomale/" },
-  { title: "潮吹", value: "/cat/squirting/" },
-  { title: "继亲剧情", value: "/cat/stepfantasy/" },
-  { title: "脱衣", value: "/cat/strip/" },
-  { title: "脱衣秀", value: "/cat/striptease/" },
-  { title: "玩具", value: "/cat/toys/" },
-  { title: "跨性别", value: "/cat/transgender/" },
-  { title: "认证素人", value: "/cat/verifiedamateurs/" },
-  { title: "复古", value: "/cat/vintage/" },
-  { title: "VR", value: "/cat/virtualreality/" },
-  { title: "直播摄像", value: "/cat/webcam/" },
-  { title: "老少配", value: "/cat/youngandold/" }
-]);
+  { title: "里番", value: "/cat/hentai/" }
+];
+
+const LANGUAGE_OPTIONS = [
+  { title: "亚洲", value: "/cat/asian/" },
+  { title: "日本", value: "/cat/japanese/" }
+];
 
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
@@ -279,7 +209,7 @@ WidgetMetadata = {
   description: 'Tube8 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.tube8.com',
-  version: '1.0.7',
+  version: '1.0.8',
   requiredVersion: '0.0.1',
   detailCacheDuration: 300,
   modules: [
@@ -297,7 +227,7 @@ WidgetMetadata = {
     {
       id: 'get-categories',
       title: '分类列表',
-      description: '自动获取分类名称和分类路径，点选后加载该分类影片。',
+      description: '显示受控分类列表，点选后加载该分类影片。',
       functionName: 'getCategories',
       type: 'list',
       params: []
@@ -305,7 +235,7 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '从下拉框选择分类加载影片，也可切换为自定义路径。',
+      description: '从白名单下拉框选择分类加载影片，也可切换为自定义路径。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -323,7 +253,7 @@ WidgetMetadata = {
           name: 'categoryPreset',
           title: '选择分类',
           type: 'enumeration',
-          value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
+          value: "/cat/asian/",
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: CATEGORY_OPTIONS
         },
@@ -342,6 +272,24 @@ WidgetMetadata = {
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
+    {
+      id: 'language-videos',
+      title: '语言/分区',
+      description: '从下拉框选择语言、字幕或地区分区加载影片。',
+      functionName: 'loadLanguageVideos',
+      type: 'list',
+      params: [
+        {
+          name: 'languagePreset',
+          title: '选择语言/分区',
+          type: 'enumeration',
+          value: "/cat/asian/",
+          enumOptions: LANGUAGE_OPTIONS
+        },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
+    },
+
     {
       id: 'get-video-detail',
       title: '影片详情',
@@ -362,10 +310,23 @@ searchVideos = async (params = {}) => {
 
 getCategories = async () => loadCategories();
 
+loadLanguageVideos = async (params = {}) => {
+  const preset = LANGUAGE_OPTIONS.find((item) => item.value === params.languagePreset) || LANGUAGE_OPTIONS[0];
+  if (!preset) {
+    return [createMessage('未配置语言/分区', '当前站点未提供语言、字幕或地区分区。')];
+  }
+  return loadCategoryVideos({
+    categoryMode: 'custom',
+    categoryId: preset.value,
+    categoryName: preset.title,
+    page: params.page || 1
+  });
+};
+
 loadCategoryVideos = async (params = {}) => {
-  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset);
+  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset) || CATEGORY_OPTIONS[0];
   const usePreset = String(params.categoryMode || 'preset') === 'preset';
-  const categoryId = String(usePreset ? (params.categoryPreset || (preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
+  const categoryId = String(usePreset ? ((preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
   const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
@@ -514,31 +475,21 @@ async function loadVideoList(url) {
 }
 
 async function loadCategories() {
-  try {
-    const html = await fetchText(SITE.latestPath);
-    const $ = Widget.html.load(html);
-    const results = [];
-    const seen = new Set();
-    $('a[href]').each((_, element) => {
-      const title = localizeCategoryTitle(cleanText($(element).text() || $(element).attr('title') || ''));
-      const url = normalizeUrl($(element).attr('href'), SITE.baseUrl);
-      if (!title || seen.has(url) || !isLikelyCategoryUrl(url)) return;
-      seen.add(url);
-      results.push({
-        id: hashId(url),
-        type: 'link',
-        title,
-        description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
-        link: 'category|' + url,
-        mediaType: 'movie',
-        playerType: 'system',
-        source: SITE.title
-      });
-    });
-    return results.length > 0 ? results.slice(0, 80) : [createMessage('未找到分类', '站点导航未返回可解析的分类链接。')];
-  } catch (error) {
-    return [createMessage('请求失败', String(error.message || error))];
-  }
+  return CATEGORY_OPTIONS.map((item) => buildCategoryEntry(item));
+}
+
+function buildCategoryEntry(item) {
+  const url = buildCategoryUrl(item.value, 1);
+  return {
+    id: hashId(url),
+    type: 'link',
+    title: item.title,
+    description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
+    link: 'category|' + url,
+    mediaType: 'movie',
+    playerType: 'system',
+    source: SITE.title
+  };
 }
 
 function buildCategoryUrl(categoryId, page) {
@@ -577,17 +528,37 @@ async function fetchText(url) {
 }
 
 function pickTitle($, element, image) {
-  const direct = cleanText(
-    $(element).attr('title') ||
-    $(element).attr('aria-label') ||
-    image.attr('alt') ||
-    $(element).find('[title]').first().attr('title') ||
-    $(element).find('.title,.video-title,.thumb-title,.video-title-text').first().text() ||
-    $(element).text()
-  );
-  if (direct) return direct;
+  const anchor = $(element);
+  const container = anchor.closest('article, li, .video-box, .video-item, .thumb-block, .pcVideoListItem, .wrap, .card, div');
+  const candidates = [
+    anchor.attr('title'),
+    anchor.attr('aria-label'),
+    image.attr('alt'),
+    image.attr('title'),
+    anchor.find('[title]').first().attr('title'),
+    anchor.find('.title,.video-title,.thumb-title,.video-title-text,.tm_video_title').first().text(),
+    container.find('.title,.video-title,.thumb-title,.video-title-text,.tm_video_title').first().text(),
+    anchor.text(),
+    container.text()
+  ];
 
-  return cleanText($(element).parent().text()).slice(0, 120);
+  for (const candidate of candidates) {
+    const title = normalizeTitleCandidate(candidate);
+    if (title) return title;
+  }
+  return '';
+}
+
+function normalizeTitleCandidate(value) {
+  const title = cleanText(value)
+    .replace(/\b\d{1,2}:\d{2}(?::\d{2})?\b/g, ' ')
+    .replace(/\b(?:HD|4K|VR)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!title || title.length < 2) return '';
+  if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(title)) return '';
+  if (/^(?:HD|4K|VR|NEW|HOT)$/i.test(title)) return '';
+  return title.slice(0, 160);
 }
 
 function findDuration($, element) {

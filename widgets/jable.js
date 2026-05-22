@@ -10,135 +10,18 @@
   ]
 };
 const CATEGORY_OPTIONS = [
-  { title: "💡 新片優先", value: "/latest-updates/" },
-  { title: "中文字幕 20288 部影片", value: "/categories/chinese-subtitle/" },
-  { title: "制服誘惑 11469 部影片", value: "/categories/uniform/" },
-  { title: "角色劇情 30725 部影片", value: "/categories/roleplay/" },
-  { title: "📚 按主題", value: "/categories/" },
-  { title: "👩 按女優", value: "/models/" },
-  { title: "黑絲", value: "/tags/black-pantyhose/" },
-  { title: "過膝襪", value: "/tags/knee-socks/" },
-  { title: "運動裝", value: "/tags/sportswear/" },
-  { title: "肉絲", value: "/tags/flesh-toned-pantyhose/" },
-  { title: "絲襪", value: "/tags/pantyhose/" },
-  { title: "眼鏡娘", value: "/tags/glasses/" },
-  { title: "獸耳", value: "/tags/kemonomimi/" },
-  { title: "漁網", value: "/tags/fishnets/" },
-  { title: "水着", value: "/tags/swimsuit/" },
-  { title: "校服", value: "/tags/school-uniform/" },
-  { title: "旗袍", value: "/tags/cheongsam/" },
-  { title: "婚紗", value: "/tags/wedding-dress/" },
-  { title: "女僕", value: "/tags/maid/" },
-  { title: "和服", value: "/tags/kimono/" },
-  { title: "吊帶襪", value: "/tags/stockings/" },
-  { title: "兔女郎", value: "/tags/bunny-girl/" },
-  { title: "Cosplay", value: "/tags/Cosplay/" },
-  { title: "黑肉", value: "/tags/suntan/" },
-  { title: "長身", value: "/tags/tall/" },
-  { title: "軟體", value: "/tags/flexible-body/" },
-  { title: "貧乳", value: "/tags/small-tits/" },
-  { title: "美腿", value: "/tags/beautiful-leg/" },
-  { title: "美尻", value: "/tags/beautiful-butt/" },
-  { title: "紋身", value: "/tags/tattoo/" },
-  { title: "短髮", value: "/tags/short-hair/" },
-  { title: "白虎", value: "/tags/hairless-pussy/" },
-  { title: "熟女", value: "/tags/mature-woman/" },
-  { title: "巨乳", value: "/tags/big-tits/" },
-  { title: "少女", value: "/tags/girl/" },
-  { title: "嬌小", value: "/tags/dainty/" },
-  { title: "顏射", value: "/tags/facial/" },
-  { title: "腳交", value: "/tags/footjob/" },
-  { title: "肛交", value: "/tags/anal-sex/" },
-  { title: "痙攣", value: "/tags/spasms/" },
-  { title: "潮吹", value: "/tags/squirting/" },
-  { title: "深喉", value: "/tags/deep-throat/" },
-  { title: "接吻", value: "/tags/kiss/" },
-  { title: "口爆", value: "/tags/cum-in-mouth/" },
-  { title: "口交", value: "/tags/blowjob/" },
-  { title: "乳交", value: "/tags/tit-wank/" },
-  { title: "中出", value: "/tags/creampie/" },
-  { title: "露出", value: "/tags/outdoor/" },
-  { title: "集團進犯", value: "/tags/gang-intrusion/" },
-  { title: "進犯", value: "/tags/intrusion/" },
-  { title: "調教", value: "/tags/tune/" },
-  { title: "綑綁", value: "/tags/bondage/" },
-  { title: "瞬間插入", value: "/tags/quickie/" },
-  { title: "痴漢", value: "/tags/chikan/" },
-  { title: "痴女", value: "/tags/chizyo/" },
-  { title: "男M", value: "/tags/masochism-guy/" },
-  { title: "泥醉", value: "/tags/crapulence/" },
-  { title: "泡姬", value: "/tags/soapland/" },
-  { title: "母乳", value: "/tags/breast-milk/" },
-  { title: "放尿", value: "/tags/piss/" },
-  { title: "按摩", value: "/tags/massage/" },
-  { title: "多P", value: "/tags/groupsex/" },
-  { title: "刑具", value: "/tags/grip/" },
-  { title: "凌辱", value: "/tags/insult/" },
-  { title: "一日十回", value: "/tags/10-times-a-day/" },
-  { title: "3P", value: "/tags/3p/" },
-  { title: "黑人", value: "/tags/black/" },
-  { title: "醜男", value: "/tags/ugly-man/" },
-  { title: "誘惑", value: "/tags/temptation/" },
-  { title: "親屬", value: "/tags/kinship/" },
-  { title: "童貞", value: "/tags/virginity/" },
-  { title: "時間停止", value: "/tags/time-stop/" },
-  { title: "復仇", value: "/tags/avenge/" },
-  { title: "年齡差", value: "/tags/age-difference/" },
-  { title: "巨漢", value: "/tags/giant/" },
-  { title: "媚藥", value: "/tags/love-potion/" },
-  { title: "夫目前犯", value: "/tags/sex-beside-husband/" },
-  { title: "出軌", value: "/tags/affair/" },
-  { title: "催眠", value: "/tags/hypnosis/" },
-  { title: "偷拍", value: "/tags/private-cam/" },
-  { title: "下雨天", value: "/tags/rainy-day/" },
-  { title: "NTR", value: "/tags/ntr/" },
-  { title: "風俗娘", value: "/tags/club-hostess-and-sex-worker/" },
-  { title: "醫生", value: "/tags/doctor/" },
-  { title: "逃犯", value: "/tags/fugitive/" },
-  { title: "護士", value: "/tags/nurse/" },
-  { title: "老師", value: "/tags/teacher/" },
-  { title: "空姐", value: "/tags/flight-attendant/" },
-  { title: "球隊經理", value: "/tags/team-manager/" },
-  { title: "未亡人", value: "/tags/widow/" },
-  { title: "搜查官", value: "/tags/detective/" },
-  { title: "情侶", value: "/tags/couple/" },
-  { title: "家政婦", value: "/tags/housewife/" },
-  { title: "家庭教師", value: "/tags/private-teacher/" },
-  { title: "偶像", value: "/tags/idol/" },
-  { title: "人妻", value: "/tags/wife/" },
-  { title: "主播", value: "/tags/female-anchor/" },
-  { title: "OL", value: "/tags/ol/" },
-  { title: "魔鏡號", value: "/tags/magic-mirror/" },
-  { title: "電車", value: "/tags/tram/" },
-  { title: "處女", value: "/tags/first-night/" },
-  { title: "監獄", value: "/tags/prison/" },
-  { title: "溫泉", value: "/tags/hot-spring/" },
-  { title: "洗浴場", value: "/tags/bathing-place/" },
-  { title: "泳池", value: "/tags/swimming-pool/" },
-  { title: "汽車", value: "/tags/car/" },
-  { title: "廁所", value: "/tags/toilet/" },
-  { title: "學校", value: "/tags/school/" },
-  { title: "圖書館", value: "/tags/library/" },
-  { title: "健身房", value: "/tags/gym-room/" },
-  { title: "便利店", value: "/tags/store/" },
-  { title: "錄像", value: "/tags/video-recording/" },
-  { title: "處女作/引退作", value: "/tags/debut-retires/" },
-  { title: "綜藝", value: "/tags/variety-show/" },
-  { title: "節日主題", value: "/tags/festival/" },
-  { title: "感謝祭", value: "/tags/thanksgiving/" },
-  { title: "4小時以上", value: "/tags/more-than-4-hours/" },
-  { title: "主奴調教 5159 部影片", value: "/categories/bdsm/" },
-  { title: "直接開啪 6363 部影片", value: "/categories/sex-only/" },
-  { title: "中文字幕 20288 部影片", value: "/categories/chinese-subtitle/" },
-  { title: "凌辱快感 3402 部影片", value: "/categories/insult/" },
-  { title: "制服誘惑 11469 部影片", value: "/categories/uniform/" },
-  { title: "角色劇情 30725 部影片", value: "/categories/roleplay/" },
-  { title: "盜攝偷拍 512 部影片", value: "/categories/private-cam/" },
-  { title: "無碼解放 266 部影片", value: "/categories/uncensored/" },
-  { title: "男友視角 3949 部影片", value: "/categories/pov/" },
-  { title: "多P群交 5205 部影片", value: "/categories/groupsex/" },
-  { title: "絲襪美腿 6821 部影片", value: "/categories/pantyhose/" },
-  { title: "女同歡愉 413 部影片", value: "/categories/lesbian/" }
+  { title: "中文字幕", value: "/categories/chinese-subtitle/" },
+  { title: "无码解放", value: "/categories/uncensored/" },
+  { title: "制服诱惑", value: "/categories/uniform/" },
+  { title: "角色剧情", value: "/categories/roleplay/" },
+  { title: "丝袜美腿", value: "/categories/pantyhose/" },
+  { title: "男友视角", value: "/categories/pov/" },
+  { title: "女同欢愉", value: "/categories/lesbian/" },
+  { title: "女优列表", value: "/models/" }
+];
+
+const LANGUAGE_OPTIONS = [
+  { title: "中文字幕", value: "/categories/chinese-subtitle/" }
 ];
 
 const DEFAULT_HEADERS = {
@@ -152,7 +35,7 @@ WidgetMetadata = {
   description: 'Jable 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://jable.tv',
-  version: '1.0.6',
+  version: '1.0.7',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -170,7 +53,7 @@ WidgetMetadata = {
     {
       id: 'get-categories',
       title: '分类列表',
-      description: '自动获取分类名称和分类路径，点选后加载该分类影片。',
+      description: '显示受控分类列表，点选后加载该分类影片。',
       functionName: 'getCategories',
       type: 'list',
       params: []
@@ -178,7 +61,7 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '从下拉框选择分类加载影片，也可切换为自定义路径。',
+      description: '从白名单下拉框选择分类加载影片，也可切换为自定义路径。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -196,7 +79,7 @@ WidgetMetadata = {
           name: 'categoryPreset',
           title: '选择分类',
           type: 'enumeration',
-          value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
+          value: "/categories/chinese-subtitle/",
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: CATEGORY_OPTIONS
         },
@@ -215,6 +98,24 @@ WidgetMetadata = {
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
+    {
+      id: 'language-videos',
+      title: '语言/分区',
+      description: '从下拉框选择语言、字幕或地区分区加载影片。',
+      functionName: 'loadLanguageVideos',
+      type: 'list',
+      params: [
+        {
+          name: 'languagePreset',
+          title: '选择语言/分区',
+          type: 'enumeration',
+          value: "/categories/chinese-subtitle/",
+          enumOptions: LANGUAGE_OPTIONS
+        },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
+    },
+
     {
       id: 'get-video-detail',
       title: '影片详情',
@@ -235,10 +136,23 @@ searchVideos = async (params = {}) => {
 
 getCategories = async () => loadCategories();
 
+loadLanguageVideos = async (params = {}) => {
+  const preset = LANGUAGE_OPTIONS.find((item) => item.value === params.languagePreset) || LANGUAGE_OPTIONS[0];
+  if (!preset) {
+    return [createMessage('未配置语言/分区', '当前站点未提供语言、字幕或地区分区。')];
+  }
+  return loadCategoryVideos({
+    categoryMode: 'custom',
+    categoryId: preset.value,
+    categoryName: preset.title,
+    page: params.page || 1
+  });
+};
+
 loadCategoryVideos = async (params = {}) => {
-  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset);
+  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset) || CATEGORY_OPTIONS[0];
   const usePreset = String(params.categoryMode || 'preset') === 'preset';
-  const categoryId = String(usePreset ? (params.categoryPreset || (preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
+  const categoryId = String(usePreset ? ((preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
   const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
@@ -340,31 +254,21 @@ async function loadVideoList(url) {
 }
 
 async function loadCategories() {
-  try {
-    const html = await fetchText(SITE.baseUrl);
-    const $ = Widget.html.load(html);
-    const results = [];
-    const seen = new Set();
-    $('a[href]').each((_, element) => {
-      const title = cleanText($(element).text() || $(element).attr('title') || '');
-      const url = normalizeUrl($(element).attr('href'), SITE.baseUrl);
-      if (!title || seen.has(url) || !isLikelyCategoryUrl(url)) return;
-      seen.add(url);
-      results.push({
-        id: hashId(url),
-        type: 'link',
-        title,
-        description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
-        link: 'category|' + url,
-        mediaType: 'movie',
-        playerType: 'system',
-        source: SITE.title
-      });
-    });
-    return results.length > 0 ? results.slice(0, 80) : [createMessage('未找到分类', '站点导航未返回可解析的分类链接。')];
-  } catch (error) {
-    return [createMessage('请求失败', String(error.message || error))];
-  }
+  return CATEGORY_OPTIONS.map((item) => buildCategoryEntry(item));
+}
+
+function buildCategoryEntry(item) {
+  const url = buildCategoryUrl(item.value, 1);
+  return {
+    id: hashId(url),
+    type: 'link',
+    title: item.title,
+    description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
+    link: 'category|' + url,
+    mediaType: 'movie',
+    playerType: 'system',
+    source: SITE.title
+  };
 }
 
 function buildCategoryUrl(categoryId, page) {
@@ -399,17 +303,37 @@ async function fetchText(url) {
 }
 
 function pickTitle($, element, image) {
-  const direct = cleanText(
-    $(element).attr('title') ||
-    $(element).attr('aria-label') ||
-    image.attr('alt') ||
-    $(element).find('[title]').first().attr('title') ||
-    $(element).find('.title,.video-title,.thumb-title').first().text() ||
-    $(element).text()
-  );
-  if (direct) return direct;
+  const anchor = $(element);
+  const container = anchor.closest('article, li, .video-box, .video-item, .thumb-block, .pcVideoListItem, .wrap, .card, div');
+  const candidates = [
+    anchor.attr('title'),
+    anchor.attr('aria-label'),
+    image.attr('alt'),
+    image.attr('title'),
+    anchor.find('[title]').first().attr('title'),
+    anchor.find('.title,.video-title,.thumb-title,.video-title-text,.tm_video_title').first().text(),
+    container.find('.title,.video-title,.thumb-title,.video-title-text,.tm_video_title').first().text(),
+    anchor.text(),
+    container.text()
+  ];
 
-  return cleanText($(element).parent().text()).slice(0, 120);
+  for (const candidate of candidates) {
+    const title = normalizeTitleCandidate(candidate);
+    if (title) return title;
+  }
+  return '';
+}
+
+function normalizeTitleCandidate(value) {
+  const title = cleanText(value)
+    .replace(/\b\d{1,2}:\d{2}(?::\d{2})?\b/g, ' ')
+    .replace(/\b(?:HD|4K|VR)\b/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!title || title.length < 2) return '';
+  if (/^\d{1,2}:\d{2}(?::\d{2})?$/.test(title)) return '';
+  if (/^(?:HD|4K|VR|NEW|HOT)$/i.test(title)) return '';
+  return title.slice(0, 160);
 }
 
 function findDuration($, element) {

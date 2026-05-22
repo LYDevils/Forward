@@ -11,14 +11,16 @@ const SITE = {
 };
 
 const CATEGORY_OPTIONS = [
-  { title: '最新A片', value: '/' },
-  { title: '無碼A片', value: '/uncensored' },
-  { title: '日本A片', value: '/censored' },
-  { title: '國產AV', value: '/china' },
-  { title: 'AV女優', value: '/Actress' },
-  { title: 'A片廠商', value: '/Maker' },
-  { title: '分類找片', value: '/Tag' },
-  { title: '最多人看', value: '/hot' }
+  { title: "国产AV", value: "/china" },
+  { title: "无码A片", value: "/uncensored" },
+  { title: "日本A片", value: "/censored" },
+  { title: "AV女优", value: "/Actress" }
+];
+
+const LANGUAGE_OPTIONS = [
+  { title: "国产AV", value: "/china" },
+  { title: "无码A片", value: "/uncensored" },
+  { title: "日本A片", value: "/censored" }
 ];
 
 const DEFAULT_HEADERS = {
@@ -33,7 +35,7 @@ WidgetMetadata = {
   description: 'JAVRate 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.javrate.com',
-  version: '1.0.7',
+  version: '1.0.8',
   requiredVersion: '0.0.1',
   detailCacheDuration: 300,
   modules: [
@@ -51,7 +53,7 @@ WidgetMetadata = {
     {
       id: 'get-categories',
       title: '分类列表',
-      description: '自动获取分类名称和分类路径，点选后加载该分类影片。',
+      description: '显示受控分类列表，点选后加载该分类影片。',
       functionName: 'getCategories',
       type: 'list',
       params: []
@@ -59,7 +61,7 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '从下拉框选择分类加载影片，也可切换为自定义路径。',
+      description: '从白名单下拉框选择分类加载影片，也可切换为自定义路径。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -77,7 +79,7 @@ WidgetMetadata = {
           name: 'categoryPreset',
           title: '选择分类',
           type: 'enumeration',
-          value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
+          value: "/china",
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
           enumOptions: CATEGORY_OPTIONS
         },
@@ -96,6 +98,24 @@ WidgetMetadata = {
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
+    {
+      id: 'language-videos',
+      title: '语言/分区',
+      description: '从下拉框选择语言、字幕或地区分区加载影片。',
+      functionName: 'loadLanguageVideos',
+      type: 'list',
+      params: [
+        {
+          name: 'languagePreset',
+          title: '选择语言/分区',
+          type: 'enumeration',
+          value: "/china",
+          enumOptions: LANGUAGE_OPTIONS
+        },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
+    },
+
     {
       id: 'get-video-detail',
       title: '影片详情',
@@ -116,10 +136,23 @@ searchVideos = async (params = {}) => {
 
 getCategories = async () => loadCategories();
 
+loadLanguageVideos = async (params = {}) => {
+  const preset = LANGUAGE_OPTIONS.find((item) => item.value === params.languagePreset) || LANGUAGE_OPTIONS[0];
+  if (!preset) {
+    return [createMessage('未配置语言/分区', '当前站点未提供语言、字幕或地区分区。')];
+  }
+  return loadCategoryVideos({
+    categoryMode: 'custom',
+    categoryId: preset.value,
+    categoryName: preset.title,
+    page: params.page || 1
+  });
+};
+
 loadCategoryVideos = async (params = {}) => {
-  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset);
+  const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset) || CATEGORY_OPTIONS[0];
   const usePreset = String(params.categoryMode || 'preset') === 'preset';
-  const categoryId = String(usePreset ? (params.categoryPreset || (preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
+  const categoryId = String(usePreset ? ((preset && preset.value) || '') : (params.categoryId || params.categoryUrl || params.url || '')).trim();
   const categoryName = String(usePreset ? ((preset && preset.title) || '') : (params.categoryName || '')).trim();
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
@@ -211,7 +244,7 @@ async function loadVideoList(url) {
 
       const metaText = cleanText(container.text());
       const yearMatch = metaText.match(/\b20\d{2}\b/);
-      const typeMatch = metaText.match(/有碼|無碼|國產/);
+      const typeMatch = metaText.match(/有码|无码|国产/);
       const dateMatch = metaText.match(/\b20\d{2}-\d{2}-\d{2}\b/);
       const description = [yearMatch && yearMatch[0], typeMatch && typeMatch[0], dateMatch && dateMatch[0]].filter(Boolean).join(' | ') || SITE.title;
       const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'src']), SITE.baseUrl);
@@ -237,31 +270,21 @@ async function loadVideoList(url) {
 }
 
 async function loadCategories() {
-  try {
-    const html = await fetchText(SITE.baseUrl);
-    const $ = Widget.html.load(html);
-    const results = [];
-    const seen = new Set();
-    $('a[href]').each((_, element) => {
-      const title = cleanText($(element).text() || $(element).attr('title') || '');
-      const url = normalizeUrl($(element).attr('href'), SITE.baseUrl);
-      if (!title || seen.has(url) || !isLikelyCategoryUrl(url)) return;
-      seen.add(url);
-      results.push({
-        id: hashId(url),
-        type: 'link',
-        title,
-        description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
-        link: 'category|' + url,
-        mediaType: 'movie',
-        playerType: 'system',
-        source: SITE.title
-      });
-    });
-    return results.length > 0 ? results.slice(0, 80) : [createMessage('未找到分类', '站点导航未返回可解析的分类链接。')];
-  } catch (error) {
-    return [createMessage('请求失败', String(error.message || error))];
-  }
+  return CATEGORY_OPTIONS.map((item) => buildCategoryEntry(item));
+}
+
+function buildCategoryEntry(item) {
+  const url = buildCategoryUrl(item.value, 1);
+  return {
+    id: hashId(url),
+    type: 'link',
+    title: item.title,
+    description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
+    link: 'category|' + url,
+    mediaType: 'movie',
+    playerType: 'system',
+    source: SITE.title
+  };
 }
 
 function buildCategoryUrl(categoryId, page) {
