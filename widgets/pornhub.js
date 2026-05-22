@@ -243,7 +243,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.13',
+  version: '1.0.17',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -318,11 +318,11 @@ WidgetMetadata = {
     {
       id: 'favorite-videos',
       title: '我的最爱',
-      description: '输入 Pornhub 用户名，读取该公开账号的收藏视频。',
+      description: '默认读取 lydevils 的公开收藏，也可输入其他用户名、主页链接或收藏页链接。',
       functionName: 'loadFavoriteVideos',
       type: 'list',
       params: [
-        { name: 'username', title: '用户名', type: 'input' },
+        { name: 'username', title: '用户名或收藏页链接', type: 'input', value: 'lydevils' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     }
@@ -338,15 +338,18 @@ searchVideos = async (params = {}) => {
 
 
 loadFavoriteVideos = async (params = {}) => {
-  const username = String(params.username || '').trim();
+  const username = String(params.username || 'lydevils').trim();
   const page = Math.max(1, Number(params.page || 1));
   if (!username) {
     return [createMessage('缺少用户名', '请输入 Pornhub 用户名。')];
   }
 
   try {
-    const favoriteUrl = await resolveFavoriteUrl(username, page);
-    const results = await loadVideoList(favoriteUrl);
+    const favoritePage = await loadFavoritePage(username, page);
+    const results = parseFavoriteVideoList(favoritePage.html, favoritePage.url, 'Pornhub 收藏');
+    if (results.length === 0) {
+      return [createMessage('未找到公开收藏', '已打开该用户收藏页，但没有解析到公开收藏视频。可能收藏为空、收藏私密，或当前网络返回了受限页面。')];
+    }
     return results.map((item) => item.type === 'link'
       ? Object.assign({}, item, {
           description: ['收藏用户：' + username, item.description].filter(Boolean).join(' | ')
@@ -465,35 +468,370 @@ async function loadVideoList(url) {
   }
 }
 
-async function resolveFavoriteUrl(username, page) {
-  const safeName = encodeURIComponent(username);
-  const candidates = [
-    '/users/' + safeName + '/videos/favorites',
-    '/model/' + safeName + '/videos/favorites',
-    '/pornstar/' + safeName + '/videos/favorites'
-  ];
+async function loadFavoritePage(username, page) {
+  const candidates = buildFavoriteCandidates(username);
+  if (candidates.length === 0) {
+    throw new Error('请输入 Pornhub 用户名、用户主页链接或收藏页链接。');
+  }
 
   let lastError = null;
-  for (const path of candidates) {
-    const url = appendPageParam(normalizeUrl(path, SITE.baseUrl), page);
+  let privateError = null;
+  for (const candidate of candidates) {
+    const url = appendPageParam(normalizeUrl(candidate, SITE.baseUrl), page);
     try {
       const html = await fetchText(url);
-      const privateBlocked = /private\s+videos?|this\s+page\s+is\s+private|not\s+available/i.test(html);
-      const hasVideo = /view_video\.php\?viewkey=/i.test(html);
-      const hasFavoritesHint = /favorite/i.test(html) || /收藏/i.test(html);
-      if (hasVideo || hasFavoritesHint) {
-        if (privateBlocked && !hasVideo) {
-          throw new Error('该用户收藏列表是私有的，无法公开读取。');
-        }
-        return url;
+      const check = inspectFavoritePage(html, url);
+      if (check.private) {
+        privateError = new Error('该用户收藏列表是私有的，无法公开读取。');
+        continue;
       }
-      lastError = new Error('未找到该用户的公开收藏页面。');
+      if (check.valid) return { url, html };
+      lastError = new Error(check.reason || '未找到该用户的公开收藏页面。');
     } catch (error) {
       lastError = error;
     }
   }
 
-  throw lastError || new Error('未找到该用户的公开收藏页面。');
+  throw privateError || lastError || new Error('未找到该用户的公开收藏页面。');
+}
+
+function buildFavoriteCandidates(username) {
+  const raw = String(username || '').trim();
+  const profile = parseProfileInput(raw);
+  const candidates = [];
+  const seen = new Set();
+
+  function add(path, origin) {
+    const normalized = String(path || '').split(/[?#]/)[0].replace(/\/+$/, '');
+    if (!normalized) return;
+    const favoritePath = /\/videos\/favorites$/i.test(normalized)
+      ? normalized
+      : normalized + '/videos/favorites';
+    const candidate = origin && favoritePath.startsWith('/') ? origin.replace(/\/$/, '') + favoritePath : favoritePath;
+    if (seen.has(candidate)) return;
+    seen.add(candidate);
+    candidates.push(candidate);
+  }
+
+  if (profile.type && profile.slug) {
+    add('/' + profile.type + '/' + profile.slug, profile.origin);
+    return candidates;
+  }
+
+  if (profile.slug) {
+    add('https://cn.pornhub.com/users/' + profile.slug + '/videos/favorites');
+    ['users', 'model', 'pornstar'].forEach((type) => add('/' + type + '/' + profile.slug));
+  }
+
+  return candidates;
+}
+
+function parseProfileInput(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return {};
+
+  const cleaned = raw.replace(/^@+/, '').replace(/\/+$/, '');
+  const path = extractProfilePath(cleaned);
+  if (path) {
+    const match = path.match(/^\/(users|model|pornstar)\/([^/?#]+)/i);
+    if (match) {
+      return {
+        type: match[1].toLowerCase(),
+        slug: normalizeProfileSlug(match[2]),
+        origin: extractSiteOrigin(cleaned)
+      };
+    }
+  }
+
+  return { slug: normalizeProfileSlug(cleaned.split(/[/?#]/)[0]) };
+}
+
+function extractProfilePath(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw)) {
+    const parsed = parseHttpUrl(raw);
+    if (!parsed || !isPornhubHost(parsed.hostname)) return '';
+    return parsed.pathname || '';
+  }
+  return raw.startsWith('/') ? raw : '';
+}
+
+function extractSiteOrigin(value) {
+  const raw = String(value || '').trim();
+  if (!/^https?:\/\//i.test(raw)) return '';
+  const parsed = parseHttpUrl(raw);
+  return parsed && isPornhubHost(parsed.hostname) ? parsed.origin : '';
+}
+
+function getOrigin(value) {
+  const raw = String(value || '').trim();
+  if (!/^https?:\/\//i.test(raw)) return '';
+  const parsed = parseHttpUrl(raw);
+  return parsed && isPornhubHost(parsed.hostname) ? parsed.origin : '';
+}
+
+function parseHttpUrl(value) {
+  const match = String(value || '').trim().match(/^(https?:)\/\/([^/?#]+)([^?#]*)?/i);
+  if (!match) return null;
+  const host = match[2].replace(/:\d+$/, '');
+  return {
+    origin: match[1].toLowerCase() + '//' + match[2],
+    hostname: host,
+    pathname: match[3] || '/'
+  };
+}
+
+function isPornhubHost(hostname) {
+  return /(^|\.)pornhub\.com$/i.test(String(hostname || '').replace(/:\d+$/, ''));
+}
+
+function normalizeProfileSlug(value) {
+  const raw = String(value || '').trim().replace(/^@+/, '').replace(/\/+$/, '');
+  if (!raw) return '';
+  try {
+    return encodeURIComponent(decodeURIComponent(raw));
+  } catch (error) {
+    return encodeURIComponent(raw);
+  }
+}
+
+function inspectFavoritePage(html, url) {
+  const raw = String(html || '');
+  const text = cleanText(raw).toLowerCase();
+  const canonicalUrl = extractCanonicalUrl(raw);
+  const ogUrl = extractMetaUrl(raw, 'og:url');
+  const routeUrls = [canonicalUrl, ogUrl].filter(Boolean);
+  const routeInMetadata = routeUrls.some(isFavoriteRoute);
+  const requestedFavoriteRoute = isFavoriteRoute(url);
+  const favoriteHeading = hasFavoriteHeading(raw);
+  const favoriteListMarker = hasFavoriteListMarker(raw);
+  const pageUnavailable = /\b(?:404|page not found|profile not found|user not found|not available|removed)\b/i.test(text);
+  const loginBlocked = /\b(?:please log in|login required|you must be logged in|age verification|verify your age)\b/i.test(text);
+  const privateBlocked = /(?:private|hidden)[^。.!?]{0,80}(?:favorite|favorites|收藏)|(?:favorite|favorites|收藏)[^。.!?]{0,80}(?:private|hidden)|this page is private/i.test(text);
+
+  if (privateBlocked) return { valid: false, private: true };
+  if (loginBlocked) return { valid: false, reason: '当前网络返回登录或年龄验证页面，无法确认公开收藏。' };
+  if (pageUnavailable) return { valid: false, reason: '该用户收藏页不可访问或不存在。' };
+  if (!routeInMetadata && !(requestedFavoriteRoute && (favoriteHeading || favoriteListMarker))) {
+    return { valid: false, reason: '当前返回内容不是收藏页。' };
+  }
+
+  return { valid: true, private: false };
+}
+
+function isFavoriteRoute(value) {
+  return /\/(?:users|model|pornstar)\/[^"'<>\s/?#]+\/videos\/favorites(?:[/?#]|$)/i.test(String(value || ''));
+}
+
+function extractCanonicalUrl(html) {
+  const raw = String(html || '');
+  const direct = raw.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']([^"']+)["']/i);
+  if (direct && direct[1]) return direct[1];
+  const reversed = raw.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["']canonical["']/i);
+  return reversed && reversed[1] ? reversed[1] : '';
+}
+
+function extractMetaUrl(html, propertyName) {
+  const raw = String(html || '');
+  const property = String(propertyName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const direct = new RegExp('<meta[^>]+property=["\\\']' + property + '["\\\'][^>]+content=["\\\']([^"\\\']+)["\\\']', 'i').exec(raw);
+  if (direct && direct[1]) return direct[1];
+  const reversed = new RegExp('<meta[^>]+content=["\\\']([^"\\\']+)["\\\'][^>]+property=["\\\']' + property + '["\\\']', 'i').exec(raw);
+  return reversed && reversed[1] ? reversed[1] : '';
+}
+
+function hasFavoriteHeading(html) {
+  const headings = [];
+  String(html || '').replace(/<(?:h1|h2|h3|title)[^>]*>([\s\S]*?)<\/(?:h1|h2|h3|title)>/gi, (_, value) => {
+    headings.push(cleanText(value).toLowerCase());
+    return '';
+  });
+  return headings.some((heading) => /\b(?:favorite videos|favourites|favorites|favorited videos)\b/i.test(heading) || /收藏/.test(heading));
+}
+
+function hasFavoriteListMarker(html) {
+  const raw = String(html || '');
+  return /(?:id|class|data-[^=]+)=["'][^"']*(?:favorite|favourite)[^"']*(?:video|list)|(?:id|class|data-[^=]+)=["'][^"']*(?:video|list)[^"']*(?:favorite|favourite)/i.test(raw);
+}
+
+function parseFavoriteVideoList(html, pageUrl, listLabel) {
+  const $ = Widget.html.load(html);
+  const results = [];
+  const seen = new Set();
+  const baseUrl = getOrigin(pageUrl) || SITE.baseUrl;
+  const scopes = findFavoriteVideoScopes($, baseUrl);
+
+  scopes.forEach((scope) => {
+    findFavoriteVideoItems($, scope, baseUrl).forEach((element) => {
+      addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel || 'Pornhub 收藏');
+    });
+  });
+
+  return results.map((item) => Object.assign({}, item, { source: SITE.title })).slice(0, 40);
+}
+
+function findFavoriteVideoScopes($, baseUrl) {
+  const preferredSelectors = [
+    '#favoriteVideos',
+    '#favoritesVideos',
+    '#profileFavoriteVideos',
+    '#userVideos',
+    '#videoListContainer',
+    '.profileVideos',
+    '.userVideos',
+    '.videoUList',
+    'ul[class*="video"]',
+    '[id*="favorite"][id*="video"]',
+    '[id*="favorites"][id*="video"]',
+    '[class*="favorite"][class*="video"]',
+    '[class*="favorites"][class*="video"]',
+    '[data-section*="favorite"]',
+    '[data-name*="favorite"]'
+  ];
+  const candidates = [];
+  const seen = new Set();
+
+  preferredSelectors.forEach((selector) => {
+    $(selector).each((_, element) => {
+      addScopeCandidate($, element, candidates, seen, baseUrl);
+    });
+  });
+
+  $('a[href*="view_video.php"]').each((_, anchor) => {
+    const card = $(anchor).closest('li, .pcVideoListItem, .videoBox, .video-item, .thumb-block, .wrap, article')[0];
+    const parent = card ? $(card).parent()[0] : $(anchor).parent()[0];
+    addScopeCandidate($, parent, candidates, seen, baseUrl);
+  });
+
+  candidates.sort((left, right) => {
+    if (right.score !== left.score) return right.score - left.score;
+    if (right.videoCount !== left.videoCount) return right.videoCount - left.videoCount;
+    return right.depth - left.depth;
+  });
+
+  const best = candidates[0];
+  return best && best.score >= 20 ? [best.element] : [];
+}
+
+function addScopeCandidate($, element, candidates, seen, baseUrl) {
+  if (!element) return;
+  const scope = scoreFavoriteScope($, element, baseUrl);
+  if (scope.blocked || scope.videoCount === 0) return;
+  const key = scope.signature;
+  if (seen.has(key)) return;
+  seen.add(key);
+  candidates.push(Object.assign({ element }, scope));
+}
+
+function scoreFavoriteScope($, element, baseUrl) {
+  const scope = $(element);
+  const identity = [
+    scope.attr('id'),
+    scope.attr('class'),
+    scope.attr('data-section'),
+    scope.attr('data-name')
+  ].filter(Boolean).join(' ').toLowerCase();
+  const ownText = cleanText(scope.children('h1,h2,h3,.title,.heading').first().text()).toLowerCase();
+  const nearbyText = cleanText(scope.prevAll('h1,h2,h3,.title,.heading').first().text()).toLowerCase();
+  const text = [ownText, nearbyText].filter(Boolean).join(' ');
+  const videoCount = countVideoLinks($, element, baseUrl);
+  const blocked = /(recommend|related|suggest|trend|premium|advert|footer|header|sidebar|comments?)/i.test(identity);
+  const blockedDescendantCount = countBlockedDescendantVideoLinks($, element, baseUrl);
+  const broad = /(?:^|\s)(?:profilecontent|content|container|main)(?:\s|$)/i.test(identity) || ['main', 'body', 'html'].includes(String(element.name || '').toLowerCase());
+  let score = Math.min(videoCount, 60);
+  if (/(favorite|favourite|收藏)/i.test(identity)) score += 80;
+  if (/(favorite|favourite|收藏)/i.test(text)) score += 60;
+  if (/(user|profile|videos?|listing|list|ul|videoulist)/i.test(identity)) score += 25;
+  if (/video(?:ulist|list|container)|(?:ulist|list)video/i.test(identity.replace(/[\s_-]+/g, ''))) score += 25;
+  if (broad) score -= 45;
+  if (blockedDescendantCount > 0) score -= Math.min(80, blockedDescendantCount * 8);
+  if (blocked) score -= 120;
+  return {
+    blocked,
+    score,
+    videoCount,
+    depth: scope.parents().length,
+    signature: identity + '|' + videoCount + '|' + text
+  };
+}
+
+function countVideoLinks($, element, baseUrl) {
+  const links = new Set();
+  $(element).find('a[href*="view_video.php"]').each((_, anchor) => {
+    const url = normalizeUrl($(anchor).attr('href'), baseUrl || SITE.baseUrl);
+    if (isLikelyVideoUrl(url)) links.add(url);
+  });
+  return links.size;
+}
+
+function countBlockedDescendantVideoLinks($, element, baseUrl) {
+  let count = 0;
+  $(element).find('[id*="recommend"],[class*="recommend"],[id*="related"],[class*="related"],[id*="suggest"],[class*="suggest"],[id*="sidebar"],[class*="sidebar"],[id*="premium"],[class*="premium"]').each((_, child) => {
+    count += countVideoLinks($, child, baseUrl);
+  });
+  return count;
+}
+
+function findFavoriteVideoItems($, scope, baseUrl) {
+  const items = [];
+  const seen = new Set();
+  $(scope).find('a[href*="view_video.php"]').each((_, anchor) => {
+    if (isInsideBlockedArea($, anchor, scope)) return;
+    const url = normalizeUrl($(anchor).attr('href'), baseUrl || SITE.baseUrl);
+    if (!isLikelyVideoUrl(url) || seen.has(url)) return;
+    seen.add(url);
+    const item = $(anchor).closest('li, .pcVideoListItem, .videoBox, .video-item, .thumb-block, .wrap, article')[0] || anchor;
+    items.push(item);
+  });
+  return items;
+}
+
+function isInsideBlockedArea($, element, scope) {
+  const blockedSelector = '[id*="recommend"],[class*="recommend"],[id*="related"],[class*="related"],[id*="suggest"],[class*="suggest"],[id*="sidebar"],[class*="sidebar"],[id*="premium"],[class*="premium"],[id*="advert"],[class*="advert"]';
+  const blockedParent = $(element).parents(blockedSelector).first()[0];
+  if (!blockedParent) return false;
+  return blockedParent === scope || $(scope).find(blockedParent).length > 0;
+}
+
+function addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel) {
+  const container = $(element);
+  const anchor = container.find('a[href*="view_video.php"]').first();
+  const href = anchor.attr('href');
+  const videoUrl = normalizeUrl(href, baseUrl || SITE.baseUrl);
+  if (!isLikelyVideoUrl(videoUrl) || seen.has(videoUrl)) return;
+
+  const image = container.find('img').first();
+  const title = normalizeTitleCandidate(
+    container.attr('data-title') ||
+    container.attr('data-video-title') ||
+    container.attr('data-name') ||
+    anchor.attr('title') ||
+    anchor.attr('aria-label') ||
+    anchor.attr('data-title') ||
+    image.attr('alt') ||
+    image.attr('title') ||
+    container.find('.title,.video-title,.thumb-title,.video-title-text,.tm_video_title').first().text() ||
+    anchor.text() ||
+    container.text()
+  );
+  if (!title || title.length < 2) return;
+
+  const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'data-lazy-src', 'data-thumb_url', 'data-mediumthumb', 'src']), baseUrl || SITE.baseUrl);
+  const description = findDuration($, element) || listLabel || 'Pornhub 收藏';
+  seen.add(videoUrl);
+  results.push({
+    id: hashId('favorite.' + videoUrl),
+    type: 'link',
+    title,
+    description,
+    coverUrl,
+    posterPath: coverUrl,
+    link: videoUrl,
+    mediaType: 'movie',
+    playerType: 'system',
+    source: SITE.title
+  });
 }
 
 function buildCategoryUrl(categoryId, page) {
@@ -607,16 +945,23 @@ function isPlayableUrl(value) {
 
 function isLikelyVideoUrl(url) {
   const lower = String(url || '').toLowerCase();
-  if (!lower.startsWith(SITE.baseUrl.toLowerCase().replace(/\/$/, ''))) return false;
+  if (!isPornhubUrl(url)) return false;
   if ((SITE.videoPathKeywords || []).some((keyword) => lower.includes(String(keyword).toLowerCase()))) return true;
   return Boolean(SITE.numericVideoPaths && /^https?:\/\/[^/]+\/\d+(?:[/?#]|$)/i.test(lower));
 }
 
 function isLikelyCategoryUrl(url) {
   const lower = String(url || '').toLowerCase();
-  if (!lower.startsWith(SITE.baseUrl.toLowerCase().replace(/\/$/, ''))) return false;
+  if (!isPornhubUrl(url)) return false;
   if (isLikelyVideoUrl(url)) return false;
   return ['/category', '/categories', '/channels', '/channel', '/tags', '/tag', '/pornstars', '/models', '/searches', '/latest', '/new', '/browse'].some((part) => lower.includes(part));
+}
+
+function isPornhubUrl(value) {
+  const raw = String(value || '').trim();
+  if (!/^https?:\/\//i.test(raw)) return false;
+  const parsed = parseHttpUrl(raw);
+  return Boolean(parsed && isPornhubHost(parsed.hostname));
 }
 
 function normalizeUrl(value, baseUrl) {
