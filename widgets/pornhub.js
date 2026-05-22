@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.21',
+  version: '1.0.22',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -327,6 +327,17 @@ WidgetMetadata = {
         { name: 'username', title: '用户名或收藏页链接', type: 'input', value: 'lydevils' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
+    },
+    {
+      id: 'creator-videos',
+      title: '作者视频',
+      description: '输入模特、演员或用户主页链接，查看该作者的公开视频。订阅页本身需要登录，无法公开读取真实订阅列表。',
+      functionName: 'loadCreatorVideos',
+      type: 'list',
+      params: [
+        { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://cn.pornhub.com/model/nana_taipei' },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
     }
   ]
 };
@@ -360,6 +371,26 @@ loadFavoriteVideos = async (params = {}) => {
   } catch (error) {
     return [createMessage('收藏读取失败', String(error.message || error))];
   }
+};
+
+loadCreatorVideos = async (params = {}) => {
+  const profile = String(params.profile || '').trim();
+  const page = Math.max(1, Number(params.page || 1));
+  if (!profile) {
+    return [createMessage('缺少作者链接', '请输入 Pornhub 作者主页链接，例如 /model/xxx、/pornstar/xxx 或 /users/xxx。')];
+  }
+
+  const url = buildProfileVideosUrl(profile, page);
+  if (!url) {
+    return [createMessage('链接无效', '请输入作者主页链接，格式例如 https://cn.pornhub.com/model/xxx。')];
+  }
+
+  const results = await loadVideoList(url);
+  return results.map((item) => item.type === 'link'
+    ? Object.assign({}, item, {
+        description: ['作者页', item.description].filter(Boolean).join(' | ')
+      })
+    : item);
 };
 
 loadCategoryVideos = async (params = {}) => {
@@ -411,10 +442,13 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const videoUrl = extractVideoUrl(html, url);
+  const playableSources = extractVideoSources(html, url);
+  const videoUrl = playableSources[0] || '';
   if (!videoUrl) {
     return createMessage('未解析到播放地址', '详情页已加载，但未找到可直接播放的 m3u8/mp4 地址。可能需要登录、地区可用性受限，或该视频只允许网页播放器播放。链接：' + url);
   }
+
+  const childItems = buildPlayableChildItems(playableSources, title);
 
   return {
     id: hashId(url),
@@ -425,6 +459,8 @@ async function loadDetail(link) {
     posterPath: coverUrl,
     link: url,
     videoUrl,
+    childItems,
+    episodeItems: childItems,
     mediaType: 'movie',
     playerType: 'system',
     source: SITE.title
@@ -564,6 +600,34 @@ function parseProfileInput(value) {
   }
 
   return { slug: normalizeProfileSlug(cleaned.split(/[/?#]/)[0]) };
+}
+
+function buildProfileVideosUrl(value, page) {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+
+  const origin = extractSiteOrigin(raw) || 'https://cn.pornhub.com';
+  const path = extractProfilePath(raw);
+  if (path) {
+    const cleanPath = String(path).split(/[?#]/)[0].replace(/\/+$/, '');
+    if (/^\/(?:users|model|pornstar)\/[^/?#]+\/videos$/i.test(cleanPath)) {
+      return appendPageParam(origin + cleanPath, page);
+    }
+
+    const directMatch = cleanPath.match(/^\/(users|model|pornstar)\/([^/?#]+)/i);
+    if (directMatch) {
+      const type = directMatch[1].toLowerCase();
+      const slug = normalizeProfileSlug(directMatch[2]);
+      return appendPageParam(origin + '/' + type + '/' + slug + '/videos', page);
+    }
+  }
+
+  const shortMatch = raw.replace(/^\/+/, '').match(/^(users|model|pornstar)\/([^/?#]+)/i);
+  if (shortMatch) {
+    return appendPageParam(origin + '/' + shortMatch[1].toLowerCase() + '/' + normalizeProfileSlug(shortMatch[2]) + '/videos', page);
+  }
+
+  return '';
 }
 
 function extractProfilePath(value) {
@@ -1046,52 +1110,121 @@ function findDuration($, element) {
 }
 
 function extractVideoUrl(html, pageUrl) {
-  const mediaUrl = extractMediaDefinitionUrl(html, pageUrl);
-  if (mediaUrl) return mediaUrl;
-
-  const patterns = [
-    /html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/i,
-    /html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/i,
-    /html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/i,
-    /<source[^>]+src=["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i,
-    /<iframe[^>]+src=["']([^"']+)["']/i,
-    /<embed[^>]+src=["']([^"']+)["']/i,
-    /["'](?:contentUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i,
-    /(?:contentUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i
-  ];
-
-  for (const pattern of patterns) {
-    const match = html.match(pattern);
-    if (match && match[1]) {
-      const value = normalizeUrl(unescapeUrl(match[1]), pageUrl);
-      if (isPlayableUrl(value)) return value;
-    }
-  }
-  return '';
+  const sources = extractVideoSources(html, pageUrl);
+  return sources[0] || '';
 }
 
-function extractMediaDefinitionUrl(html, pageUrl) {
+function extractVideoSources(html, pageUrl) {
   const raw = unescapeUrl(String(html || ''));
-  const urls = [];
-  const pattern = /["'](?:videoUrl|url)["']\s*:\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/gi;
-  let match;
-  while ((match = pattern.exec(raw))) {
-    const url = normalizeUrl(match[1], pageUrl);
-    if (isPlayableUrl(url)) urls.push(url);
+  const buckets = {
+    direct: [],
+    mp4: [],
+    hls: []
+  };
+  const seen = new Set();
+
+  function add(url) {
+    const normalized = normalizeUrl(url, pageUrl);
+    if (!isPlayableUrl(normalized) || seen.has(normalized)) return;
+    seen.add(normalized);
+    if (isGetMediaUrl(normalized)) {
+      buckets.direct.push(normalized);
+      return;
+    }
+    if (/\.mp4(?:[?#].*)?$/i.test(normalized)) {
+      buckets.mp4.push(normalized);
+      return;
+    }
+    if (/\.m3u8(?:[?#].*)?$/i.test(normalized)) {
+      buckets.hls.push(normalized);
+    }
   }
 
-  if (urls.length === 0) return '';
-  const hlsUrls = urls.filter((url) => /\.m3u8(?:[?#].*)?$/i.test(url));
-  const preferred = hlsUrls.find((url) => /720P|720/i.test(url))
-    || hlsUrls.find((url) => /480P|480/i.test(url))
-    || hlsUrls[0]
-    || urls.find((url) => /\.mp4(?:[?#].*)?$/i.test(url))
-    || urls[0];
-  return preferred || '';
+  const getMediaPattern = /https?:\/\/[^"'\\\s]+\/video\/get_media\?[^"'\\\s]+/gi;
+  let match;
+  while ((match = getMediaPattern.exec(raw))) {
+    add(match[0]);
+  }
+
+  extractMediaDefinitionUrls(raw).forEach(add);
+
+  const patterns = [
+    /html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/ig,
+    /html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/ig,
+    /html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/ig,
+    /<source[^>]+src=["']([^"']+)["']/ig,
+    /["'](?:contentUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+)["']/ig,
+    /(?:contentUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+)["']/ig
+  ];
+
+  patterns.forEach((pattern) => {
+    let localMatch;
+    while ((localMatch = pattern.exec(raw))) {
+      if (localMatch[1]) add(localMatch[1]);
+    }
+  });
+
+  return buckets.direct
+    .concat(buckets.mp4)
+    .concat(sortHlsSources(buckets.hls));
+}
+
+function extractMediaDefinitionUrls(rawHtml) {
+  const raw = String(rawHtml || '');
+  const urls = [];
+  const pattern = /["'](?:videoUrl|url)["']\s*:\s*["']([^"']+)["']/gi;
+  let match;
+  while ((match = pattern.exec(raw))) {
+    urls.push(match[1]);
+  }
+  return urls;
+}
+
+function sortHlsSources(urls) {
+  return (urls || []).slice().sort((left, right) => getPlayablePriority(left) - getPlayablePriority(right));
+}
+
+function getPlayablePriority(url) {
+  const value = String(url || '');
+  if (isGetMediaUrl(value)) return 0;
+  if (/\.mp4(?:[?#].*)?$/i.test(value)) return 10;
+  if (/720P|720/i.test(value)) return 20;
+  if (/480P|480/i.test(value)) return 30;
+  if (/240P|240/i.test(value)) return 40;
+  if (/1080P|1080/i.test(value)) return 50;
+  if (/\.m3u8(?:[?#].*)?$/i.test(value)) return 60;
+  return 100;
+}
+
+function buildPlayableChildItems(urls, baseTitle) {
+  return (urls || []).slice(0, 3).map((url, index) => ({
+    id: url,
+    type: 'url',
+    title: buildPlayableSourceTitle(url, baseTitle, index),
+    link: url,
+    videoUrl: url,
+    mediaType: 'movie',
+    playerType: 'system'
+  }));
+}
+
+function buildPlayableSourceTitle(url, baseTitle, index) {
+  const title = String(baseTitle || '视频');
+  if (isGetMediaUrl(url)) return title + ' - 直连';
+  const qualityMatch = String(url || '').match(/(1080|720|480|240)P?/i);
+  if (qualityMatch && qualityMatch[1]) return title + ' - ' + qualityMatch[1] + 'P';
+  if (/\.m3u8(?:[?#].*)?$/i.test(String(url || ''))) return title + ' - HLS';
+  if (/\.mp4(?:[?#].*)?$/i.test(String(url || ''))) return title + ' - MP4';
+  return title + ' - 源' + (index + 1);
+}
+
+function isGetMediaUrl(value) {
+  return /\/video\/get_media\b/i.test(String(value || ''));
 }
 
 function isPlayableUrl(value) {
-  return /\.(?:m3u8|mp4)(?:\/[^?#]*)?(?:[?#].*)?$/i.test(String(value || ''));
+  return /\/video\/get_media\b/i.test(String(value || ''))
+    || /\.(?:m3u8|mp4)(?:\/[^?#]*)?(?:[?#].*)?$/i.test(String(value || ''));
 }
 
 function isLikelyVideoUrl(url) {
