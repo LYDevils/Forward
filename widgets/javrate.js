@@ -1,30 +1,30 @@
-﻿const SITE = {
-  "file": "javrate.js",
-  "key": "javrate",
-  "title": "JAVRate",
-  "baseUrl": "https://javrate.com",
-  "searchPath": "/?s={keyword}",
-  "latestPath": "/",
-  "videoPathKeywords": [
-    "/video/",
-    "/videos/",
-    "/jav/",
-    "/movie/",
-    "/detail/"
+const SITE = {
+  file: 'javrate.js',
+  key: 'javrate',
+  title: 'JAVRate',
+  baseUrl: 'https://www.javrate.com',
+  searchPath: '/?s={keyword}',
+  latestPath: '/',
+  videoPathKeywords: [
+    '/Movie/Detail/'
   ]
 };
+
 const CATEGORY_OPTIONS = [
-  { title: "Home", value: "/" },
-  { title: "Censored", value: "/category/censored/" },
-  { title: "Uncensored", value: "/category/uncensored/" },
-  { title: "JAV", value: "/jav/" },
-  { title: "Movie", value: "/movie/" },
-  { title: "Latest", value: "/?orderby=date" }
+  { title: '最新A片', value: '/' },
+  { title: '無碼A片', value: '/uncensored' },
+  { title: '日本A片', value: '/censored' },
+  { title: '國產AV', value: '/china' },
+  { title: 'AV女優', value: '/Actress' },
+  { title: 'A片廠商', value: '/Maker' },
+  { title: '分類找片', value: '/Tag' },
+  { title: '最多人看', value: '/hot' }
 ];
 
 const DEFAULT_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36',
-  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8'
 };
 
 WidgetMetadata = {
@@ -32,10 +32,10 @@ WidgetMetadata = {
   title: 'JAVRate',
   description: 'JAVRate 真实视频数据源。',
   author: 'LYDevils',
-  site: 'https://javrate.com',
-  version: '1.0.6',
+  site: 'https://www.javrate.com',
+  version: '1.0.7',
   requiredVersion: '0.0.1',
-  detailCacheDuration:300,
+  detailCacheDuration: 300,
   modules: [
     {
       id: 'search-videos',
@@ -79,14 +79,7 @@ WidgetMetadata = {
           type: 'enumeration',
           value: CATEGORY_OPTIONS[0] ? CATEGORY_OPTIONS[0].value : '',
           belongTo: { paramName: 'categoryMode', value: ['preset'] },
-          enumOptions: [
-  { title: "Home", value: "/" },
-  { title: "Censored", value: "/category/censored/" },
-  { title: "Uncensored", value: "/category/uncensored/" },
-  { title: "JAV", value: "/jav/" },
-  { title: "Movie", value: "/movie/" },
-  { title: "Latest", value: "/?orderby=date" }
-]
+          enumOptions: CATEGORY_OPTIONS
         },
         {
           name: 'categoryId',
@@ -117,7 +110,7 @@ WidgetMetadata = {
 searchVideos = async (params = {}) => {
   const keyword = String(params.keyword || '').trim();
   const page = Math.max(1, Number(params.page || 1));
-  const url = keyword ? buildSearchUrl(keyword, page) : normalizeUrl(SITE.latestPath || '/', SITE.baseUrl);
+  const url = keyword ? buildSearchUrl(keyword, page) : buildCategoryUrl(SITE.latestPath, page);
   return loadVideoList(url);
 };
 
@@ -131,12 +124,14 @@ loadCategoryVideos = async (params = {}) => {
   if (!categoryId) {
     return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
   }
+
   const results = await loadVideoList(buildCategoryUrl(categoryId, params.page || 1));
   if (!categoryName) return results;
   return results.map((item) => item.type === 'link'
     ? Object.assign({}, item, { description: [categoryName, item.description].filter(Boolean).join(' | ') })
     : item);
 };
+
 getVideoDetail = async (params = {}) => {
   const url = String(params.url || params.link || '').trim();
   if (!url) {
@@ -151,6 +146,7 @@ async function loadDetail(link) {
   if (rawLink.startsWith('category|')) {
     return loadVideoList(rawLink.slice('category|'.length));
   }
+
   const url = normalizeUrl(rawLink, SITE.baseUrl);
   const html = await fetchText(url);
   const $ = Widget.html.load(html);
@@ -164,13 +160,14 @@ async function loadDetail(link) {
   const coverUrl = normalizeUrl(
     $('meta[property="og:image"]').attr('content') ||
     $('meta[name="twitter:image"]').attr('content') ||
-    $('video').attr('poster') ||
+    $('img').first().attr('src') ||
     '',
     url
   );
   const description = cleanText(
     $('meta[property="og:description"]').attr('content') ||
     $('meta[name="description"]').attr('content') ||
+    $('.mt-3').first().text() ||
     ''
   );
   const videoUrl = extractVideoUrl(html, url) || url;
@@ -197,17 +194,29 @@ async function loadVideoList(url) {
     const seen = new Set();
 
     $('a[href]').each((_, element) => {
-      const href = $(element).attr('href');
+      const anchor = $(element);
+      const href = anchor.attr('href');
       const videoUrl = normalizeUrl(href, SITE.baseUrl);
       if (!isLikelyVideoUrl(videoUrl) || seen.has(videoUrl)) return;
 
-      const image = $(element).find('img').first();
-      const title = pickTitle($, element, image);
-      if (!title || title.length < 2) return;
+      const container = anchor.closest('article, .col, .card, .grid, li, div');
+      const image = anchor.find('img').first().length ? anchor.find('img').first() : container.find('img').first();
+      const title = cleanText(
+        anchor.attr('title') ||
+        image.attr('alt') ||
+        anchor.text() ||
+        container.text()
+      ).slice(0, 160);
+      if (!title || title.length < 4) return;
+
+      const metaText = cleanText(container.text());
+      const yearMatch = metaText.match(/\b20\d{2}\b/);
+      const typeMatch = metaText.match(/有碼|無碼|國產/);
+      const dateMatch = metaText.match(/\b20\d{2}-\d{2}-\d{2}\b/);
+      const description = [yearMatch && yearMatch[0], typeMatch && typeMatch[0], dateMatch && dateMatch[0]].filter(Boolean).join(' | ') || SITE.title;
+      const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'src']), SITE.baseUrl);
 
       seen.add(videoUrl);
-      const coverUrl = normalizeUrl(readFirstAttr(image, ['data-src', 'data-original', 'data-lazy-src', 'data-thumb_url', 'data-mediumthumb', 'src']), SITE.baseUrl);
-      const description = findDuration($, element) || SITE.title;
       results.push({
         id: hashId(videoUrl),
         type: 'link',
@@ -257,69 +266,35 @@ async function loadCategories() {
 
 function buildCategoryUrl(categoryId, page) {
   const value = String(categoryId || '').trim();
-  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return appendPageParam(normalizeUrl(value, SITE.baseUrl), page);
-  const normalized = value.replace(/^\/+/, '');
-  const suffix = page && Number(page) > 1 ? (normalized.indexOf('?') === -1 ? '?page=' + page : '&page=' + page) : '';
-  return normalizeUrl('/' + normalized + suffix, SITE.baseUrl);
-}
-
-function appendPageParam(url, page) {
-  if (!page || Number(page) <= 1 || /[?&]page=/i.test(url)) return url;
-  return url + (url.indexOf('?') === -1 ? '?page=' : '&page=') + page;
+  const normalized = normalizeUrl(value || SITE.latestPath, SITE.baseUrl);
+  const pageNumber = Math.max(1, Number(page || 1));
+  if (pageNumber <= 1) return normalized;
+  return normalized + (normalized.includes('?') ? '&' : '?') + 'page=' + pageNumber;
 }
 
 function buildSearchUrl(keyword, page) {
   const encoded = encodeURIComponent(keyword);
-  const encodedPath = encodeURIComponent(keyword).replace(/%20/g, '-');
-  const page0 = Math.max(0, page - 1);
-  const path = String(SITE.searchPath || '/')
-    .replace('{keyword}', encoded)
-    .replace('{keywordPath}', encodedPath)
-    .replace('{page0}', String(page0))
-    .replace('{page}', String(page));
-  return normalizeUrl(path, SITE.baseUrl);
+  const pageNumber = Math.max(1, Number(page || 1));
+  return normalizeUrl(String(SITE.searchPath).replace('{keyword}', encoded), SITE.baseUrl) + '&page=' + pageNumber;
 }
 
 async function fetchText(url) {
-  const response = await Widget.http.get(url, { headers: DEFAULT_HEADERS, timeout: 15000 });
+  const response = await Widget.http.get(normalizeUrl(url, SITE.baseUrl), { headers: DEFAULT_HEADERS, timeout: 15000 });
   if (typeof response === 'string') return response;
   return String(response.data || response.body || response.html || '');
 }
 
-function pickTitle($, element, image) {
-  const direct = cleanText(
-    $(element).attr('title') ||
-    $(element).attr('aria-label') ||
-    image.attr('alt') ||
-    $(element).find('[title]').first().attr('title') ||
-    $(element).find('.title,.video-title,.thumb-title').first().text() ||
-    $(element).text()
-  );
-  if (direct) return direct;
-
-  return cleanText($(element).parent().text()).slice(0, 120);
-}
-
-function findDuration($, element) {
-  const text = cleanText($(element).parent().text());
-  const match = text.match(/\b\d{1,2}:\d{2}(?::\d{2})?\b/);
-  return match ? '时长：' + match[0] : '';
-}
-
 function extractVideoUrl(html, pageUrl) {
   const patterns = [
-    /html5player\.setVideoHLS\(['"]([^'"]+)['"]\)/i,
-    /html5player\.setVideoUrlHigh\(['"]([^'"]+)['"]\)/i,
-    /html5player\.setVideoUrlLow\(['"]([^'"]+)['"]\)/i,
-    /<source[^>]+src=["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i,
-    /["'](?:contentUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i,
-    /(?:contentUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+\.(?:m3u8|mp4)(?:[^"']*)?)["']/i
+    /["'](?:contentUrl|embedUrl|videoUrl|file|hls|url)["']\s*[:=]\s*["']([^"']+)["']/i,
+    /(?:contentUrl|embedUrl|videoUrl|file|hls|url)\s*[:=]\s*["']([^"']+)["']/i
   ];
 
   for (const pattern of patterns) {
     const match = html.match(pattern);
     if (match && match[1]) {
-      return normalizeUrl(unescapeUrl(match[1]), pageUrl);
+      const value = normalizeUrl(unescapeUrl(match[1]), pageUrl);
+      if (/\.m3u8|\.mp4|\/embed\//i.test(value)) return value;
     }
   }
   return '';
@@ -328,15 +303,14 @@ function extractVideoUrl(html, pageUrl) {
 function isLikelyVideoUrl(url) {
   const lower = String(url || '').toLowerCase();
   if (!lower.startsWith(SITE.baseUrl.toLowerCase().replace(/\/$/, ''))) return false;
-  if ((SITE.videoPathKeywords || []).some((keyword) => lower.includes(String(keyword).toLowerCase()))) return true;
-  return Boolean(SITE.numericVideoPaths && /^https?:\/\/[^/]+\/\d+(?:[/?#]|$)/i.test(lower));
+  return (SITE.videoPathKeywords || []).some((keyword) => lower.includes(String(keyword).toLowerCase()));
 }
 
 function isLikelyCategoryUrl(url) {
   const lower = String(url || '').toLowerCase();
   if (!lower.startsWith(SITE.baseUrl.toLowerCase().replace(/\/$/, ''))) return false;
   if (isLikelyVideoUrl(url)) return false;
-  return ['/category', '/categories', '/channels', '/channel', '/tags', '/tag', '/pornstars', '/models', '/searches', '/latest', '/new', '/browse'].some((part) => lower.includes(part));
+  return ['/uncensored', '/censored', '/china', '/actress', '/maker', '/tag', '/hot', '/new'].some((part) => lower.includes(part));
 }
 
 function normalizeUrl(value, baseUrl) {
@@ -362,7 +336,10 @@ function cleanText(value) {
 }
 
 function unescapeUrl(value) {
-  return String(value || '').replace(/\\\//g, '/').replace(/\\u0026/g, '&');
+  return String(value || '')
+    .replace(/\\\//g, '/')
+    .replace(/\\u0026/g, '&')
+    .replace(/\\"/g, '"');
 }
 
 function hashId(value) {

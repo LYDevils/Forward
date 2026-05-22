@@ -44,7 +44,7 @@
       "title": "JAVRate",
       "description": "JAVRate 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/javrate.js"
     },
@@ -98,7 +98,7 @@
       "title": "Tube8",
       "description": "Tube8 真实视频数据源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tube8.js"
     },
