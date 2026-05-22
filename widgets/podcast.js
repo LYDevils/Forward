@@ -4,7 +4,7 @@
   description: 'RSS 播客源。',
   author: 'LYDevils',
   site: '',
-  version: '1.0.2',
+  version: '1.0.4',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -101,9 +101,3 @@ function hash(value) {
 function message(title, description) {
   return { id: 'podcast.message.' + hash(title + description), type: 'text', title, description };
 }
-
-
-
-
-
-

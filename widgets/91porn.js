@@ -20,7 +20,7 @@ WidgetMetadata = {
   description: '91Porn 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://91porn.com',
-  version: '1.0.2',
+  version: '1.0.4',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -37,11 +37,23 @@ WidgetMetadata = {
     },
     {
       id: 'get-categories',
-      title: '分类',
-      description: '从站点导航加载分类。',
+      title: '分类列表',
+      description: '自动获取分类名称和分类路径，点选后加载该分类影片。',
       functionName: 'getCategories',
       type: 'list',
       params: []
+    },
+    {
+      id: 'category-videos',
+      title: '分类影片',
+      description: '按分类 ID、路径或完整分类链接加载影片。',
+      functionName: 'loadCategoryVideos',
+      type: 'list',
+      params: [
+        { name: 'categoryId', title: '分类 ID/路径', type: 'input' },
+        { name: 'categoryName', title: '分类名称', type: 'input' },
+        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
     },
     {
       id: 'get-video-detail',
@@ -63,6 +75,18 @@ searchVideos = async (params = {}) => {
 
 getCategories = async () => loadCategories();
 
+loadCategoryVideos = async (params = {}) => {
+  const categoryId = String(params.categoryId || params.categoryUrl || params.url || '').trim();
+  const categoryName = String(params.categoryName || '').trim();
+  if (!categoryId) {
+    return [createMessage('缺少分类 ID', '请输入分类 ID、路径或完整分类链接。')];
+  }
+  const results = await loadVideoList(buildCategoryUrl(categoryId, params.page || 1));
+  if (!categoryName) return results;
+  return results.map((item) => item.type === 'link'
+    ? Object.assign({}, item, { description: [categoryName, item.description].filter(Boolean).join(' | ') })
+    : item);
+};
 getVideoDetail = async (params = {}) => {
   const url = String(params.url || params.link || '').trim();
   if (!url) {
@@ -168,7 +192,7 @@ async function loadCategories() {
         id: hashId(url),
         type: 'link',
         title,
-        description: '点击查看该分类影片',
+        description: '分类路径：' + url.replace(SITE.baseUrl.replace(/\/$/, ''), '') + '，点击查看该分类影片',
         link: 'category|' + url,
         mediaType: 'movie',
         playerType: 'system',
@@ -179,6 +203,14 @@ async function loadCategories() {
   } catch (error) {
     return [createMessage('请求失败', String(error.message || error))];
   }
+}
+
+function buildCategoryUrl(categoryId, page) {
+  const value = String(categoryId || '').trim();
+  if (/^https?:\/\//i.test(value) || value.startsWith('/')) return normalizeUrl(value, SITE.baseUrl);
+  const normalized = value.replace(/^\/+/, '');
+  const suffix = page && Number(page) > 1 ? (normalized.indexOf('?') === -1 ? '?page=' + page : '&page=' + page) : '';
+  return normalizeUrl('/' + normalized + suffix, SITE.baseUrl);
 }
 
 function buildSearchUrl(keyword, page) {
@@ -295,10 +327,3 @@ function createMessage(title, description) {
     description
   };
 }
-
-
-
-
-
-
-

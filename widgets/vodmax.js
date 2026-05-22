@@ -89,7 +89,7 @@ WidgetMetadata = {
     title: "VodMax",
     description: "聚合点播数据源",
     author: "LYDevils",
-    version: "1.0.2",
+    version: "1.0.4",
     requiredVersion: "0.0.1",
     site: "https://t.me/MakkaPakkaOvO",
     detailCacheDuration:3600,
@@ -145,7 +145,7 @@ async function loadCmsList(params) {
             params: {
                 ac: "videolist",
                 pg: page,
-                out: "json" 
+                out: "json"
             },
             headers: {
                 "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15",
@@ -174,22 +174,22 @@ async function loadCmsList(params) {
         return list.map(item => {
             const detailLink = `${siteConfig.id}|${item.vod_id}`;
             return {
-                id: detailLink, 
-                type: "link", 
+                id: detailLink,
+                type: "link",
                 title: item.vod_name,
                 description: item.vod_remarks || item.vod_blurb || "暂无简介",
                 coverUrl: item.vod_pic,
-                link: detailLink, 
+                link: detailLink,
                 subTitle: item.vod_time || ""
             };
         });
 
     } catch (error) {
         console.error("加载列表失败:", error);
-        return [{ 
-            id: "error", 
-            type: "text", 
-            title: "请求失败: " + siteConfig.name, 
+        return [{
+            id: "error",
+            type: "text",
+            title: "请求失败: " + siteConfig.name,
             description: String(error.message || error) + " (请尝试切换其他源)"
         }];
     }
@@ -230,10 +230,10 @@ async function loadDetail(link) {
         const playUrls = item.vod_play_url || "";
         const episodes = [];
         const playerGroups = playUrls.split("$$$");
-        
+
         // 优先选择包含 m3u8 的播放组
         let targetGroup = playerGroups.find(g => g.includes(".m3u8")) || playerGroups[0];
-        
+
         if (targetGroup) {
             const partsList = targetGroup.split("#");
             for (let p of partsList) {
@@ -259,7 +259,7 @@ async function loadDetail(link) {
             description: cleanDesc,
             coverUrl: item.vod_pic,
             genreTitle: `${item.vod_year || ""} • ${item.vod_class || ""}`,
-            episodeItems: episodes 
+            episodeItems: episodes
         }];
 
     } catch (error) {
@@ -267,10 +267,3 @@ async function loadDetail(link) {
         throw error;
     }
 }
-
-
-
-
-
-
-

@@ -11,7 +11,7 @@ WidgetMetadata = {
   description: 'MacCMS VOD 真实可播放数据源。',
   author: 'LYDevils',
   site: 'https://91md.me',
-  version: '1.0.2',
+  version: '1.0.4',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -26,18 +26,19 @@ WidgetMetadata = {
     {
       id: 'category-videos',
       title: '分类影片',
-      description: '按分类 ID 加载影片，例如 /vod/type/id/27.html 对应分类 27。',
+      description: '按分类 ID 加载影片；分类 ID 和名称可先从“分类列表”点选查看。',
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
         { name: 'typeId', title: '分类 ID', type: 'input', value: '27' },
+        { name: 'typeName', title: '分类名称', type: 'input' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
     },
     {
       id: 'get-categories',
-      title: '分类',
-      description: '加载采集源分类，点分类后显示该分类影片。',
+      title: '分类列表',
+      description: '自动获取分类名称和分类 ID，点选后显示该分类影片。',
       functionName: 'getCategories',
       type: 'list',
       params: []
@@ -68,7 +69,10 @@ loadLatestVideos = async (params = {}) => loadVodList({ pg: params.page || 1 });
 
 loadCategoryVideos = async (params = {}) => {
   const typeId = extractTypeId(params.typeId || params.url) || VOD_SOURCE.defaultTypeId;
-  return loadVodList({ t: typeId, pg: params.page || 1 });
+  const typeName = String(params.typeName || '').trim();
+  const results = await loadVodList({ t: typeId, pg: params.page || 1 });
+  if (!typeName) return results;
+  return addCategoryPrefix(results, typeId, typeName);
 };
 
 getCategories = async () => {
@@ -83,8 +87,8 @@ getCategories = async () => {
         id: VOD_SOURCE.id + '.category.' + typeId,
         type: 'link',
         title,
-        description: '点击查看该分类影片',
-        link: 'category|' + typeId,
+        description: '分类 ID：' + typeId + '，点击查看“' + title + '”影片',
+        link: 'category|' + typeId + '|' + title,
         mediaType: 'movie',
         playerType: 'system',
         source: VOD_SOURCE.name
@@ -112,7 +116,9 @@ getVideoDetail = async (params = {}) => {
 async function loadDetail(link) {
   const rawLink = String(link || '');
   if (rawLink.startsWith('category|')) {
-    return loadVodList({ t: rawLink.slice('category|'.length), pg: 1 });
+    const category = parseCategoryLink(rawLink);
+    const results = await loadVodList({ t: category.typeId, pg: 1 });
+    return addCategoryPrefix(results, category.typeId, category.typeName);
   }
   const parts = String(link || '').split('|');
   const vodId = parts.length > 1 ? parts[1] : extractVodId(link);
@@ -159,6 +165,23 @@ function buildListItem(item) {
     playerType: 'system',
     source: VOD_SOURCE.name
   };
+}
+
+function parseCategoryLink(link) {
+  const parts = String(link || '').split('|');
+  return {
+    typeId: extractTypeId(parts[1]) || VOD_SOURCE.defaultTypeId,
+    typeName: parts.slice(2).join('|')
+  };
+}
+
+function addCategoryPrefix(results, typeId, typeName) {
+  return results.map((item) => {
+    if (item.type !== 'link') return item;
+    return Object.assign({}, item, {
+      description: ['分类：' + typeName + '（ID：' + typeId + '）', item.description].filter(Boolean).join(' | ')
+    });
+  });
 }
 
 function buildDetail(item) {
@@ -217,9 +240,3 @@ function cleanText(value) {
 function createMessage(title, description) {
   return { id: 'vod.message.' + title, type: 'text', title, description };
 }
-
-
-
-
-
-
