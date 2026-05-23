@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.28',
+  version: '1.0.29',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -253,6 +253,7 @@ WidgetMetadata = {
       id: 'region-videos',
       title: '地区语言',
       description: '按地区、语言或字幕筛选影片。',
+      requiresWebView: true,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -270,6 +271,7 @@ WidgetMetadata = {
       id: 'person-videos',
       title: '人物分类',
       description: '按人物身份或出演类型筛选影片。',
+      requiresWebView: true,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -287,6 +289,7 @@ WidgetMetadata = {
       id: 'feature-videos',
       title: '特点分类',
       description: '按题材、风格或内容特点筛选影片。',
+      requiresWebView: true,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -304,6 +307,7 @@ WidgetMetadata = {
       id: 'sort-videos',
       title: '排序筛选',
       description: '按最新、热门、评分等排序筛选影片。',
+      requiresWebView: true,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -321,6 +325,7 @@ WidgetMetadata = {
       id: 'favorite-videos',
       title: '我的最爱',
       description: '默认读取 lydevils 的公开收藏，也可输入其他用户名、主页链接或收藏页链接。',
+      requiresWebView: true,
       functionName: 'loadFavoriteVideos',
       type: 'list',
       params: [
@@ -332,18 +337,13 @@ WidgetMetadata = {
       id: 'creator-videos',
       title: '作者视频',
       description: '输入模特、演员或用户主页链接，查看该作者的公开视频。订阅页本身需要登录，无法公开读取真实订阅列表。',
+      requiresWebView: true,
       functionName: 'loadCreatorVideos',
       type: 'list',
       params: [
         { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://cn.pornhub.com/model/nana_taipei' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
       ]
-    },
-    {
-      id: 'loadResource',
-      title: '加载资源',
-      type: 'stream',
-      functionName: 'loadResource'
     }
   ]
 };
@@ -421,28 +421,6 @@ getVideoDetail = async (params = {}) => {
   return Array.isArray(detail) ? detail : [detail];
 };
 
-loadResource = async (params = {}) => {
-  const candidates = [params.id, params.link, params.videoUrl]
-    .map((value) => String(value || '').trim())
-    .filter(Boolean);
-  const target = candidates.find(isLikelyVideoUrl) || candidates.find(isPornhubUrl) || '';
-  if (!target) {
-    return [];
-  }
-
-  const url = normalizeUrl(target, SITE.baseUrl);
-  const detail = await loadDetail(url);
-  if (!detail || detail.type === 'text' || !detail.videoUrl) {
-    return [];
-  }
-
-  return [{
-    name: detail.title || SITE.title,
-    description: detail.description || '',
-    url: detail.videoUrl
-  }];
-};
-
 async function loadDetail(link) {
   const rawLink = String(link || '');
   if (rawLink.startsWith('category|')) {
@@ -470,7 +448,9 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const videoUrl = extractPrimaryVideoUrl(html, url);
+  const appVideoUrl = buildEmbedPlaybackUrl(url);
+  const systemVideoUrl = extractPrimaryVideoUrl(html, url);
+  const videoUrl = appVideoUrl || systemVideoUrl || '';
   if (!videoUrl) {
     return createMessage('未解析到播放地址', '详情页已加载，但未找到可直接播放的 m3u8/mp4 地址。可能需要登录、地区可用性受限，或该视频只允许网页播放器播放。链接：' + url);
   }
@@ -486,7 +466,7 @@ async function loadDetail(link) {
     link: url,
     videoUrl,
     mediaType: 'movie',
-    playerType: 'system',
+    playerType: appVideoUrl ? 'app' : 'system',
     source: SITE.title
   };
 }
@@ -1158,6 +1138,13 @@ function extractDetailDescription(html) {
   const descMatch = raw.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
     || raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
   return descMatch && descMatch[1] ? cleanText(descMatch[1]) : '';
+}
+
+function buildEmbedPlaybackUrl(pageUrl) {
+  const raw = String(pageUrl || '').trim();
+  const match = raw.match(/[?&]viewkey=([^&#]+)/i);
+  if (!match || !match[1]) return '';
+  return 'https://www.pornhub.com/embed/' + match[1];
 }
 
 function extractVideoUrl(html, pageUrl) {
