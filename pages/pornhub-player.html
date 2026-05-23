@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Pornhub 播放器</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b0b0d;
+      --panel: #16181d;
+      --text: #f5f5f5;
+      --muted: #b3b3b8;
+      --accent: #ff9000;
+      --border: rgba(255, 255, 255, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(255, 144, 0, 0.14), transparent 28%),
+        linear-gradient(180deg, #111317 0%, #090a0c 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .shell {
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      padding: 16px;
+    }
+    .card {
+      background: rgba(22, 24, 29, 0.88);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.34);
+      backdrop-filter: blur(16px);
+    }
+    .media {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+    .fallback {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.7)),
+        center / cover no-repeat;
+    }
+    .fallback.show { display: flex; }
+    .fallback-inner {
+      max-width: 560px;
+      background: rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .fallback h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.35;
+    }
+    .fallback p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .button:hover { transform: translateY(-1px); }
+    .button.primary {
+      background: var(--accent);
+      color: #111;
+    }
+    .button.secondary {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .meta {
+      padding: 18px 18px 22px;
+    }
+    .title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+    .desc {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+    .tip {
+      margin-top: 12px;
+      color: #d6b37b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="card">
+      <div class="media">
+        <iframe id="playerFrame" allowfullscreen referrerpolicy="origin" allow="autoplay; fullscreen"></iframe>
+        <div id="fallback" class="fallback">
+          <div class="fallback-inner">
+            <h2 id="fallbackTitle">播放页面已准备</h2>
+            <p id="fallbackText">如果嵌入播放器未能自动显示，请点击下方按钮直接打开原站播放页。</p>
+            <div class="actions">
+              <a id="openEmbed" class="button primary" href="#" target="_self" rel="noopener noreferrer">打开嵌入播放页</a>
+              <a id="openPage" class="button secondary" href="#" target="_self" rel="noopener noreferrer">打开原页面</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="meta">
+        <h1 id="title" class="title">Pornhub</h1>
+        <p id="desc" class="desc"></p>
+        <div class="tip">说明：此页面优先使用官方嵌入播放器播放；若站点临时拦截嵌入，可切换到原页面继续观看。</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const pageUrl = params.get('pageUrl') || '';
+      const viewKey = params.get('viewKey') || '';
+      const title = params.get('title') || 'Pornhub';
+      const description = params.get('description') || '';
+      const coverUrl = params.get('coverUrl') || '';
+
+      const titleNode = document.getElementById('title');
+      const descNode = document.getElementById('desc');
+      const frame = document.getElementById('playerFrame');
+      const fallback = document.getElementById('fallback');
+      const openEmbed = document.getElementById('openEmbed');
+      const openPage = document.getElementById('openPage');
+      const fallbackTitle = document.getElementById('fallbackTitle');
+
+      titleNode.textContent = title;
+      descNode.textContent = description;
+
+      if (coverUrl) {
+        fallback.style.backgroundImage = "linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.72)), url('" + coverUrl.replace(/'/g, "%27") + "')";
+      }
+
+      const embedUrl = viewKey ? 'https://www.pornhub.com/embed/' + encodeURIComponent(viewKey) : '';
+      openEmbed.href = embedUrl || pageUrl || '#';
+      openPage.href = pageUrl || embedUrl || '#';
+
+      if (!embedUrl && !pageUrl) {
+        fallback.classList.add('show');
+        fallbackTitle.textContent = '缺少可播放地址';
+        document.getElementById('fallbackText').textContent = '当前页面没有收到有效的视频地址，请返回模块重新打开该视频。';
+        frame.remove();
+        return;
+      }
+
+      let settled = false;
+      function showFallback(reason) {
+        if (settled) return;
+        settled = true;
+        fallback.classList.add('show');
+        if (reason) {
+          document.getElementById('fallbackText').textContent = reason;
+        }
+      }
+
+      const timer = setTimeout(function () {
+        showFallback('嵌入播放器未在预期时间内完成显示。你可以直接打开嵌入页或原页面继续观看。');
+      }, 5000);
+
+      frame.addEventListener('load', function () {
+        if (!settled) {
+          clearTimeout(timer);
+        }
+      });
+
+      frame.addEventListener('error', function () {
+        clearTimeout(timer);
+        showFallback('嵌入播放器加载失败，请点击按钮切换到原页面继续观看。');
+      });
+
+      frame.src = embedUrl || pageUrl;
+    })();
+  </script>
+</body>
+</html>

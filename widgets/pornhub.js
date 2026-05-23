@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://cn.pornhub.com',
-  version: '1.0.32',
+  version: '1.0.33',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -459,9 +459,15 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const sources = await extractVideoSources(html, url);
-  const videoUrl = pickSystemPlayableSource(sources) || url;
-  const playerType = videoUrl === url ? 'app' : 'system';
+  const viewKey = extractViewKey(url, html);
+  const videoUrl = buildForwardPlayerUrl({
+    pageUrl: url,
+    title,
+    coverUrl,
+    description,
+    viewKey
+  });
+  const playerType = 'app';
 
   return {
     id: url,
@@ -1495,6 +1501,43 @@ function normalizeUrl(value, baseUrl) {
   const base = String(baseUrl || SITE.baseUrl).replace(/\/$/, '');
   if (raw.startsWith('/')) return base + raw;
   return base + '/' + raw;
+}
+
+function buildForwardPlayerUrl(params) {
+  const pageUrl = normalizeUrl(params && params.pageUrl, SITE.baseUrl);
+  const title = String(params && params.title || SITE.title || 'Pornhub');
+  const description = String(params && params.description || '');
+  const coverUrl = normalizeUrl(params && params.coverUrl, pageUrl || SITE.baseUrl);
+  const viewKey = String(params && params.viewKey || '');
+  const basePlayerUrl = 'https://rawcdn.githack.com/LYDevils/Forward/main/pages/pornhub-player.html';
+  const search = [
+    ['pageUrl', pageUrl],
+    ['title', title],
+    ['description', description],
+    ['coverUrl', coverUrl],
+    ['viewKey', viewKey]
+  ]
+    .filter((entry) => entry[1])
+    .map((entry) => encodeURIComponent(entry[0]) + '=' + encodeURIComponent(entry[1]))
+    .join('&');
+  return search ? basePlayerUrl + '?' + search : basePlayerUrl;
+}
+
+function extractViewKey(pageUrl, html) {
+  const fromUrl = String(pageUrl || '').match(/[?&]viewkey=([^&#]+)/i);
+  if (fromUrl && fromUrl[1]) return fromUrl[1];
+
+  const raw = String(html || '');
+  const patterns = [
+    /["']viewkey["']\s*[:=]\s*["']([^"']+)["']/i,
+    /\/embed\/([a-z0-9]+)(?:[/?#"'&]|$)/i,
+    /["']videoViewId["']\s*[:=]\s*["']([^"']+)["']/i
+  ];
+  for (const pattern of patterns) {
+    const match = raw.match(pattern);
+    if (match && match[1]) return String(match[1]).trim();
+  }
+  return '';
 }
 
 function readFirstAttr(element, names) {
