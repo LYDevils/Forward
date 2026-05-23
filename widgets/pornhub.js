@@ -2,7 +2,7 @@
   "file": "pornhub.js",
   "key": "pornhub",
   "title": "Pornhub",
-  "baseUrl": "https://www.pornhub.com",
+  "baseUrl": "https://cn.pornhub.com",
   "searchPath": "/video/search?search={keyword}&page={page}",
   "latestPath": "/video",
   "videoPathKeywords": [
@@ -244,8 +244,8 @@ WidgetMetadata = {
   title: 'Pornhub',
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
-  site: 'https://www.pornhub.com',
-  version: '1.0.30',
+  site: 'https://cn.pornhub.com',
+  version: '1.0.31',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -348,7 +348,7 @@ WidgetMetadata = {
     {
       id: 'loadResource',
       title: '播放源解析',
-      description: '解析视频的真实播放源，优先返回 HLS 直链。',
+      description: '解析视频的真实播放源，优先返回可直接播放地址。',
       requiresWebView: false,
       functionName: 'loadResource',
       type: 'stream',
@@ -470,14 +470,10 @@ async function loadDetail(link) {
     type: 'detail',
     title,
     description,
-    coverUrl,
-    posterPath: coverUrl,
     backdropPath: coverUrl,
     link: url,
     videoUrl,
-    mediaType: 'movie',
-    playerType: 'system',
-    source: SITE.title
+    mediaType: 'movie'
   };
 }
 
@@ -1253,14 +1249,14 @@ function getPlayableEntryPriority(item) {
   const format = String(item && item.format || '').toLowerCase();
   const quality = String(item && item.quality || '');
   const url = String(item && item.url || '');
-  if (format === 'hls' && item && item.defaultQuality) return 0;
-  if (format === 'hls' && /720/i.test(quality || url)) return 10;
-  if (format === 'hls' && /480/i.test(quality || url)) return 20;
-  if (format === 'hls' && /1080/i.test(quality || url)) return 30;
-  if (format === 'hls' && /240/i.test(quality || url)) return 40;
-  if (format === 'hls') return 50;
-  if (format === 'mp4' && !isGetMediaUrl(url)) return 60;
-  if (isGetMediaUrl(url)) return 70;
+  if (isGetMediaUrl(url)) return 0;
+  if (format === 'mp4' && !isGetMediaUrl(url)) return 10;
+  if (format === 'hls' && item && item.defaultQuality) return 20;
+  if (format === 'hls' && /720/i.test(quality || url)) return 30;
+  if (format === 'hls' && /480/i.test(quality || url)) return 40;
+  if (format === 'hls' && /1080/i.test(quality || url)) return 50;
+  if (format === 'hls' && /240/i.test(quality || url)) return 60;
+  if (format === 'hls') return 70;
   return 100;
 }
 
