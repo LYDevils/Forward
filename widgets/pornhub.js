@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://cn.pornhub.com',
-  version: '1.0.34',
+  version: '1.0.35',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -459,15 +459,17 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const viewKey = extractViewKey(url, html);
-  const videoUrl = buildForwardPlayerUrl({
+  const sourceItems = await extractPlayableSourceItems(html, url, title);
+  const firstSource = sourceItems[0] || null;
+  const videoUrl = firstSource ? firstSource.videoUrl : '';
+  const playerType = firstSource ? 'system' : 'app';
+  const appVideoUrl = buildForwardPlayerUrl({
     pageUrl: url,
     title,
     coverUrl,
     description,
-    viewKey
+    viewKey: extractViewKey(url, html)
   });
-  const playerType = 'app';
 
   return {
     id: url,
@@ -478,7 +480,8 @@ async function loadDetail(link) {
     posterPath: coverUrl,
     backdropPath: coverUrl,
     link: url,
-    videoUrl,
+    videoUrl: videoUrl || appVideoUrl,
+    episodeItems: sourceItems,
     mediaType: 'movie',
     playerType,
     source: SITE.title
@@ -486,36 +489,32 @@ async function loadDetail(link) {
 }
 
 loadResource = async (params = {}) => {
-  const rawLink = String(params.link || params.url || '').trim();
-  const rawVideoUrl = String(params.videoUrl || '').trim();
+  const rawLink = String(params.link || params.url || params.videoUrl || '').trim();
   const title = String(params.title || 'Pornhub').trim() || 'Pornhub';
   const description = String(params.description || '真实播放源').trim() || '真实播放源';
 
-  let pageUrl = '';
-  let html = '';
-
-  if (isPornhubUrl(rawLink)) {
-    pageUrl = normalizeUrl(rawLink, SITE.baseUrl);
-  } else if (isPornhubUrl(rawVideoUrl)) {
-    pageUrl = normalizeUrl(rawVideoUrl, SITE.baseUrl);
+  if (!isPornhubUrl(rawLink)) {
+    return [];
   }
 
-  if (pageUrl) {
-    try {
-      html = await fetchText(pageUrl);
-    } catch (error) {
-      html = '';
-    }
+  const pageUrl = normalizeUrl(rawLink, SITE.baseUrl);
+  const html = await fetchText(pageUrl);
+  const sourceItems = await extractPlayableSourceItems(html, pageUrl, title);
+  if (sourceItems.length > 0) {
+    return sourceItems.map((item) => ({
+      name: item.title,
+      description,
+      url: item.videoUrl
+    }));
   }
 
   const appUrl = buildForwardPlayerUrl({
-    pageUrl: pageUrl || SITE.baseUrl,
+    pageUrl,
     title,
     description,
-    coverUrl: extractDetailCoverUrl(html, pageUrl || SITE.baseUrl),
-    viewKey: extractViewKey(pageUrl || rawLink || rawVideoUrl, html)
+    coverUrl: extractDetailCoverUrl(html, pageUrl),
+    viewKey: extractViewKey(pageUrl, html)
   });
-
   return [{
     name: title + ' - 网页播放',
     description,
@@ -1215,6 +1214,45 @@ function buildStreamSourceItems(urls, title, description) {
     description: description || '',
     url
   }));
+}
+
+async function extractPlayableSourceItems(html, pageUrl, title) {
+  const sources = await extractVideoSources(html, pageUrl);
+  const seen = new Set();
+  const items = [];
+
+  for (const sourceUrl of sources || []) {
+    const normalized = normalizeUrl(sourceUrl, pageUrl || SITE.baseUrl);
+    if (!normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    items.push({
+      id: normalized,
+      type: 'url',
+      title: buildQualityOptionTitle(normalized, title, items.length),
+      videoUrl: normalized,
+      playerType: 'system'
+    });
+  }
+
+  return items;
+}
+
+function buildQualityOptionTitle(url, baseTitle, index) {
+  const quality = extractSourceQuality(url);
+  if (quality) return quality;
+  if (/\.m3u8(?:[?#].*)?$/i.test(String(url || ''))) return '自适应清晰度';
+  if (/\.mp4(?:[?#].*)?$/i.test(String(url || ''))) return 'MP4 直链';
+  return '播放源 ' + (index + 1);
+}
+
+function extractSourceQuality(url) {
+  const value = String(url || '');
+  const qualityMatch = value.match(/(?:^|[^\d])(2160|1440|1080|720|480|360|240)(?:p|P)?(?:[^\d]|$)/);
+  if (qualityMatch && qualityMatch[1]) {
+    return qualityMatch[1] + 'P';
+  }
+  if (/defaultQuality/i.test(value)) return '默认清晰度';
+  return '';
 }
 
 async function extractVideoSources(html, pageUrl) {
