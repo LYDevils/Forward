@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://cn.pornhub.com',
-  version: '1.0.33',
+  version: '1.0.34',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -486,32 +486,41 @@ async function loadDetail(link) {
 }
 
 loadResource = async (params = {}) => {
-  const link = String(params.link || params.url || params.videoUrl || '').trim();
-  const directVideoUrl = String(params.videoUrl || '').trim();
-  const sources = [];
-  const seen = new Set();
+  const rawLink = String(params.link || params.url || '').trim();
+  const rawVideoUrl = String(params.videoUrl || '').trim();
+  const title = String(params.title || 'Pornhub').trim() || 'Pornhub';
+  const description = String(params.description || '真实播放源').trim() || '真实播放源';
 
-  function add(url) {
-    const normalized = normalizeUrl(url, SITE.baseUrl);
-    if (!isPlayableUrl(normalized) || isPreviewAssetUrl(normalized) || seen.has(normalized)) return;
-    seen.add(normalized);
-    sources.push(normalized);
+  let pageUrl = '';
+  let html = '';
+
+  if (isPornhubUrl(rawLink)) {
+    pageUrl = normalizeUrl(rawLink, SITE.baseUrl);
+  } else if (isPornhubUrl(rawVideoUrl)) {
+    pageUrl = normalizeUrl(rawVideoUrl, SITE.baseUrl);
   }
 
-  if (isPornhubUrl(link)) {
-    const html = await fetchText(link);
-    const parsedSources = await extractVideoSources(html, link);
-    parsedSources.forEach(add);
+  if (pageUrl) {
+    try {
+      html = await fetchText(pageUrl);
+    } catch (error) {
+      html = '';
+    }
   }
 
-  if (directVideoUrl) add(directVideoUrl);
-  if (isPlayableUrl(link)) add(link);
+  const appUrl = buildForwardPlayerUrl({
+    pageUrl: pageUrl || SITE.baseUrl,
+    title,
+    description,
+    coverUrl: extractDetailCoverUrl(html, pageUrl || SITE.baseUrl),
+    viewKey: extractViewKey(pageUrl || rawLink || rawVideoUrl, html)
+  });
 
-  return buildStreamSourceItems(
-    sources,
-    params.title || 'Pornhub',
-    params.description || '真实播放源'
-  );
+  return [{
+    name: title + ' - 网页播放',
+    description,
+    url: appUrl
+  }];
 };
 
 async function loadVideoList(url) {
@@ -1181,6 +1190,14 @@ function extractDetailDescription(html) {
   const descMatch = raw.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
     || raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
   return descMatch && descMatch[1] ? cleanText(descMatch[1]) : '';
+}
+
+function extractDetailCoverUrl(html, baseUrl) {
+  const raw = String(html || '');
+  const coverMatch = raw.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+    || raw.match(/<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["']/i)
+    || raw.match(/<video[^>]+poster=["']([^"']+)["']/i);
+  return coverMatch && coverMatch[1] ? normalizeUrl(coverMatch[1], baseUrl || SITE.baseUrl) : '';
 }
 
 function extractVideoUrl(html, pageUrl) {
