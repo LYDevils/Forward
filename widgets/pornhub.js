@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.27',
+  version: '1.0.28',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -482,6 +482,7 @@ async function loadDetail(link) {
     description,
     coverUrl,
     posterPath: coverUrl,
+    backdropPath: coverUrl,
     link: url,
     videoUrl,
     mediaType: 'movie',
@@ -530,10 +531,9 @@ async function loadVideoList(url) {
           description,
           coverUrl,
           posterPath: coverUrl,
+          backdropPath: coverUrl,
           link: videoUrl,
-          mediaType: 'movie',
-          playerType: 'system',
-          source: SITE.title
+          mediaType: 'movie'
         });
       });
     });
@@ -1012,10 +1012,9 @@ function addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel) {
     description,
     coverUrl,
     posterPath: coverUrl,
+    backdropPath: coverUrl,
     link: videoUrl,
-    mediaType: 'movie',
-    playerType: 'system',
-    source: SITE.title
+    mediaType: 'movie'
   });
 }
 
@@ -1057,10 +1056,9 @@ function parseFavoriteAnchorsFromHtml(html, baseUrl, listLabel, seen, results) {
       description: durationMatch ? '时长：' + durationMatch[0] : listLabel || 'Pornhub 收藏',
       coverUrl,
       posterPath: coverUrl,
+      backdropPath: coverUrl,
       link: videoUrl,
-      mediaType: 'movie',
-      playerType: 'system',
-      source: SITE.title
+      mediaType: 'movie'
     });
   }
 }
