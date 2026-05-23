@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.29',
+  version: '1.0.30',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -253,7 +253,7 @@ WidgetMetadata = {
       id: 'region-videos',
       title: '地区语言',
       description: '按地区、语言或字幕筛选影片。',
-      requiresWebView: true,
+      requiresWebView: false,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -271,7 +271,7 @@ WidgetMetadata = {
       id: 'person-videos',
       title: '人物分类',
       description: '按人物身份或出演类型筛选影片。',
-      requiresWebView: true,
+      requiresWebView: false,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -289,7 +289,7 @@ WidgetMetadata = {
       id: 'feature-videos',
       title: '特点分类',
       description: '按题材、风格或内容特点筛选影片。',
-      requiresWebView: true,
+      requiresWebView: false,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -307,7 +307,7 @@ WidgetMetadata = {
       id: 'sort-videos',
       title: '排序筛选',
       description: '按最新、热门、评分等排序筛选影片。',
-      requiresWebView: true,
+      requiresWebView: false,
       functionName: 'loadCategoryVideos',
       type: 'list',
       params: [
@@ -325,7 +325,7 @@ WidgetMetadata = {
       id: 'favorite-videos',
       title: '我的最爱',
       description: '默认读取 lydevils 的公开收藏，也可输入其他用户名、主页链接或收藏页链接。',
-      requiresWebView: true,
+      requiresWebView: false,
       functionName: 'loadFavoriteVideos',
       type: 'list',
       params: [
@@ -337,12 +337,23 @@ WidgetMetadata = {
       id: 'creator-videos',
       title: '作者视频',
       description: '输入模特、演员或用户主页链接，查看该作者的公开视频。订阅页本身需要登录，无法公开读取真实订阅列表。',
-      requiresWebView: true,
+      requiresWebView: false,
       functionName: 'loadCreatorVideos',
       type: 'list',
       params: [
         { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://cn.pornhub.com/model/nana_taipei' },
         { name: 'page', title: '页码', type: 'page', startPage: 1 }
+      ]
+    },
+    {
+      id: 'loadResource',
+      title: '播放源解析',
+      description: '解析视频的真实播放源，优先返回 HLS 直链。',
+      requiresWebView: false,
+      functionName: 'loadResource',
+      type: 'stream',
+      params: [
+        { name: 'link', title: '视频链接', type: 'input', value: 'https://cn.pornhub.com/view_video.php?viewkey=691970bc6375e' }
       ]
     }
   ]
@@ -448,11 +459,10 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const appVideoUrl = buildEmbedPlaybackUrl(url);
-  const systemVideoUrl = extractPrimaryVideoUrl(html, url);
-  const videoUrl = appVideoUrl || systemVideoUrl || '';
+  const sources = extractVideoSources(html, url);
+  const videoUrl = sources[0] || '';
   if (!videoUrl) {
-    return createMessage('未解析到播放地址', '详情页已加载，但未找到可直接播放的 m3u8/mp4 地址。可能需要登录、地区可用性受限，或该视频只允许网页播放器播放。链接：' + url);
+    return createMessage('未解析到播放地址', '详情页已加载，但未找到可直接播放的 m3u8/mp4 地址。可能需要登录、地区可用性受限，或当前网络返回了受限页面。链接：' + url);
   }
 
   return {
@@ -466,10 +476,38 @@ async function loadDetail(link) {
     link: url,
     videoUrl,
     mediaType: 'movie',
-    playerType: appVideoUrl ? 'app' : 'system',
+    playerType: 'system',
     source: SITE.title
   };
 }
+
+loadResource = async (params = {}) => {
+  const link = String(params.link || params.url || params.videoUrl || '').trim();
+  const directVideoUrl = String(params.videoUrl || '').trim();
+  const sources = [];
+  const seen = new Set();
+
+  function add(url) {
+    const normalized = normalizeUrl(url, SITE.baseUrl);
+    if (!isPlayableUrl(normalized) || isPreviewAssetUrl(normalized) || seen.has(normalized)) return;
+    seen.add(normalized);
+    sources.push(normalized);
+  }
+
+  if (isPornhubUrl(link)) {
+    const html = await fetchText(link);
+    extractVideoSources(html, link).forEach(add);
+  }
+
+  if (directVideoUrl) add(directVideoUrl);
+  if (isPlayableUrl(link)) add(link);
+
+  return buildStreamSourceItems(
+    sources,
+    params.title || 'Pornhub',
+    params.description || '真实播放源'
+  );
+};
 
 async function loadVideoList(url) {
   try {
@@ -1138,13 +1176,6 @@ function extractDetailDescription(html) {
   const descMatch = raw.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
     || raw.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
   return descMatch && descMatch[1] ? cleanText(descMatch[1]) : '';
-}
-
-function buildEmbedPlaybackUrl(pageUrl) {
-  const raw = String(pageUrl || '').trim();
-  const match = raw.match(/[?&]viewkey=([^&#]+)/i);
-  if (!match || !match[1]) return '';
-  return 'https://www.pornhub.com/embed/' + match[1];
 }
 
 function extractVideoUrl(html, pageUrl) {
