@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://cn.pornhub.com',
-  version: '1.0.35',
+  version: '1.0.36',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -459,10 +459,8 @@ async function loadDetail(link) {
     $('meta[name="description"]').attr('content') ||
     ''
   );
-  const sourceItems = await extractPlayableSourceItems(html, url, title);
-  const firstSource = sourceItems[0] || null;
-  const videoUrl = firstSource ? firstSource.videoUrl : '';
-  const playerType = firstSource ? 'system' : 'app';
+  const playbackOptions = await buildPlaybackOptions(url, html, title);
+  const firstSource = playbackOptions[0] || null;
   const appVideoUrl = buildForwardPlayerUrl({
     pageUrl: url,
     title,
@@ -470,6 +468,8 @@ async function loadDetail(link) {
     description,
     viewKey: extractViewKey(url, html)
   });
+  const videoUrl = firstSource ? firstSource.videoUrl : appVideoUrl;
+  const playerType = firstSource && firstSource.playerType ? firstSource.playerType : 'app';
 
   return {
     id: url,
@@ -480,8 +480,8 @@ async function loadDetail(link) {
     posterPath: coverUrl,
     backdropPath: coverUrl,
     link: url,
-    videoUrl: videoUrl || appVideoUrl,
-    episodeItems: sourceItems,
+    videoUrl,
+    episodeItems: playbackOptions,
     mediaType: 'movie',
     playerType,
     source: SITE.title
@@ -499,9 +499,9 @@ loadResource = async (params = {}) => {
 
   const pageUrl = normalizeUrl(rawLink, SITE.baseUrl);
   const html = await fetchText(pageUrl);
-  const sourceItems = await extractPlayableSourceItems(html, pageUrl, title);
-  if (sourceItems.length > 0) {
-    return sourceItems.map((item) => ({
+  const playbackOptions = await buildPlaybackOptions(pageUrl, html, title);
+  if (playbackOptions.length > 0) {
+    return playbackOptions.map((item) => ({
       name: item.title,
       description,
       url: item.videoUrl
@@ -1216,16 +1216,43 @@ function buildStreamSourceItems(urls, title, description) {
   }));
 }
 
-async function extractPlayableSourceItems(html, pageUrl, title) {
-  const sources = await extractVideoSources(html, pageUrl);
-  const seen = new Set();
+async function buildPlaybackOptions(pageUrl, html, title) {
   const items = [];
+  const seen = new Set();
+  const normalizedPageUrl = normalizeUrl(pageUrl, SITE.baseUrl);
+  const viewKey = extractViewKey(normalizedPageUrl, html);
 
+  function add(item) {
+    if (!item || !item.videoUrl) return;
+    const key = String(item.playerType || '') + '|' + String(item.videoUrl || '');
+    if (seen.has(key)) return;
+    seen.add(key);
+    items.push(item);
+  }
+
+  if (viewKey) {
+    add({
+      id: 'embed|' + viewKey,
+      type: 'url',
+      title: '站内嵌入播放',
+      videoUrl: normalizeUrl('/embed/' + viewKey, SITE.baseUrl),
+      playerType: 'app'
+    });
+  }
+
+  add({
+    id: 'page|' + normalizedPageUrl,
+    type: 'url',
+    title: '站内网页播放',
+    videoUrl: normalizedPageUrl,
+    playerType: 'app'
+  });
+
+  const sources = await extractVideoSources(html, normalizedPageUrl);
   for (const sourceUrl of sources || []) {
-    const normalized = normalizeUrl(sourceUrl, pageUrl || SITE.baseUrl);
-    if (!normalized || seen.has(normalized)) continue;
-    seen.add(normalized);
-    items.push({
+    const normalized = normalizeUrl(sourceUrl, normalizedPageUrl || SITE.baseUrl);
+    if (!normalized) continue;
+    add({
       id: normalized,
       type: 'url',
       title: buildQualityOptionTitle(normalized, title, items.length),
