@@ -3,6 +3,7 @@ const path = require('path');
 const vm = require('vm');
 
 const DEFAULT_WIDGET_ORDER = [
+  'debug',
   'lydevils.podcast',
   'lydevils.forward.playback.debug'
 ];

@@ -1,16 +1,16 @@
 {
   "title": "LYDevils Widgets",
   "description": "LYDevils Forward Widget Source",
-  "icon": "https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/icon.png",
+  "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
   "widgets": [
     {
-      "id": "lydevils.forward.playback.debug",
-      "title": "Forward Playback Debug",
-      "description": "Basic playback verification widget for Forward.",
+      "id": "debug",
+      "title": "播放调试",
+      "description": "Forward 播放能力验证模块",
       "requiredVersion": "0.0.1",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "author": "LYDevils",
-      "url": "https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/widgets/forward-playback-debug.js"
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/debug.js"
     }
   ]
 }

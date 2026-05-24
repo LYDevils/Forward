@@ -8,8 +8,8 @@ const {
 } = require('./ForwardWidgetSource');
 
 async function run() {
-  const widgetFile = path.join(__dirname, 'widget-sources', 'forward-playback-debug.js');
-  const encryptedWidgetFile = path.join(__dirname, 'widgets', 'forward-playback-debug.js');
+  const widgetFile = path.join(__dirname, 'widget-sources', 'debug.js');
+  const encryptedWidgetFile = path.join(__dirname, 'widgets', 'debug.js');
   const widgetsDir = path.join(__dirname, 'widget-sources');
   const widgetFiles = fs.readdirSync(widgetsDir).filter((fileName) => fileName.endsWith('.js'));
   const inspection = await inspectWidget(widgetFile);
@@ -22,6 +22,7 @@ async function run() {
 
   console.log('2. Generate source indexes');
   const outputFiles = [
+    path.join(__dirname, 'widgets.fwd'),
     path.join(__dirname, 'forward-widgets.fwd'),
     path.join(__dirname, 'forward-widgets.json')
   ];
@@ -30,12 +31,12 @@ async function run() {
     generation = await generateSourceIndex({
       widgetsDir,
       outputFile,
-      baseScriptUrl: 'https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/widgets',
+      baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
       title: 'LYDevils Widgets',
       description: 'LYDevils Forward Widget Source',
-      icon: 'https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/icon.png',
+      icon: 'https://github.com/LYDevils/Forward/raw/main/icon.png',
       includeWidgetIds: [
-        'lydevils.forward.playback.debug'
+        'debug'
       ]
     });
     console.log(`   output: ${generation.outputFile}`);

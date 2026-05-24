@@ -3,20 +3,21 @@ const { generateSourceIndex } = require('./ForwardWidgetSource');
 
 function buildIndexOptions(outputFile) {
   return {
-    baseScriptUrl: 'https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/widgets',
+    baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
     widgetsDir: path.join(__dirname, 'widget-sources'),
     outputFile,
     title: 'LYDevils Widgets',
     description: 'LYDevils Forward Widget Source',
-    icon: 'https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/icon.png',
+    icon: 'https://github.com/LYDevils/Forward/raw/main/icon.png',
     includeWidgetIds: [
-      'lydevils.forward.playback.debug'
+      'debug'
     ]
   };
 }
 
 async function main() {
   const outputs = [
+    path.join(__dirname, 'widgets.fwd'),
     path.join(__dirname, 'forward-widgets.fwd'),
     path.join(__dirname, 'forward-widgets.json')
   ];
