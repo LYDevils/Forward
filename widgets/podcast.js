@@ -4,7 +4,7 @@
   description: 'RSS 播客源。',
   author: 'LYDevils',
   site: '',
-  version: '1.0.4',
+  version: '1.0.5',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -13,7 +13,6 @@
       title: '播客列表',
       description: '加载真实 RSS 源。',
       functionName: 'loadFeed',
-      type: 'list',
       params: [{ name: 'feedUrl', title: 'RSS 链接', type: 'input' }]
     },
     {
@@ -21,7 +20,6 @@
       title: '单集详情',
       description: '根据媒体链接加载单集详情。',
       functionName: 'getEpisodeDetail',
-      type: 'list',
       params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]

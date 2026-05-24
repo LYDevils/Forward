@@ -33,7 +33,7 @@ WidgetMetadata = {
   description: 'MacCMS VOD 真实可播放数据源。',
   author: 'LYDevils',
   site: 'https://91md.me',
-  version: '1.0.11',
+  version: '1.0.12',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -42,15 +42,13 @@ WidgetMetadata = {
       title: '最新更新',
       description: '加载当前采集源最新影片。',
       functionName: 'loadLatestVideos',
-      type: 'list',
-      params: [{ name: 'page', title: '页码', type: 'page', startPage: 1 }]
+      params: [{ name: 'page', title: '页码', type: 'page' }]
     },
     {
       id: 'studio-videos',
       title: '片商分类',
       description: '按片商、厂牌或专题分类加载影片。',
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'typePreset',
@@ -59,7 +57,7 @@ WidgetMetadata = {
           value: VOD_SOURCE.defaultTypeId,
           enumOptions: VOD_CATEGORY_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     }
   ]

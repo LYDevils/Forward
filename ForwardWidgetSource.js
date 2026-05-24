@@ -98,10 +98,98 @@ function validateWidgetMetadata(metadata) {
     throw new Error('WidgetMetadata.modules must be an array');
   }
 
+  const allowedMetadataFields = new Set([
+    'id',
+    'title',
+    'description',
+    'author',
+    'site',
+    'version',
+    'requiredVersion',
+    'detailCacheDuration',
+    'globalParams',
+    'modules',
+    'search'
+  ]);
+  const allowedModuleFields = new Set([
+    'id',
+    'type',
+    'title',
+    'description',
+    'requiresWebView',
+    'functionName',
+    'sectionMode',
+    'cacheDuration',
+    'params'
+  ]);
+  const allowedParamFields = new Set([
+    'name',
+    'title',
+    'type',
+    'description',
+    'value',
+    'belongTo',
+    'placeholders',
+    'enumOptions'
+  ]);
+  const allowedModuleTypes = new Set(['danmu', 'stream', 'subtitle']);
+  const allowedParamTypes = new Set(['input', 'constant', 'enumeration', 'count', 'page', 'offset', 'language']);
+
+  const extraMetadataFields = Object.keys(metadata).filter((fieldName) => !allowedMetadataFields.has(fieldName));
+  if (extraMetadataFields.length > 0) {
+    throw new Error(`WidgetMetadata contains unsupported fields: ${extraMetadataFields.join(', ')}`);
+  }
+
   metadata.modules.forEach((moduleItem, moduleIndex) => {
     if (!moduleItem.id || !moduleItem.functionName || !moduleItem.title) {
       throw new Error(`WidgetMetadata.modules[${moduleIndex}] must include id, title and functionName`);
     }
+
+    const extraModuleFields = Object.keys(moduleItem).filter((fieldName) => !allowedModuleFields.has(fieldName));
+    if (extraModuleFields.length > 0) {
+      throw new Error(
+        `WidgetMetadata.modules[${moduleIndex}] contains unsupported fields: ${extraModuleFields.join(', ')}`
+      );
+    }
+
+    if (moduleItem.type && !allowedModuleTypes.has(moduleItem.type)) {
+      throw new Error(
+        `WidgetMetadata.modules[${moduleIndex}] has unsupported type: ${moduleItem.type}`
+      );
+    }
+
+    if (!Array.isArray(moduleItem.params) && moduleItem.params != null) {
+      throw new Error(`WidgetMetadata.modules[${moduleIndex}].params must be an array`);
+    }
+
+    (moduleItem.params || []).forEach((paramItem, paramIndex) => {
+      if (!paramItem || typeof paramItem !== 'object') {
+        throw new Error(
+          `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] must be an object`
+        );
+      }
+
+      const requiredParamFields = ['name', 'title', 'type'];
+      const missingParamFields = requiredParamFields.filter((fieldName) => !paramItem[fieldName]);
+      if (missingParamFields.length > 0) {
+        throw new Error(
+          `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] is missing fields: ${missingParamFields.join(', ')}`
+        );
+      }
+
+      const extraParamFields = Object.keys(paramItem).filter((fieldName) => !allowedParamFields.has(fieldName));
+      if (extraParamFields.length > 0) {
+        throw new Error(
+          `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] contains unsupported fields: ${extraParamFields.join(', ')}`
+        );
+      }
+
+      if (!allowedParamTypes.has(paramItem.type)) {
+        throw new Error(
+          `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] has unsupported type: ${paramItem.type}`
+        );
+      }
+    });
   });
 
   return metadata;

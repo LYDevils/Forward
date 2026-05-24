@@ -6,7 +6,7 @@ WidgetMetadata = {
   description: '真实 IPTV 直播源。',
   author: 'LYDevils',
   site: 'https://iptv-org.github.io',
-  version: '1.0.4',
+  version: '1.0.5',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -15,7 +15,6 @@ WidgetMetadata = {
       title: '直播列表',
       description: '加载真实 M3U 直播流。',
       functionName: 'loadLiveList',
-      type: 'list',
       params: []
     },
     {
@@ -23,7 +22,6 @@ WidgetMetadata = {
       title: '直播详情',
       description: '根据链接加载直播详情。',
       functionName: 'getLiveDetail',
-      type: 'list',
       params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]

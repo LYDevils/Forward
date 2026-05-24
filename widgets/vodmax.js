@@ -88,7 +88,7 @@ WidgetMetadata = {
     title: "VodMax",
     description: "聚合点播数据源",
     author: "LYDevils",
-    version: "1.0.6",
+  version: "1.0.7",
     requiredVersion: "0.0.1",
     site: "https://t.me/MakkaPakkaOvO",
     detailCacheDuration:3600,
@@ -97,7 +97,6 @@ WidgetMetadata = {
             id: "load-cms-list",
             title: "资源列表",
             functionName: "loadCmsList",
-            type: "list",
             cacheDuration:300,
             params: [
                 {
@@ -126,7 +125,7 @@ WidgetMetadata = {
                     belongTo: { paramName: "group", value: ["premium"] },
                     enumOptions: premiumOptions
                 },
-                { name: "page", title: "页码", type: "page", startPage: 1 }
+                { name: "page", title: "页码", type: "page" }
             ]
         }
     ]

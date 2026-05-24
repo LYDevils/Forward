@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://cn.pornhub.com',
-  version: '1.0.36',
+  version: '1.0.37',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -255,7 +255,6 @@ WidgetMetadata = {
       description: '按地区、语言或字幕筛选影片。',
       requiresWebView: true,
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'categoryPreset',
@@ -264,7 +263,7 @@ WidgetMetadata = {
           value: REGION_OPTIONS[0] ? REGION_OPTIONS[0].value : '',
           enumOptions: REGION_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {
@@ -273,7 +272,6 @@ WidgetMetadata = {
       description: '按人物身份或出演类型筛选影片。',
       requiresWebView: true,
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'categoryPreset',
@@ -282,7 +280,7 @@ WidgetMetadata = {
           value: PERSON_OPTIONS[0] ? PERSON_OPTIONS[0].value : '',
           enumOptions: PERSON_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {
@@ -291,7 +289,6 @@ WidgetMetadata = {
       description: '按题材、风格或内容特点筛选影片。',
       requiresWebView: true,
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'categoryPreset',
@@ -300,7 +297,7 @@ WidgetMetadata = {
           value: FEATURE_OPTIONS[0] ? FEATURE_OPTIONS[0].value : '',
           enumOptions: FEATURE_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {
@@ -309,7 +306,6 @@ WidgetMetadata = {
       description: '按最新、热门、评分等排序筛选影片。',
       requiresWebView: true,
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'categoryPreset',
@@ -318,7 +314,7 @@ WidgetMetadata = {
           value: SORT_OPTIONS[0] ? SORT_OPTIONS[0].value : '',
           enumOptions: SORT_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {
@@ -327,10 +323,9 @@ WidgetMetadata = {
       description: '默认读取 lydevils 的公开收藏，也可输入其他用户名、主页链接或收藏页链接。',
       requiresWebView: true,
       functionName: 'loadFavoriteVideos',
-      type: 'list',
       params: [
         { name: 'username', title: '用户名或收藏页链接', type: 'input', value: 'lydevils' },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {
@@ -339,10 +334,9 @@ WidgetMetadata = {
       description: '输入模特、演员或用户主页链接，查看该作者的公开视频。订阅页本身需要登录，无法公开读取真实订阅列表。',
       requiresWebView: true,
       functionName: 'loadCreatorVideos',
-      type: 'list',
       params: [
         { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://cn.pornhub.com/model/nana_taipei' },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {

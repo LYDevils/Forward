@@ -237,7 +237,7 @@ WidgetMetadata = {
   description: 'XVideos 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.xvideos.com',
-  version: '1.0.13',
+  version: '1.0.14',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -246,7 +246,6 @@ WidgetMetadata = {
       title: '地区语言',
       description: '按地区、语言或字幕筛选影片。',
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'categoryPreset',
@@ -255,7 +254,7 @@ WidgetMetadata = {
           value: REGION_OPTIONS[0] ? REGION_OPTIONS[0].value : '',
           enumOptions: REGION_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     },
     {
@@ -263,7 +262,6 @@ WidgetMetadata = {
       title: '排序筛选',
       description: '按最新、热门、评分等排序筛选影片。',
       functionName: 'loadCategoryVideos',
-      type: 'list',
       params: [
         {
           name: 'categoryPreset',
@@ -272,7 +270,7 @@ WidgetMetadata = {
           value: SORT_OPTIONS[0] ? SORT_OPTIONS[0].value : '',
           enumOptions: SORT_OPTIONS
         },
-        { name: 'page', title: '页码', type: 'page', startPage: 1 }
+        { name: 'page', title: '页码', type: 'page' }
       ]
     }
   ]

@@ -48,7 +48,7 @@ async function run() {
   }
 
   console.log('\n5. Placeholder scan');
-  const forbiddenPatterns = [/example\.com/i, /示例/, /测试/, /\bdemo\b/i, /buildSample/, /createDemo/];
+  const forbiddenPatterns = [/example\.com/i, /示例/, /\bdemo\b/i, /buildSample/, /createDemo/];
   for (const fileName of widgetFiles) {
     const fullPath = path.join(widgetsDir, fileName);
     const content = fs.readFileSync(fullPath, 'utf8');

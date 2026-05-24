@@ -10,53 +10,22 @@ const DEBUG_VIDEO_PAGE =
 WidgetMetadata = {
   id: "lydevils.forward-playback-debug",
   title: "Forward 播放调试",
-  description: "用于验证 Forward 客户端支持的播放方式。",
+  description: "用于验证 Forward 的基础播放能力。",
   author: "LYDevils",
   site: "https://github.com/LYDevils/Forward",
-  version: "1.0.1",
+  version: "1.0.2",
   requiredVersion: "0.0.1",
-  detailCacheDuration: 60,
   modules: [
     {
-      id: "system-mp4",
-      title: "System MP4",
-      description: "系统播放器直放公开 MP4。",
-      functionName: "loadSystemMp4",
-      params: []
-    },
-    {
-      id: "system-hls",
-      title: "System HLS",
-      description: "系统播放器直放公开 HLS。",
-      functionName: "loadSystemHls",
-      params: []
-    },
-    {
-      id: "app-page",
-      title: "App 网页播放",
-      description: "App/WebView 打开普通网页。",
-      functionName: "loadAppPage",
-      requiresWebView: true,
-      params: []
-    },
-    {
-      id: "app-video-page",
-      title: "App 页面内视频",
-      description: "App/WebView 打开带 HTML5 video 的网页。",
-      functionName: "loadAppVideoPage",
-      requiresWebView: true,
-      params: []
-    },
-    {
       id: "loadResource",
+      title: "播放能力测试",
+      description: "返回公开 MP4、HLS 和网页调试地址。",
+      functionName: "loadResource",
       type: "stream",
-      title: "多源选择",
-      description: "验证 loadResource 多源选择是否正常。",
-      functionName: "loadStreamDebug",
       params: [
         {
           name: "mode",
-          title: "调试模式",
+          title: "测试模式",
           type: "enumeration",
           value: "mixed",
           enumOptions: [
@@ -71,104 +40,38 @@ WidgetMetadata = {
   ]
 };
 
-loadSystemMp4 = async () => {
-  return [buildDetail({
-    id: "system-mp4",
-    title: "System MP4 调试",
-    description: "公开 MP4，用于验证系统播放器。",
-    videoUrl: PUBLIC_MP4,
-    playerType: "system"
-  })];
-};
-
-loadSystemHls = async () => {
-  return [buildDetail({
-    id: "system-hls",
-    title: "System HLS 调试",
-    description: "公开 HLS，用于验证系统播放器对 m3u8 的支持。",
-    videoUrl: PUBLIC_HLS,
-    playerType: "system",
-    episodeItems: [
-      buildEpisode("hls-auto", "自适应清晰度", PUBLIC_HLS, "system"),
-      buildEpisode("mp4-fallback", "MP4 备用", PUBLIC_MP4, "system")
-    ]
-  })];
-};
-
-loadAppPage = async () => {
-  return [buildDetail({
-    id: "app-page",
-    title: "App 网页播放调试",
-    description: "打开普通网页，验证 app/webview 是否可用。",
-    videoUrl: DEBUG_PAGE,
-    playerType: "app"
-  })];
-};
-
-loadAppVideoPage = async () => {
-  return [buildDetail({
-    id: "app-video-page",
-    title: "App 页面内视频调试",
-    description: "打开带 HTML5 video 的网页，验证 app/webview 页面内播放。",
-    videoUrl: DEBUG_VIDEO_PAGE,
-    playerType: "app"
-  })];
-};
-
-loadStreamDebug = async (params = {}) => {
+loadResource = async (params = {}) => {
   const mode = String(params.mode || "mixed");
+
   if (mode === "mp4") {
-    return [buildStreamSource("MP4 直链", "公开 MP4", PUBLIC_MP4)];
+    return [
+      buildSource("公开 MP4", "系统播放器 MP4", PUBLIC_MP4)
+    ];
   }
+
   if (mode === "hls") {
     return [
-      buildStreamSource("HLS 主清单", "公开 m3u8", PUBLIC_HLS),
-      buildStreamSource("MP4 备用", "公开 MP4", PUBLIC_MP4)
+      buildSource("公开 HLS", "系统播放器 HLS", PUBLIC_HLS),
+      buildSource("MP4 备用", "系统播放器 MP4", PUBLIC_MP4)
     ];
   }
+
   if (mode === "app") {
     return [
-      buildStreamSource("普通网页", "App/WebView 页面", DEBUG_PAGE),
-      buildStreamSource("页面内视频", "App/WebView + HTML5 video", DEBUG_VIDEO_PAGE)
+      buildSource("普通网页", "WebView 页面", DEBUG_PAGE),
+      buildSource("页面内视频", "WebView + HTML5 Video", DEBUG_VIDEO_PAGE)
     ];
   }
+
   return [
-    buildStreamSource("MP4 直链", "公开 MP4", PUBLIC_MP4),
-    buildStreamSource("HLS 主清单", "公开 HLS", PUBLIC_HLS),
-    buildStreamSource("普通网页", "App/WebView 页面", DEBUG_PAGE),
-    buildStreamSource("页面内视频", "App/WebView + HTML5 video", DEBUG_VIDEO_PAGE)
+    buildSource("公开 MP4", "系统播放器 MP4", PUBLIC_MP4),
+    buildSource("公开 HLS", "系统播放器 HLS", PUBLIC_HLS),
+    buildSource("普通网页", "WebView 页面", DEBUG_PAGE),
+    buildSource("页面内视频", "WebView + HTML5 Video", DEBUG_VIDEO_PAGE)
   ];
 };
 
-function buildDetail(options) {
-  return {
-    id: "forward-playback-debug." + String(options.id || ""),
-    type: "detail",
-    title: options.title || "调试项",
-    description: options.description || "",
-    coverUrl: "",
-    posterPath: "",
-    backdropPath: "",
-    link: options.videoUrl || "",
-    videoUrl: options.videoUrl || "",
-    episodeItems: options.episodeItems || [],
-    mediaType: "movie",
-    playerType: options.playerType || "system",
-    source: "Forward 播放调试"
-  };
-}
-
-function buildEpisode(id, title, videoUrl, playerType) {
-  return {
-    id: "forward-playback-debug." + id,
-    type: "url",
-    title,
-    videoUrl,
-    playerType: playerType || "system"
-  };
-}
-
-function buildStreamSource(name, description, url) {
+function buildSource(name, description, url) {
   return {
     name,
     description,
