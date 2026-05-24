@@ -1,0 +1,16 @@
+{
+  "title": "LYDevils Widgets",
+  "description": "LYDevils Forward Widget Source",
+  "icon": "https://cdn.jsdelivr.net/gh/LYDevils/Forward@268f6e3/icon.png",
+  "widgets": [
+    {
+      "id": "lydevils.forward.playback.debug",
+      "title": "Forward Playback Debug",
+      "description": "Basic playback verification widget for Forward.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.4",
+      "author": "LYDevils",
+      "url": "https://cdn.jsdelivr.net/gh/LYDevils/Forward@268f6e3/widgets/forward-playback-debug.js"
+    }
+  ]
+}
