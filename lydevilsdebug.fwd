@@ -1,0 +1,16 @@
+{
+  "title": "LYDevils Debug Source",
+  "description": "Standalone Forward debug source for import verification",
+  "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
+  "widgets": [
+    {
+      "id": "lydevilsdebug",
+      "title": "LYDevils Debug",
+      "description": "Standalone Forward debug widget",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.7",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/lydevilsdebug.js"
+    }
+  ]
+}
