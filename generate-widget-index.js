@@ -30,7 +30,6 @@ async function main() {
     description,
     icon,
     includeWidgetIds: [
-      'lydevils.podcast',
       'lydevils.forward-playback-debug'
     ]
   });

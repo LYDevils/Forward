@@ -29,7 +29,6 @@ async function run() {
     description: 'LYDevils Forward Widget Source',
     icon: 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png',
     includeWidgetIds: [
-      'lydevils.podcast',
       'lydevils.forward-playback-debug'
     ]
   });
@@ -47,8 +46,8 @@ async function run() {
   });
   console.log(`   extracted title: ${metadata.metadata.title}`);
 
-  if (generation.index.widgets.length !== 2) {
-    throw new Error(`Expected 2 widgets, got ${generation.index.widgets.length}`);
+  if (generation.index.widgets.length !== 1) {
+    throw new Error(`Expected 1 widget, got ${generation.index.widgets.length}`);
   }
 
   console.log('\n5. Placeholder scan');
