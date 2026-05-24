@@ -8,7 +8,7 @@ const {
 } = require('./ForwardWidgetSource');
 
 async function run() {
-  const widgetFile = path.join(__dirname, 'widgets', 'jable.js');
+  const widgetFile = path.join(__dirname, 'widgets', 'forward-playback-debug.js');
   const inspection = await inspectWidget(widgetFile);
   const widgetsDir = path.join(__dirname, 'widgets');
   const widgetFiles = fs.readdirSync(widgetsDir).filter((fileName) => fileName.endsWith('.js'));
@@ -22,12 +22,16 @@ async function run() {
   console.log('2. Generate .fwd index');
   const outputFile = path.join(__dirname, 'forward-widgets.fwd');
   const generation = await generateSourceIndex({
-    widgetsDir: path.join(__dirname, 'widgets'),
+    widgetsDir,
     outputFile,
-    baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
-    title: 'LYDevils 模块库',
-    description: 'LYDevils Forward 模块源',
-    icon: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/icon.png'
+    baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/main/widgets',
+    title: 'LYDevils Widgets',
+    description: 'LYDevils Forward Widget Source',
+    icon: 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png',
+    includeWidgetIds: [
+      'lydevils.podcast',
+      'lydevils.forward-playback-debug'
+    ]
   });
   console.log(`   output: ${generation.outputFile}`);
   console.log(`   widgets: ${generation.index.widgets.length}\n`);
@@ -43,8 +47,8 @@ async function run() {
   });
   console.log(`   extracted title: ${metadata.metadata.title}`);
 
-  if (generation.index.widgets.length !== 17) {
-    throw new Error(`Expected 17 widgets, got ${generation.index.widgets.length}`);
+  if (generation.index.widgets.length !== 2) {
+    throw new Error(`Expected 2 widgets, got ${generation.index.widgets.length}`);
   }
 
   console.log('\n5. Placeholder scan');

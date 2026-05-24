@@ -5,6 +5,6 @@
   "main": "ForwardWidgetSource.js",
   "scripts": {
     "test": "node forwardSourceTest.js",
-    "build:fwd": "node generate-widget-index.js --base-url https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets --title \"LYDevils 模块库\" --description \"LYDevils Forward 模块源\" --icon https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/icon.png"
+    "build:fwd": "node generate-widget-index.js --base-url https://raw.githubusercontent.com/LYDevils/Forward/main/widgets --title \"LYDevils Widgets\" --description \"LYDevils Forward Widget Source\" --icon https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png"
   }
 }

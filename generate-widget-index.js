@@ -18,9 +18,9 @@ async function main() {
 
   const widgetsDir = getArgValue('--widgets-dir') || path.join(__dirname, 'widgets');
   const outputFile = getArgValue('--out') || path.join(__dirname, 'forward-widgets.fwd');
-  const title = getArgValue('--title') || 'LYDevils 模块库';
-  const description = getArgValue('--description') || 'LYDevils Forward 模块源';
-  const icon = getArgValue('--icon') || 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/icon.png';
+  const title = getArgValue('--title') || 'LYDevils Widgets';
+  const description = getArgValue('--description') || 'LYDevils Forward Widget Source';
+  const icon = getArgValue('--icon') || 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png';
 
   const result = await generateSourceIndex({
     baseScriptUrl,
@@ -28,7 +28,11 @@ async function main() {
     outputFile,
     title,
     description,
-    icon
+    icon,
+    includeWidgetIds: [
+      'lydevils.podcast',
+      'lydevils.forward-playback-debug'
+    ]
   });
 
   console.log(`Generated ${result.outputFile}`);

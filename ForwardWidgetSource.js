@@ -3,22 +3,7 @@ const path = require('path');
 const vm = require('vm');
 
 const DEFAULT_WIDGET_ORDER = [
-  'lydevils.jable',
-  'lydevils.91porn',
-  'lydevils.pornhub',
-  'lydevils.javday',
-  'lydevils.javrate',
-  'lydevils.xvideos',
-  'lydevils.redtube',
-  'lydevils.youporn',
-  'lydevils.spankbang',
-  'lydevils.xhamster',
-  'lydevils.tube8',
-  'lydevils.vod',
-  'lydevils.vodmax',
   'lydevils.podcast',
-  'lydevils.live-tv',
-  'lydevils.tv-stations',
   'lydevils.forward-playback-debug'
 ];
 
@@ -331,6 +316,9 @@ async function buildWidgetEntryFromFile(filePath, options = {}) {
 async function generateSourceIndex(options = {}) {
   const widgetsDir = path.resolve(options.widgetsDir || path.join(__dirname, 'widgets'));
   const outputFile = path.resolve(options.outputFile || path.join(__dirname, 'forward-widgets.fwd'));
+  const includeWidgetIds = Array.isArray(options.includeWidgetIds) && options.includeWidgetIds.length > 0
+    ? new Set(options.includeWidgetIds.map((value) => String(value)))
+    : null;
   const widgets = fs.existsSync(widgetsDir)
     ? fs.readdirSync(widgetsDir)
       .filter((fileName) => fileName.endsWith('.js'))
@@ -339,7 +327,11 @@ async function generateSourceIndex(options = {}) {
 
   const widgetEntries = [];
   for (const widgetFile of widgets) {
-    widgetEntries.push(await buildWidgetEntryFromFile(widgetFile, options));
+    const entry = await buildWidgetEntryFromFile(widgetFile, options);
+    if (includeWidgetIds && !includeWidgetIds.has(entry.id)) {
+      continue;
+    }
+    widgetEntries.push(entry);
   }
 
   const orderIndex = new Map(DEFAULT_WIDGET_ORDER.map((widgetId, index) => [widgetId, index]));
@@ -354,8 +346,8 @@ async function generateSourceIndex(options = {}) {
   });
 
   const index = {
-    title: options.title || 'LYDevils 模块库',
-    description: options.description || 'LYDevils Forward 模块源',
+    title: options.title || 'LYDevils Widgets',
+    description: options.description || 'LYDevils Forward Widget Source',
     icon: options.icon || '',
     widgets: widgetEntries
   };

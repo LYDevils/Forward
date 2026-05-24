@@ -3,8 +3,7 @@
   title: '播客',
   description: 'RSS 播客源。',
   author: 'LYDevils',
-  site: '',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
