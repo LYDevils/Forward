@@ -5,6 +5,8 @@
   "main": "ForwardWidgetSource.js",
   "scripts": {
     "test": "node forwardSourceTest.js",
-    "build:fwd": "node generate-widget-index.js --base-url https://raw.githubusercontent.com/LYDevils/Forward/main/widgets --title \"LYDevils Widgets\" --description \"LYDevils Forward Widget Source\" --icon https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png"
+    "build:widgets": "node build-widget-artifacts.js",
+    "build:fwd": "node generate-widget-index.js",
+    "build": "npm run build:widgets && npm run build:fwd"
   }
 }

@@ -1,41 +1,31 @@
 const path = require('path');
 const { generateSourceIndex } = require('./ForwardWidgetSource');
 
-function getArgValue(flagName) {
-  const flagIndex = process.argv.indexOf(flagName);
-  if (flagIndex === -1) {
-    return null;
-  }
-
-  return process.argv[flagIndex + 1] || null;
+function buildIndexOptions(outputFile) {
+  return {
+    baseScriptUrl: 'https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/widgets',
+    widgetsDir: path.join(__dirname, 'widget-sources'),
+    outputFile,
+    title: 'LYDevils Widgets',
+    description: 'LYDevils Forward Widget Source',
+    icon: 'https://cdn.jsdelivr.net/gh/LYDevils/Forward@main/icon.png',
+    includeWidgetIds: [
+      'lydevils.forward.playback.debug'
+    ]
+  };
 }
 
 async function main() {
-  const baseScriptUrl = getArgValue('--base-url');
-  if (!baseScriptUrl) {
-    throw new Error('Missing required --base-url argument');
+  const outputs = [
+    path.join(__dirname, 'forward-widgets.fwd'),
+    path.join(__dirname, 'forward-widgets.json')
+  ];
+
+  for (const outputFile of outputs) {
+    const result = await generateSourceIndex(buildIndexOptions(outputFile));
+    console.log(`Generated ${result.outputFile}`);
+    console.log(`Widget count: ${result.index.widgets.length}`);
   }
-
-  const widgetsDir = getArgValue('--widgets-dir') || path.join(__dirname, 'widgets');
-  const outputFile = getArgValue('--out') || path.join(__dirname, 'forward-widgets.fwd');
-  const title = getArgValue('--title') || 'LYDevils Widgets';
-  const description = getArgValue('--description') || 'LYDevils Forward Widget Source';
-  const icon = getArgValue('--icon') || 'https://raw.githubusercontent.com/LYDevils/Forward/main/icon.png';
-
-  const result = await generateSourceIndex({
-    baseScriptUrl,
-    widgetsDir,
-    outputFile,
-    title,
-    description,
-    icon,
-    includeWidgetIds: [
-      'lydevils.forward-playback-debug'
-    ]
-  });
-
-  console.log(`Generated ${result.outputFile}`);
-  console.log(`Widget count: ${result.index.widgets.length}`);
 }
 
 main().catch((error) => {

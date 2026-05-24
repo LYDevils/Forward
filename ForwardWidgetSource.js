@@ -4,7 +4,7 @@ const vm = require('vm');
 
 const DEFAULT_WIDGET_ORDER = [
   'lydevils.podcast',
-  'lydevils.forward-playback-debug'
+  'lydevils.forward.playback.debug'
 ];
 
 function isHttpUrl(value) {
@@ -86,6 +86,7 @@ function validateWidgetMetadata(metadata) {
   const allowedMetadataFields = new Set([
     'id',
     'title',
+    'icon',
     'description',
     'author',
     'site',
@@ -314,7 +315,7 @@ async function buildWidgetEntryFromFile(filePath, options = {}) {
 }
 
 async function generateSourceIndex(options = {}) {
-  const widgetsDir = path.resolve(options.widgetsDir || path.join(__dirname, 'widgets'));
+  const widgetsDir = path.resolve(options.widgetsDir || path.join(__dirname, 'widget-sources'));
   const outputFile = path.resolve(options.outputFile || path.join(__dirname, 'forward-widgets.fwd'));
   const includeWidgetIds = Array.isArray(options.includeWidgetIds) && options.includeWidgetIds.length > 0
     ? new Set(options.includeWidgetIds.map((value) => String(value)))
