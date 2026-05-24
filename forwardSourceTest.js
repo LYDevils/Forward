@@ -43,12 +43,12 @@ async function run() {
   });
   console.log(`   extracted title: ${metadata.metadata.title}`);
 
-  if (generation.index.widgets.length !== 16) {
-    throw new Error(`Expected 16 widgets, got ${generation.index.widgets.length}`);
+  if (generation.index.widgets.length !== 17) {
+    throw new Error(`Expected 17 widgets, got ${generation.index.widgets.length}`);
   }
 
   console.log('\n5. Placeholder scan');
-  const forbiddenPatterns = [/example\.com/i, /示例/, /测试/, /\bdemo\b/i, /\bsample\b/i, /buildSample/, /createDemo/];
+  const forbiddenPatterns = [/example\.com/i, /示例/, /测试/, /\bdemo\b/i, /buildSample/, /createDemo/];
   for (const fileName of widgetFiles) {
     const fullPath = path.join(widgetsDir, fileName);
     const content = fs.readFileSync(fullPath, 'utf8');

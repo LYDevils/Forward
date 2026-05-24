@@ -146,6 +146,15 @@
       "version": "1.0.4",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tv-stations.js"
+    },
+    {
+      "id": "lydevils.forward-playback-debug",
+      "title": "Forward 播放调试",
+      "description": "用于验证 Forward 客户端实际支持的播放方式。",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/forward-playback-debug.js"
     }
   ]
 }

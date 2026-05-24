@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Forward 调试网页</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1020;
+      --panel: #131a2d;
+      --line: rgba(255,255,255,0.1);
+      --text: #f3f5ff;
+      --muted: #a7b0cc;
+      --accent: #7fd1ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(127, 209, 255, 0.22), transparent 26%),
+        linear-gradient(180deg, #11172a 0%, #090d19 100%);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .card {
+      width: min(720px, 100%);
+      background: rgba(19, 26, 45, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 28px;
+    }
+    p {
+      margin: 10px 0;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+    .ok {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1px solid rgba(127, 209, 255, 0.3);
+      color: var(--accent);
+      background: rgba(127, 209, 255, 0.08);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Forward App/WebView 调试页</h1>
+    <p>如果你能看到这个页面，说明 `playerType: app` 至少可以正常打开普通网页。</p>
+    <p>这个页面不包含视频，只用于验证 WebView 的基础打开与渲染能力。</p>
+    <div class="ok">看到此页面 = App/WebView 基础打开正常</div>
+  </main>
+</body>
+</html>

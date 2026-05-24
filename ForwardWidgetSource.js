@@ -18,7 +18,8 @@ const DEFAULT_WIDGET_ORDER = [
   'lydevils.vodmax',
   'lydevils.podcast',
   'lydevils.live-tv',
-  'lydevils.tv-stations'
+  'lydevils.tv-stations',
+  'lydevils.forward-playback-debug'
 ];
 
 function isHttpUrl(value) {

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Forward 页面内视频调试</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #091018;
+      --panel: #101923;
+      --line: rgba(255,255,255,0.1);
+      --text: #f2f6fb;
+      --muted: #9eb0c2;
+      --accent: #83ffca;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(131, 255, 202, 0.2), transparent 24%),
+        linear-gradient(180deg, #101923 0%, #070c13 100%);
+      padding: 20px;
+    }
+    .shell {
+      width: min(960px, 100%);
+      margin: 0 auto;
+      background: rgba(16, 25, 35, 0.9);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 28px;
+    }
+    p {
+      margin: 10px 0 18px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+    video {
+      width: 100%;
+      border-radius: 16px;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ok {
+      margin-top: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(131, 255, 202, 0.26);
+      color: var(--accent);
+      background: rgba(131, 255, 202, 0.08);
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <h1>Forward 页面内视频调试</h1>
+    <p>如果这个页面能打开，并且下面的视频能直接点播，说明 `playerType: app` 的 WebView 内部 HTML5 video 也正常。</p>
+    <video controls playsinline preload="metadata" poster="">
+      <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+      当前 WebView 不支持内嵌视频标签播放。
+    </video>
+    <div class="ok">看到页面且能播放视频 = App/WebView 页面内视频正常</div>
+  </main>
+</body>
+</html>
