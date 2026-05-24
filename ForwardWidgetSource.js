@@ -128,8 +128,8 @@ function validateWidgetMetadata(metadata) {
   }
 
   metadata.modules.forEach((moduleItem, moduleIndex) => {
-    if (!moduleItem.id || !moduleItem.functionName || !moduleItem.title) {
-      throw new Error(`WidgetMetadata.modules[${moduleIndex}] must include id, title and functionName`);
+    if (!moduleItem.functionName || !moduleItem.title) {
+      throw new Error(`WidgetMetadata.modules[${moduleIndex}] must include title and functionName`);
     }
 
     const extraModuleFields = Object.keys(moduleItem).filter((fieldName) => !allowedModuleFields.has(fieldName));

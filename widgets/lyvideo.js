@@ -5,7 +5,6 @@ WidgetMetadata = {
   requiredVersion: "0.0.1",
   modules: [
     {
-      id: "debugVideos",
       title: "Debug Videos",
       requiresWebView: false,
       functionName: "loadDebugVideos",
