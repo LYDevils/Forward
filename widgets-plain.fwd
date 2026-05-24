@@ -1,0 +1,16 @@
+{
+  "title": "LYDevils Widgets",
+  "description": "LYDevils Forward Widget Source",
+  "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
+  "widgets": [
+    {
+      "id": "debug",
+      "title": "Playback Debug",
+      "description": "Forward playback verification widget",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.6",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/debug-plain.js"
+    }
+  ]
+}
