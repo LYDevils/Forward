@@ -1,0 +1,16 @@
+{
+  "title": "Forward Proxy Widgets",
+  "description": "Proxy manifest pointing to official Forward demo widget.",
+  "icon": "https://cdn.jsdelivr.net/gh/InchStudio/ForwardWidgets@master/icon.png",
+  "widgets": [
+    {
+      "id": "forward.meta.demo",
+      "title": "DEMO",
+      "description": "Official Forward demo widget proxy.",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.0",
+      "author": "Forward",
+      "url": "https://cdn.jsdelivr.net/gh/InchStudio/ForwardWidgets@master/widgets/demo.js"
+    }
+  ]
+}
