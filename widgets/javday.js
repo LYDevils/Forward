@@ -68,7 +68,7 @@ WidgetMetadata = {
   description: 'JAVDay 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://javday.tv',
-  version: '1.0.13',
+  version: '1.0.14',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -208,8 +208,11 @@ async function loadDetail(link) {
     description,
     coverUrl,
     posterPath: coverUrl,
+    backdropPath: coverUrl,
     link: url,
     videoUrl,
+    childItems: buildDirectPlaybackItems(url, videoUrl, title, coverUrl),
+    episodeItems: buildDirectPlaybackItems(url, videoUrl, title, coverUrl),
     mediaType: 'movie',
     playerType: 'system',
     source: SITE.title
@@ -411,6 +414,20 @@ function hashId(value) {
     hash = ((hash << 5) - hash + text.charCodeAt(index)) | 0;
   }
   return SITE.key + '.' + Math.abs(hash);
+}
+
+function buildDirectPlaybackItems(link, videoUrl, title, coverUrl) {
+  return [{
+    id: videoUrl,
+    type: 'url',
+    title: title || '??',
+    link,
+    videoUrl,
+    posterPath: coverUrl,
+    backdropPath: coverUrl,
+    mediaType: 'movie',
+    playerType: 'system'
+  }];
 }
 
 function createMessage(title, description) {

@@ -1,17 +1,33 @@
 const path = require('path');
 const { generateSourceIndex } = require('./ForwardWidgetSource');
 
+const INCLUDED_WIDGET_IDS = [
+  'lydevils.vodmax',
+  'lydevils.vod',
+  'lydevils.pornhub',
+  'lydevils.jable',
+  'lydevils.91porn',
+  'lydevils.javday',
+  'lydevils.javrate',
+  'lydevils.xvideos',
+  'lydevils.xhamster',
+  'lydevils.spankbang',
+  'lydevils.redtube',
+  'lydevils.youporn',
+  'lydevils.live-tv',
+  'lydevils.tv-stations',
+  'lydevils.podcast'
+];
+
 function buildIndexOptions(outputFile) {
   return {
     baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
-    widgetsDir: path.join(__dirname, 'widget-sources'),
+    widgetsDir: path.join(__dirname, 'widgets'),
     outputFile,
-    title: 'LYDevils Widgets',
-    description: 'LYDevils Forward Widget Source',
+    title: 'LYDevils Forward Widgets',
+    description: 'LYDevils Forward module source.',
     icon: 'https://github.com/LYDevils/Forward/raw/main/icon.png',
-    includeWidgetIds: [
-      'debug'
-    ]
+    includeWidgetIds: INCLUDED_WIDGET_IDS
   };
 }
 

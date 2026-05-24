@@ -245,7 +245,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://cn.pornhub.com',
-  version: '1.0.37',
+  version: '1.0.38',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -454,7 +454,8 @@ async function loadDetail(link) {
     ''
   );
   const playbackOptions = await buildPlaybackOptions(url, html, title);
-  const firstSource = playbackOptions[0] || null;
+  const normalizedPlaybackOptions = attachPlaybackContext(playbackOptions, url, coverUrl);
+  const firstSource = normalizedPlaybackOptions.find((item) => item.playerType === 'system' && isPlayableUrl(item.videoUrl)) || normalizedPlaybackOptions[0] || null;
   const appVideoUrl = buildForwardPlayerUrl({
     pageUrl: url,
     title,
@@ -475,7 +476,8 @@ async function loadDetail(link) {
     backdropPath: coverUrl,
     link: url,
     videoUrl,
-    episodeItems: playbackOptions,
+    childItems: normalizedPlaybackOptions,
+    episodeItems: normalizedPlaybackOptions,
     mediaType: 'movie',
     playerType,
     source: SITE.title
@@ -551,7 +553,7 @@ async function loadVideoList(url) {
         const description = findDuration($, element) || SITE.title;
         results.push({
           id: videoUrl,
-          type: 'url',
+          type: 'link',
           title,
           description,
           coverUrl,
@@ -1032,7 +1034,7 @@ function addFavoriteVideoItem($, element, seen, results, baseUrl, listLabel) {
   seen.add(videoUrl);
   results.push({
     id: videoUrl,
-    type: 'url',
+    type: 'link',
     title,
     description,
     coverUrl,
@@ -1076,7 +1078,7 @@ function parseFavoriteAnchorsFromHtml(html, baseUrl, listLabel, seen, results) {
     seen.add(videoUrl);
     results.push({
       id: videoUrl,
-      type: 'url',
+      type: 'link',
       title,
       description: durationMatch ? '时长：' + durationMatch[0] : listLabel || 'Pornhub 收藏',
       coverUrl,
@@ -1224,6 +1226,19 @@ async function buildPlaybackOptions(pageUrl, html, title) {
     items.push(item);
   }
 
+  const sources = await extractVideoSources(html, normalizedPageUrl);
+  for (const sourceUrl of sources || []) {
+    const normalized = normalizeUrl(sourceUrl, normalizedPageUrl || SITE.baseUrl);
+    if (!normalized) continue;
+    add({
+      id: normalized,
+      type: 'url',
+      title: buildQualityOptionTitle(normalized, title, items.length),
+      videoUrl: normalized,
+      playerType: 'system'
+    });
+  }
+
   if (viewKey) {
     add({
       id: 'embed|' + viewKey,
@@ -1242,20 +1257,19 @@ async function buildPlaybackOptions(pageUrl, html, title) {
     playerType: 'app'
   });
 
-  const sources = await extractVideoSources(html, normalizedPageUrl);
-  for (const sourceUrl of sources || []) {
-    const normalized = normalizeUrl(sourceUrl, normalizedPageUrl || SITE.baseUrl);
-    if (!normalized) continue;
-    add({
-      id: normalized,
-      type: 'url',
-      title: buildQualityOptionTitle(normalized, title, items.length),
-      videoUrl: normalized,
-      playerType: 'system'
-    });
-  }
-
   return items;
+}
+
+function attachPlaybackContext(items, pageUrl, coverUrl) {
+  return (items || []).map((item, index) => Object.assign({
+    id: item && item.id ? item.id : 'pornhub.playback.' + index,
+    type: 'url',
+    title: item && item.title ? item.title : '播放源 ' + (index + 1),
+    link: pageUrl,
+    posterPath: coverUrl,
+    backdropPath: coverUrl,
+    mediaType: 'movie'
+  }, item || {}));
 }
 
 function buildQualityOptionTitle(url, baseTitle, index) {

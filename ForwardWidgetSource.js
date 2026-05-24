@@ -3,8 +3,22 @@ const path = require('path');
 const vm = require('vm');
 
 const DEFAULT_WIDGET_ORDER = [
-  'debug',
+  'lydevils.vodmax',
+  'lydevils.vod',
+  'lydevils.pornhub',
+  'lydevils.jable',
+  'lydevils.91porn',
+  'lydevils.javday',
+  'lydevils.javrate',
+  'lydevils.xvideos',
+  'lydevils.xhamster',
+  'lydevils.spankbang',
+  'lydevils.redtube',
+  'lydevils.youporn',
+  'lydevils.live-tv',
+  'lydevils.tv-stations',
   'lydevils.podcast',
+  'debug',
   'lydevils.forward.playback.debug'
 ];
 
@@ -329,11 +343,18 @@ async function generateSourceIndex(options = {}) {
 
   const widgetEntries = [];
   for (const widgetFile of widgets) {
-    const entry = await buildWidgetEntryFromFile(widgetFile, options);
-    if (includeWidgetIds && !includeWidgetIds.has(entry.id)) {
-      continue;
+    try {
+      const entry = await buildWidgetEntryFromFile(widgetFile, options);
+      if (includeWidgetIds && !includeWidgetIds.has(entry.id)) {
+        continue;
+      }
+      widgetEntries.push(entry);
+    } catch (error) {
+      if (String(error.message || error).includes('encrypted file')) {
+        continue;
+      }
+      throw error;
     }
-    widgetEntries.push(entry);
   }
 
   const orderIndex = new Map(DEFAULT_WIDGET_ORDER.map((widgetId, index) => [widgetId, index]));
@@ -348,8 +369,8 @@ async function generateSourceIndex(options = {}) {
   });
 
   const index = {
-    title: options.title || 'LYDevils Widgets',
-    description: options.description || 'LYDevils Forward Widget Source',
+    title: options.title || 'LYDevils Forward Widgets',
+    description: options.description || 'LYDevils Forward module source.',
     icon: options.icon || '',
     widgets: widgetEntries
   };

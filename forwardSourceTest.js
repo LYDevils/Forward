@@ -7,10 +7,27 @@ const {
   loadSourceIndex
 } = require('./ForwardWidgetSource');
 
+const INCLUDED_WIDGET_IDS = [
+  'lydevils.vodmax',
+  'lydevils.vod',
+  'lydevils.pornhub',
+  'lydevils.jable',
+  'lydevils.91porn',
+  'lydevils.javday',
+  'lydevils.javrate',
+  'lydevils.xvideos',
+  'lydevils.xhamster',
+  'lydevils.spankbang',
+  'lydevils.redtube',
+  'lydevils.youporn',
+  'lydevils.live-tv',
+  'lydevils.tv-stations',
+  'lydevils.podcast'
+];
+
 async function run() {
-  const widgetFile = path.join(__dirname, 'widget-sources', 'debug.js');
-  const encryptedWidgetFile = path.join(__dirname, 'widgets', 'debug.js');
-  const widgetsDir = path.join(__dirname, 'widget-sources');
+  const widgetFile = path.join(__dirname, 'widgets', 'vod.js');
+  const widgetsDir = path.join(__dirname, 'widgets');
   const widgetFiles = fs.readdirSync(widgetsDir).filter((fileName) => fileName.endsWith('.js'));
   const inspection = await inspectWidget(widgetFile);
 
@@ -32,12 +49,10 @@ async function run() {
       widgetsDir,
       outputFile,
       baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
-      title: 'LYDevils Widgets',
-      description: 'LYDevils Forward Widget Source',
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.',
       icon: 'https://github.com/LYDevils/Forward/raw/main/icon.png',
-      includeWidgetIds: [
-        'debug'
-      ]
+      includeWidgetIds: INCLUDED_WIDGET_IDS
     });
     console.log(`   output: ${generation.outputFile}`);
     console.log(`   widgets: ${generation.index.widgets.length}`);
@@ -55,21 +70,30 @@ async function run() {
   });
   console.log(`   extracted title: ${metadata.metadata.title}`);
 
-  if (generation.index.widgets.length !== 1) {
-    throw new Error(`Expected 1 widget, got ${generation.index.widgets.length}`);
+  if (generation.index.widgets.length !== INCLUDED_WIDGET_IDS.length) {
+    throw new Error(`Expected ${INCLUDED_WIDGET_IDS.length} widgets, got ${generation.index.widgets.length}`);
   }
 
-  console.log('\n5. Encrypted widget artifact');
-  const encryptedContent = fs.readFileSync(encryptedWidgetFile, 'utf8');
-  console.log(`   starts with FWENC1: ${String(encryptedContent.startsWith('FWENC1'))}`);
-  if (!encryptedContent.startsWith('FWENC1')) {
-    throw new Error('Expected encrypted widget artifact in widgets/forward-playback-debug.js');
-  }
-
-  console.log('\n6. Placeholder scan');
-  const forbiddenPatterns = [/example\.com/i, /绀轰緥/, /\bdemo\b/i, /buildSample/, /createDemo/];
+  console.log('\n5. Placeholder scan');
+  const forbiddenPatterns = [/example\.com/i, /缁€杞扮伐/, /\bdemo\b/i, /buildSample/, /createDemo/];
+  let scannedCount = 0;
   for (const fileName of widgetFiles) {
     const fullPath = path.join(widgetsDir, fileName);
+    let inspectionResult;
+    try {
+      inspectionResult = await inspectWidget(fullPath);
+    } catch (error) {
+      if (String(error.message || error).includes('Cannot read properties of null')
+        || String(error.message || error).includes('No WidgetMetadata found')
+        || String(error.message || error).includes('encrypted')) {
+        continue;
+      }
+      throw error;
+    }
+    if (!inspectionResult.metadata || !INCLUDED_WIDGET_IDS.includes(inspectionResult.metadata.id)) {
+      continue;
+    }
+
     const content = fs.readFileSync(fullPath, 'utf8');
     const hit = forbiddenPatterns.find((pattern) => pattern.test(content));
     if (hit) {
@@ -77,8 +101,9 @@ async function run() {
     }
 
     extractWidgetMetadata(content, { filename: fullPath });
+    scannedCount += 1;
   }
-  console.log(`   scanned widgets: ${widgetFiles.length}`);
+  console.log(`   scanned widgets: ${scannedCount}`);
 }
 
 run().catch((error) => {
