@@ -243,7 +243,7 @@ WidgetMetadata = {
   description: 'YouPorn 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.youporn.com',
-  version: '1.0.16',
+  version: '1.0.17',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -378,7 +378,7 @@ async function loadDetail(link) {
   );
   const videoUrl = extractVideoUrl(html, url);
   if (!videoUrl) {
-    return createMessage('未解析到播放地址', '详情页已加载，但未找到 mp4/m3u8 播放地址。可能需要登录、WebView 或当前网络受限。链接：' + url);
+    return createWebPlaybackFallbackDetail(url, title, '详情页已加载，但未找到 mp4/m3u8 播放地址。可能需要登录、WebView 或当前网络受限。');
   }
 
   return {
@@ -612,14 +612,7 @@ function buildDirectPlaybackItems(link, videoUrl, title, coverUrl) {
 
 function createWebPlaybackFallbackDetail(pageUrl, title, reason) {
   const normalizedPageUrl = normalizeUrl(pageUrl, SITE.baseUrl);
-  return {
-    id: hashId(normalizedPageUrl),
-    type: 'detail',
-    title: title || SITE.title,
-    description: ['脚本请求原站失败，可尝试网页播放。', reason].filter(Boolean).join(' '),
-    link: normalizedPageUrl,
-    videoUrl: normalizedPageUrl,
-    childItems: [
+  const childItems = [
       {
         id: hashId('web|' + normalizedPageUrl),
         type: 'url',
@@ -629,7 +622,16 @@ function createWebPlaybackFallbackDetail(pageUrl, title, reason) {
         mediaType: 'movie',
         playerType: 'app'
       }
-    ],
+    ];
+  return {
+    id: hashId(normalizedPageUrl),
+    type: 'detail',
+    title: title || SITE.title,
+    description: ['脚本请求原站失败，可尝试网页播放。', reason].filter(Boolean).join(' '),
+    link: normalizedPageUrl,
+    videoUrl: normalizedPageUrl,
+    childItems,
+    episodeItems: childItems,
     mediaType: 'movie',
     playerType: 'app',
     source: SITE.title
