@@ -112,20 +112,20 @@
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/youporn.js"
     },
     {
-      "id": "lydevils.live-tv",
+      "id": "lydevils.livetv",
       "title": "直播（电视+网络）",
       "description": "真实 IPTV 直播源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/live-tv.js"
     },
     {
-      "id": "lydevils.tv-stations",
+      "id": "lydevils.tvstations",
       "title": "电视台",
       "description": "真实电视台直播源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.5",
+      "version": "1.0.6",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tv-stations.js"
     },
@@ -134,7 +134,7 @@
       "title": "播客",
       "description": "RSS 播客源。",
       "requiredVersion": "0.0.1",
-      "version": "1.0.6",
+      "version": "1.0.7",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/podcast.js"
     }

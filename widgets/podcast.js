@@ -3,7 +3,7 @@
   title: '播客',
   description: 'RSS 播客源。',
   author: 'LYDevils',
-  version: '1.0.6',
+  version: '1.0.7',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -13,13 +13,6 @@
       description: '加载真实 RSS 源。',
       functionName: 'loadFeed',
       params: [{ name: 'feedUrl', title: 'RSS 链接', type: 'input' }]
-    },
-    {
-      id: 'get-episode-detail',
-      title: '单集详情',
-      description: '根据媒体链接加载单集详情。',
-      functionName: 'getEpisodeDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };

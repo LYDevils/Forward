@@ -15,8 +15,8 @@ const DEFAULT_WIDGET_ORDER = [
   'lydevils.spankbang',
   'lydevils.redtube',
   'lydevils.youporn',
-  'lydevils.live-tv',
-  'lydevils.tv-stations',
+  'lydevils.livetv',
+  'lydevils.tvstations',
   'lydevils.podcast',
   'debug',
   'lydevils.forward.playback.debug'

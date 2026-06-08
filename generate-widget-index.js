@@ -14,8 +14,8 @@ const INCLUDED_WIDGET_IDS = [
   'lydevils.spankbang',
   'lydevils.redtube',
   'lydevils.youporn',
-  'lydevils.live-tv',
-  'lydevils.tv-stations',
+  'lydevils.livetv',
+  'lydevils.tvstations',
   'lydevils.podcast'
 ];
 

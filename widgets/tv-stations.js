@@ -1,12 +1,12 @@
 ﻿const M3U_URL = 'https://iptv-org.github.io/iptv/categories/news.m3u';
 
 WidgetMetadata = {
-  id: 'lydevils.tv-stations',
+  id: 'lydevils.tvstations',
   title: '电视台',
   description: '真实电视台直播源。',
   author: 'LYDevils',
   site: 'https://iptv-org.github.io',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -16,13 +16,6 @@ WidgetMetadata = {
       description: '加载真实 M3U 直播流。',
       functionName: 'loadStations',
       params: []
-    },
-    {
-      id: 'get-station-detail',
-      title: '电视台详情',
-      description: '根据链接加载直播详情。',
-      functionName: 'getStationDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };

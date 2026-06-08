@@ -1,12 +1,12 @@
 ﻿const M3U_URL = 'https://iptv-org.github.io/iptv/index.m3u';
 
 WidgetMetadata = {
-  id: 'lydevils.live-tv',
+  id: 'lydevils.livetv',
   title: '直播（电视+网络）',
   description: '真实 IPTV 直播源。',
   author: 'LYDevils',
   site: 'https://iptv-org.github.io',
-  version: '1.0.5',
+  version: '1.0.6',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -16,13 +16,6 @@ WidgetMetadata = {
       description: '加载真实 M3U 直播流。',
       functionName: 'loadLiveList',
       params: []
-    },
-    {
-      id: 'get-live-detail',
-      title: '直播详情',
-      description: '根据链接加载直播详情。',
-      functionName: 'getLiveDetail',
-      params: [{ name: 'url', title: '链接', type: 'input' }]
     }
   ]
 };
