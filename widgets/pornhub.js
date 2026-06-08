@@ -2,13 +2,15 @@
   "file": "pornhub.js",
   "key": "pornhub",
   "title": "Pornhub",
-  "baseUrl": "https://cn.pornhub.com",
+  "baseUrl": "https://www.pornhub.com",
   "searchPath": "/video/search?search={keyword}&page={page}",
   "latestPath": "/video",
   "videoPathKeywords": [
     "view_video.php"
   ]
 };
+
+const PORNHUB_ORIGINS = ['https://www.pornhub.com', 'https://cn.pornhub.com'];
 
 const CATEGORY_TITLE_MAP = {
   "18 25": "18-25",
@@ -244,8 +246,8 @@ WidgetMetadata = {
   title: 'Pornhub',
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
-  site: 'https://cn.pornhub.com',
-  version: '1.0.38',
+  site: 'https://www.pornhub.com',
+  version: '1.0.40',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -335,19 +337,8 @@ WidgetMetadata = {
       requiresWebView: true,
       functionName: 'loadCreatorVideos',
       params: [
-        { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://cn.pornhub.com/model/nana_taipei' },
+        { name: 'profile', title: '作者主页链接', type: 'input', value: 'https://www.pornhub.com/model/nana_taipei' },
         { name: 'page', title: '页码', type: 'page' }
-      ]
-    },
-    {
-      id: 'loadResource',
-      title: '播放源解析',
-      description: '解析视频的真实播放源，优先返回可直接播放地址。',
-      requiresWebView: false,
-      functionName: 'loadResource',
-      type: 'stream',
-      params: [
-        { name: 'link', title: '视频链接', type: 'input', value: 'https://cn.pornhub.com/view_video.php?viewkey=691970bc6375e' }
       ]
     }
   ]
@@ -393,7 +384,7 @@ loadCreatorVideos = async (params = {}) => {
 
   const url = buildProfileVideosUrl(profile, page);
   if (!url) {
-    return [createMessage('链接无效', '请输入作者主页链接，格式例如 https://cn.pornhub.com/model/xxx。')];
+    return [createMessage('链接无效', '请输入作者主页链接，格式例如 https://www.pornhub.com/model/xxx。')];
   }
 
   const results = await loadVideoList(url);
@@ -432,7 +423,12 @@ async function loadDetail(link) {
     return loadVideoList(rawLink.slice('category|'.length));
   }
   const url = normalizeUrl(rawLink, SITE.baseUrl);
-  const html = await fetchText(url);
+  let html;
+  try {
+    html = await fetchText(url);
+  } catch (error) {
+    return createWebPlaybackFallbackDetail(url, SITE.title, String(error.message || error));
+  }
   const $ = Widget.html.load(html);
   const title = extractDetailTitle(html) || cleanText(
     $('meta[property="og:title"]').attr('content') ||
@@ -494,7 +490,22 @@ loadResource = async (params = {}) => {
   }
 
   const pageUrl = normalizeUrl(rawLink, SITE.baseUrl);
-  const html = await fetchText(pageUrl);
+  let html;
+  try {
+    html = await fetchText(pageUrl);
+  } catch (error) {
+    const fallbackDescription = [description, String(error.message || error)].filter(Boolean).join(' | ');
+    return [{
+      name: title + ' - 网页播放',
+      description: fallbackDescription,
+      url: buildForwardPlayerUrl({
+        pageUrl,
+        title,
+        description: fallbackDescription,
+        viewKey: extractViewKey(pageUrl, '')
+      })
+    }];
+  }
   const playbackOptions = await buildPlaybackOptions(pageUrl, html, title);
   if (playbackOptions.length > 0) {
     return playbackOptions.map((item) => ({
@@ -1127,9 +1138,48 @@ function buildSearchUrl(keyword, page) {
 }
 
 async function fetchText(url) {
-  const response = await Widget.http.get(url, { headers: DEFAULT_HEADERS, timeout: 15000 });
+  const response = await fetchWithPornhubFallbacks(url, { headers: DEFAULT_HEADERS, timeout: 15000 });
   if (typeof response === 'string') return response;
   return String(response.data || response.body || response.html || '');
+}
+
+async function fetchWithPornhubFallbacks(url, options) {
+  const candidates = buildPornhubUrlCandidates(url);
+  let lastError = null;
+
+  for (const candidate of candidates) {
+    try {
+      return await Widget.http.get(candidate, options);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError || new Error('Pornhub 请求失败');
+}
+
+function buildPornhubUrlCandidates(url) {
+  const normalized = normalizeUrl(url, SITE.baseUrl);
+  const candidates = [];
+  const seen = new Set();
+
+  function add(value) {
+    if (!value || seen.has(value)) return;
+    seen.add(value);
+    candidates.push(value);
+  }
+
+  add(normalized);
+
+  const parsed = parseHttpUrl(normalized);
+  if (parsed && isPornhubHost(parsed.hostname)) {
+    const pathAndSearch = normalized.slice(parsed.origin.length);
+    for (const origin of PORNHUB_ORIGINS) {
+      add(origin.replace(/\/$/, '') + pathAndSearch);
+    }
+  }
+
+  return candidates;
 }
 
 function pickTitle($, element, image) {
@@ -1270,6 +1320,42 @@ function attachPlaybackContext(items, pageUrl, coverUrl) {
     backdropPath: coverUrl,
     mediaType: 'movie'
   }, item || {}));
+}
+
+function createWebPlaybackFallbackDetail(pageUrl, title, reason) {
+  const normalizedPageUrl = normalizeUrl(pageUrl, SITE.baseUrl);
+  const description = ['脚本请求原站失败，已切换到网页播放入口。', reason].filter(Boolean).join(' ');
+  const appVideoUrl = buildForwardPlayerUrl({
+    pageUrl: normalizedPageUrl,
+    title: title || SITE.title,
+    description,
+    viewKey: extractViewKey(normalizedPageUrl, '')
+  });
+  const childItems = [
+    {
+      id: 'page|' + normalizedPageUrl,
+      type: 'url',
+      title: '站内网页播放',
+      link: normalizedPageUrl,
+      videoUrl: normalizedPageUrl,
+      mediaType: 'movie',
+      playerType: 'app'
+    }
+  ];
+
+  return {
+    id: normalizedPageUrl,
+    type: 'detail',
+    title: title || SITE.title,
+    description,
+    link: normalizedPageUrl,
+    videoUrl: appVideoUrl,
+    childItems,
+    episodeItems: childItems,
+    mediaType: 'movie',
+    playerType: 'app',
+    source: SITE.title
+  };
 }
 
 function buildQualityOptionTitle(url, baseTitle, index) {

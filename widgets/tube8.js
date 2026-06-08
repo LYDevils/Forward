@@ -240,7 +240,7 @@ WidgetMetadata = {
   description: 'Tube8 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.tube8.com',
-  version: '1.0.16',
+  version: '1.0.17',
   requiredVersion: '0.0.1',
   detailCacheDuration: 300,
   modules: [
@@ -350,7 +350,12 @@ async function loadDetail(link) {
   }
 
   const url = normalizeUrl(rawLink, SITE.baseUrl);
-  const html = await fetchText(url);
+  let html;
+  try {
+    html = await fetchText(url);
+  } catch (error) {
+    return createWebPlaybackFallbackDetail(url, SITE.title, String(error.message || error));
+  }
   const $ = Widget.html.load(html);
   const title = cleanText(
     $('meta[property="og:title"]').attr('content') ||
@@ -663,6 +668,31 @@ function buildDirectPlaybackItems(link, videoUrl, title, coverUrl) {
   }];
 }
 
+function createWebPlaybackFallbackDetail(pageUrl, title, reason) {
+  const normalizedPageUrl = normalizeUrl(pageUrl, SITE.baseUrl);
+  return {
+    id: hashId(normalizedPageUrl),
+    type: 'detail',
+    title: title || SITE.title,
+    description: ['脚本请求原站失败，可尝试网页播放。', reason].filter(Boolean).join(' '),
+    link: normalizedPageUrl,
+    videoUrl: normalizedPageUrl,
+    childItems: [
+      {
+        id: hashId('web|' + normalizedPageUrl),
+        type: 'url',
+        title: '网页播放',
+        link: normalizedPageUrl,
+        videoUrl: normalizedPageUrl,
+        mediaType: 'movie',
+        playerType: 'app'
+      }
+    ],
+    mediaType: 'movie',
+    playerType: 'app',
+    source: SITE.title
+  };
+}
 function createMessage(title, description) {
   return {
     id: SITE.key + '.message.' + hashId(title + description),
