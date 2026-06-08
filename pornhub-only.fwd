@@ -1,0 +1,16 @@
+{
+  "title": "LYDevils Pornhub",
+  "description": "Pornhub-only Forward module source.",
+  "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
+  "widgets": [
+    {
+      "id": "lydevils.pornhub",
+      "title": "Pornhub",
+      "description": "Pornhub 真实视频数据源。",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.40",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/pornhub.js"
+    }
+  ]
+}
