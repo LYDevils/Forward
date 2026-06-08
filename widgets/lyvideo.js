@@ -1,10 +1,11 @@
 WidgetMetadata = {
   id: "lyvideo",
   title: "LY Video",
-  version: "1.0.8",
+  version: "1.0.9",
   requiredVersion: "0.0.1",
   modules: [
     {
+      id: "debug-videos",
       title: "Debug Videos",
       requiresWebView: false,
       functionName: "loadDebugVideos",

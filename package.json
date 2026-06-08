@@ -7,6 +7,7 @@
     "test": "node forwardSourceTest.js",
     "build:widgets": "node build-widget-artifacts.js",
     "build:fwd": "node generate-widget-index.js",
-    "build": "npm run build:widgets && npm run build:fwd"
+    "build:adult": "node generate-adult-indexes.js",
+    "build": "npm run build:widgets && npm run build:fwd && npm run build:adult"
   }
 }

@@ -269,7 +269,7 @@ WidgetMetadata = {
   description: 'Pornhub 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://www.pornhub.com',
-  version: '1.0.41',
+  version: '1.0.42',
   requiredVersion: '0.0.1',
   detailCacheDuration:1,
   modules: [
@@ -1823,7 +1823,20 @@ function cleanText(value) {
 }
 
 function unescapeUrl(value) {
-  return String(value || '').replace(/\\\//g, '/').replace(/\\u0026/g, '&').replace(/\\"/g, '"');
+  return String(value || '')
+    .replace(/\\\//g, '/')
+    .replace(/\\u0026/gi, '&')
+    .replace(/\\u003d/gi, '=')
+    .replace(/\\u003f/gi, '?')
+    .replace(/\\u002f/gi, '/')
+    .replace(/\\u003a/gi, ':')
+    .replace(/%5C%2F/gi, '/')
+    .replace(/%5C\//gi, '/')
+    .replace(/&amp;/g, '&')
+    .replace(/&#38;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\\"/g, '"');
 }
 
 function hashId(value) {

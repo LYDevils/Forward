@@ -15,12 +15,19 @@ const DEFAULT_WIDGET_ORDER = [
   'lydevils.spankbang',
   'lydevils.redtube',
   'lydevils.youporn',
+  'lydevils.tube8',
   'lydevils.livetv',
   'lydevils.tvstations',
   'lydevils.podcast',
   'debug',
   'lydevils.forward.playback.debug'
 ];
+
+const VALIDATION_ERROR_PREFIX = '模块信息校验失败，请修改后重试';
+
+function createValidationError(message) {
+  return new Error(`${VALIDATION_ERROR_PREFIX}：${message}`);
+}
 
 function isHttpUrl(value) {
   return typeof value === 'string' && /^https?:\/\//i.test(value);
@@ -59,22 +66,22 @@ async function loadJson(resource) {
 
 function validateSourceIndex(index) {
   if (!index || typeof index !== 'object') {
-    throw new Error('Source index must be an object');
+    throw createValidationError('Source index must be an object');
   }
 
   if (!index.title || typeof index.title !== 'string') {
-    throw new Error('Source index must include title');
+    throw createValidationError('Source index must include title');
   }
 
   if (!Array.isArray(index.widgets)) {
-    throw new Error('Source index must include widgets array');
+    throw createValidationError('Source index must include widgets array');
   }
 
   index.widgets.forEach((widget, indexValue) => {
     const requiredFields = ['id', 'title', 'version', 'requiredVersion', 'author', 'url'];
     const missingFields = requiredFields.filter((fieldName) => !widget[fieldName]);
     if (missingFields.length > 0) {
-      throw new Error(
+      throw createValidationError(
         `Widget entry at index ${indexValue} is missing fields: ${missingFields.join(', ')}`
       );
     }
@@ -85,17 +92,17 @@ function validateSourceIndex(index) {
 
 function validateWidgetMetadata(metadata) {
   if (!metadata || typeof metadata !== 'object') {
-    throw new Error('WidgetMetadata must be an object');
+    throw createValidationError('WidgetMetadata must be an object');
   }
 
   const requiredFields = ['id', 'title', 'version', 'requiredVersion', 'modules'];
   const missingFields = requiredFields.filter((fieldName) => !metadata[fieldName]);
   if (missingFields.length > 0) {
-    throw new Error(`WidgetMetadata is missing fields: ${missingFields.join(', ')}`);
+    throw createValidationError(`WidgetMetadata is missing fields: ${missingFields.join(', ')}`);
   }
 
   if (!Array.isArray(metadata.modules)) {
-    throw new Error('WidgetMetadata.modules must be an array');
+    throw createValidationError('WidgetMetadata.modules must be an array');
   }
 
   const allowedMetadataFields = new Set([
@@ -138,34 +145,38 @@ function validateWidgetMetadata(metadata) {
 
   const extraMetadataFields = Object.keys(metadata).filter((fieldName) => !allowedMetadataFields.has(fieldName));
   if (extraMetadataFields.length > 0) {
-    throw new Error(`WidgetMetadata contains unsupported fields: ${extraMetadataFields.join(', ')}`);
+    throw createValidationError(`WidgetMetadata contains unsupported fields: ${extraMetadataFields.join(', ')}`);
   }
 
   metadata.modules.forEach((moduleItem, moduleIndex) => {
-    if (!moduleItem.functionName || !moduleItem.title) {
-      throw new Error(`WidgetMetadata.modules[${moduleIndex}] must include title and functionName`);
+    if (!moduleItem || typeof moduleItem !== 'object') {
+      throw createValidationError(`WidgetMetadata.modules[${moduleIndex}] must be an object`);
+    }
+
+    if (!moduleItem.id || !moduleItem.functionName || !moduleItem.title) {
+      throw createValidationError(`WidgetMetadata.modules[${moduleIndex}] must include id, title and functionName`);
     }
 
     const extraModuleFields = Object.keys(moduleItem).filter((fieldName) => !allowedModuleFields.has(fieldName));
     if (extraModuleFields.length > 0) {
-      throw new Error(
+      throw createValidationError(
         `WidgetMetadata.modules[${moduleIndex}] contains unsupported fields: ${extraModuleFields.join(', ')}`
       );
     }
 
     if (moduleItem.type && !allowedModuleTypes.has(moduleItem.type)) {
-      throw new Error(
+      throw createValidationError(
         `WidgetMetadata.modules[${moduleIndex}] has unsupported type: ${moduleItem.type}`
       );
     }
 
     if (!Array.isArray(moduleItem.params) && moduleItem.params != null) {
-      throw new Error(`WidgetMetadata.modules[${moduleIndex}].params must be an array`);
+      throw createValidationError(`WidgetMetadata.modules[${moduleIndex}].params must be an array`);
     }
 
     (moduleItem.params || []).forEach((paramItem, paramIndex) => {
       if (!paramItem || typeof paramItem !== 'object') {
-        throw new Error(
+        throw createValidationError(
           `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] must be an object`
         );
       }
@@ -173,20 +184,20 @@ function validateWidgetMetadata(metadata) {
       const requiredParamFields = ['name', 'title', 'type'];
       const missingParamFields = requiredParamFields.filter((fieldName) => !paramItem[fieldName]);
       if (missingParamFields.length > 0) {
-        throw new Error(
+        throw createValidationError(
           `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] is missing fields: ${missingParamFields.join(', ')}`
         );
       }
 
       const extraParamFields = Object.keys(paramItem).filter((fieldName) => !allowedParamFields.has(fieldName));
       if (extraParamFields.length > 0) {
-        throw new Error(
+        throw createValidationError(
           `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] contains unsupported fields: ${extraParamFields.join(', ')}`
         );
       }
 
       if (!allowedParamTypes.has(paramItem.type)) {
-        throw new Error(
+        throw createValidationError(
           `WidgetMetadata.modules[${moduleIndex}].params[${paramIndex}] has unsupported type: ${paramItem.type}`
         );
       }
@@ -274,7 +285,7 @@ function extractWidgetMetadata(scriptContent, options = {}) {
 
   const metadata = getCapturedMetadata();
   if (!metadata) {
-    throw new Error(`No WidgetMetadata found in ${options.filename || 'widget.js'}`);
+    throw createValidationError(`No WidgetMetadata found in ${options.filename || 'widget.js'}`);
   }
 
   return {
@@ -308,14 +319,14 @@ async function buildWidgetEntryFromFile(filePath, options = {}) {
   const scriptContent = fs.readFileSync(filePath, 'utf8');
   const inspection = extractWidgetMetadata(scriptContent, { filename: filePath });
   if (inspection.encrypted) {
-    throw new Error(`Cannot generate widget entry from encrypted file: ${filePath}`);
+    throw createValidationError(`Cannot generate widget entry from encrypted file: ${filePath}`);
   }
 
   const metadata = inspection.metadata;
   const fileName = path.basename(filePath);
   const baseScriptUrl = String(options.baseScriptUrl || '').replace(/\/$/, '');
   if (!baseScriptUrl) {
-    throw new Error('baseScriptUrl is required to generate widget entry');
+    throw createValidationError('baseScriptUrl is required to generate widget entry');
   }
 
   return {

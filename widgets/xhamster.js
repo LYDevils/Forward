@@ -258,7 +258,7 @@ WidgetMetadata = {
   description: 'xHamster 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://xhamster.com',
-  version: '1.0.18',
+  version: '1.0.19',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -672,7 +672,20 @@ function cleanText(value) {
 }
 
 function unescapeUrl(value) {
-  return String(value || '').replace(/\\\//g, '/').replace(/\\u0026/g, '&').replace(/\\"/g, '"');
+  return String(value || '')
+    .replace(/\\\//g, '/')
+    .replace(/\\u0026/gi, '&')
+    .replace(/\\u003d/gi, '=')
+    .replace(/\\u003f/gi, '?')
+    .replace(/\\u002f/gi, '/')
+    .replace(/\\u003a/gi, ':')
+    .replace(/%5C%2F/gi, '/')
+    .replace(/%5C\//gi, '/')
+    .replace(/&amp;/g, '&')
+    .replace(/&#38;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\\"/g, '"');
 }
 
 function hashId(value) {
@@ -685,17 +698,35 @@ function hashId(value) {
 }
 
 function buildDirectPlaybackItems(link, videoUrl, title, coverUrl) {
-  return [{
-    id: videoUrl,
-    type: 'url',
-    title: title || '??',
-    link,
-    videoUrl,
-    posterPath: coverUrl,
-    backdropPath: coverUrl,
-    mediaType: 'movie',
-    playerType: 'system'
-  }];
+  const normalizedPageUrl = normalizeUrl(link, SITE.baseUrl);
+  const items = [];
+  if (videoUrl) {
+    items.push({
+      id: videoUrl,
+      type: 'url',
+      title: title ? title + ' - 直链播放' : '直链播放',
+      link: normalizedPageUrl,
+      videoUrl,
+      posterPath: coverUrl,
+      backdropPath: coverUrl,
+      mediaType: 'movie',
+      playerType: 'system'
+    });
+  }
+  if (normalizedPageUrl) {
+    items.push({
+      id: hashId('web|' + normalizedPageUrl),
+      type: 'url',
+      title: '网页播放',
+      link: normalizedPageUrl,
+      videoUrl: normalizedPageUrl,
+      posterPath: coverUrl,
+      backdropPath: coverUrl,
+      mediaType: 'movie',
+      playerType: 'app'
+    });
+  }
+  return items;
 }
 
 function createWebPlaybackFallbackDetail(pageUrl, title, reason) {

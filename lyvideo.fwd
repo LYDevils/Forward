@@ -8,7 +8,7 @@
       "title": "LY Video",
       "description": "Minimal video-style Forward widget",
       "requiredVersion": "0.0.1",
-      "version": "1.0.8",
+      "version": "1.0.9",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/lyvideo.js"
     }
