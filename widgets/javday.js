@@ -43,6 +43,28 @@ const CATEGORY_OPTIONS = mergeCategoryOptions(
   CHANNEL_OPTIONS
 );
 
+const CATEGORY_PAGE_OPTIONS = [
+  { title: "\u9996\u9875", value: SITE.latestPath || "/" }
+];
+
+const SITE_CATEGORIES_MODULE = {
+  id: 'site-categories',
+  title: '\u5e73\u53f0\u5206\u7c7b',
+  description: '\u4ece\u5e73\u53f0\u5f53\u524d\u9875\u9762\u6293\u53d6\u771f\u5b9e\u5206\u7c7b\u5165\u53e3\u3002',
+  functionName: 'loadSiteCategories',
+  cacheDuration: 300,
+  params: [
+    {
+      name: 'categoryPage',
+      title: '\u5206\u7c7b\u5165\u53e3',
+      type: 'enumeration',
+      value: CATEGORY_PAGE_OPTIONS[0] ? CATEGORY_PAGE_OPTIONS[0].value : '/',
+      enumOptions: CATEGORY_PAGE_OPTIONS
+    },
+    { name: 'page', title: '\u89c6\u9891\u9875\u7801', type: 'page' }
+  ]
+};
+
 function mergeCategoryOptions() {
   const seen = new Set();
   const output = [];
@@ -68,7 +90,7 @@ WidgetMetadata = {
   description: 'JAVDay 真实视频数据源。',
   author: 'LYDevils',
   site: 'https://javday.tv',
-  version: '1.0.16',
+  version: '1.0.17',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -139,6 +161,8 @@ WidgetMetadata = {
   ]
 };
 
+WidgetMetadata.modules = [SITE_CATEGORIES_MODULE].concat(WidgetMetadata.modules.filter(hasUsablePresetModule));
+
 searchVideos = async (params = {}) => {
   const keyword = String(params.keyword || '').trim();
   const page = Math.max(1, Number(params.page || 1));
@@ -146,6 +170,44 @@ searchVideos = async (params = {}) => {
   return loadVideoList(url);
 };
 
+
+
+loadSiteCategories = async (params = {}) => {
+  const preset = CATEGORY_PAGE_OPTIONS.find((item) => item.value === params.categoryPage) || CATEGORY_PAGE_OPTIONS[0];
+  const startUrl = normalizeUrl((preset && preset.value) || params.categoryPage || SITE.latestPath || '/', SITE.baseUrl);
+  const page = Math.max(1, Number(params.page || 1));
+  try {
+    const html = await fetchText(startUrl);
+    const $ = Widget.html.load(html);
+    const results = [];
+    const seen = new Set();
+
+    $('a[href]').each((_, element) => {
+      const categoryUrl = normalizeUrl($(element).attr('href'), SITE.baseUrl);
+      if (!isLikelyCategoryUrl(categoryUrl)) return;
+      const key = categoryUrl.replace(/#.*$/, '').replace(/\/$/, '');
+      if (!key || seen.has(key)) return;
+      const title = pickCategoryTitle($, element, categoryUrl);
+      if (!title) return;
+      seen.add(key);
+      const targetUrl = buildCategoryUrl(categoryUrl, page);
+      results.push({
+        id: hashId('category|' + targetUrl),
+        type: 'link',
+        title,
+        description: ['\u5e73\u53f0\u771f\u5b9e\u5165\u53e3', page > 1 ? '\u7b2c ' + page + ' \u9875' : ''].filter(Boolean).join(' | '),
+        link: 'category|' + targetUrl,
+        mediaType: 'movie',
+        playerType: 'system',
+        source: SITE.title
+      });
+    });
+
+    return results.length > 0 ? results.slice(0, 60) : [createMessage('\u672a\u627e\u5230\u5206\u7c7b', '\u5e73\u53f0\u5f53\u524d\u9875\u9762\u6ca1\u6709\u8fd4\u56de\u53ef\u8bc6\u522b\u7684\u5206\u7c7b\u5165\u53e3\uff0c\u8bf7\u6362\u5206\u7c7b\u5165\u53e3\u6216\u7a0d\u540e\u91cd\u8bd5\u3002')];
+  } catch (error) {
+    return [createMessage('\u5206\u7c7b\u8bfb\u53d6\u5931\u8d25', String(error.message || error))];
+  }
+};
 
 loadCategoryVideos = async (params = {}) => {
   const preset = CATEGORY_OPTIONS.find((item) => item.value === params.categoryPreset) || CATEGORY_OPTIONS[0];
@@ -294,6 +356,37 @@ async function fetchText(url) {
   return String(response.data || response.body || response.html || '');
 }
 
+
+function hasUsablePresetModule(moduleItem) {
+  const params = moduleItem && Array.isArray(moduleItem.params) ? moduleItem.params : [];
+  const categoryParam = params.find((param) => param && param.name === 'categoryPreset');
+  return !categoryParam || (Array.isArray(categoryParam.enumOptions) && categoryParam.enumOptions.length > 0);
+}
+
+function pickCategoryTitle($, element, url) {
+  const anchor = $(element);
+  let title = cleanText(anchor.attr('title') || anchor.attr('aria-label') || anchor.text() || '');
+  if (!title || title.length > 80) title = titleFromCategoryUrl(url);
+  title = title
+    .replace(/\b\d[\d,.KMB]*\s+Videos?\b/gi, ' ')
+    .replace(/\s+Category$/i, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (typeof localizeCategoryTitle === 'function') title = localizeCategoryTitle(title);
+  if (!title || title.length < 2 || title.length > 60 || isBlockedCategoryTitle(title)) return '';
+  return title;
+}
+
+function titleFromCategoryUrl(url) {
+  const cleanUrl = String(url || '').replace(/[?#].*$/, '').replace(/\/$/, '');
+  const part = cleanUrl.split('/').filter(Boolean).pop() || '';
+  return decodeURIComponent(part).replace(/[-_]+/g, ' ').trim();
+}
+
+function isBlockedCategoryTitle(title) {
+  return /^(?:home|login|log in|sign in|sign up|join|upload|premium|live|photos|gifs|community|blog|support|terms|privacy|dmca|2257|advertising|help|language|categories|category|tags|tag|channels|channel|models|pornstars|latest|new|browse|\u9996\u9875|\u767b\u5f55|\u6ce8\u518c|\u4e0a\u4f20|\u76f4\u64ad|\u5206\u7c7b|\u5206\u7c7b\u603b\u89c8|\u6807\u7b7e|\u6807\u7b7e\u603b\u89c8|\u9891\u9053|\u9891\u9053\u603b\u89c8|\u660e\u661f\u6f14\u5458|\u6700\u65b0|\u66f4\u591a|\u5173\u4e8e)$/i.test(String(title || '').trim());
+}
+
 function pickTitle($, element, image) {
   const anchor = $(element);
   const container = anchor.closest('article, li, .video-box, .video-item, .thumb-block, .pcVideoListItem, .wrap, .card, div');
@@ -383,6 +476,7 @@ function isLikelyCategoryUrl(url) {
   const lower = String(url || '').toLowerCase();
   if (!lower.startsWith(SITE.baseUrl.toLowerCase().replace(/\/$/, ''))) return false;
   if (isLikelyVideoUrl(url)) return false;
+  if ((SITE.categoryPathKeywords || []).some((part) => lower.includes(String(part).toLowerCase()))) return true;
   return ['/category', '/categories', '/channels', '/channel', '/tags', '/tag', '/pornstars', '/models', '/searches', '/latest', '/new', '/browse'].some((part) => lower.includes(part));
 }
 
