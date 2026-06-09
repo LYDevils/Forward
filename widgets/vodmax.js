@@ -62,6 +62,7 @@
     { "id": "lsb", "name": "lsb", "baseUrl": "https://apilsbzy1.com/api.php/provide/vod", "group": "premium" },
     { "id": "hsck", "name": "黄色仓库", "baseUrl": "https://hsckzy.vip/api.php/provide/vod", "group": "premium" },
     { "id": "yutu", "name": "玉兔", "baseUrl": "https://yutuzy10.com/api.php/provide/vod", "group": "premium" },
+    { "id": "msnii", "name": "美少女资源站", "baseUrl": "https://www.msnii.com/api/json.php", "group": "premium" },
     { "id": "xrbsp", "name": "淫水机资源站", "baseUrl": "https://www.xrbsp.com/api/json.php", "group": "premium" },
     { "id": "gdlsp", "name": "香奶儿资源站", "baseUrl": "https://www.gdlsp.com/api/json.php", "group": "premium" },
     { "id": "kxgav", "name": "白嫖资源站", "baseUrl": "https://www.kxgav.com/api/json.php", "group": "premium" },
@@ -88,7 +89,7 @@ WidgetMetadata = {
     title: "VodMax",
     description: "聚合点播数据源",
     author: "LYDevils",
-  version: "1.0.7",
+  version: "1.0.8",
     requiredVersion: "0.0.1",
     site: "https://t.me/MakkaPakkaOvO",
     detailCacheDuration:3600,
@@ -97,6 +98,7 @@ WidgetMetadata = {
             id: "load-cms-list",
             title: "资源列表",
             functionName: "loadCmsList",
+            type: "list",
             cacheDuration:300,
             params: [
                 {
@@ -125,7 +127,7 @@ WidgetMetadata = {
                     belongTo: { paramName: "group", value: ["premium"] },
                     enumOptions: premiumOptions
                 },
-                { name: "page", title: "页码", type: "page" }
+                { name: "page", title: "页码", type: "page", startPage: 1 }
             ]
         }
     ]

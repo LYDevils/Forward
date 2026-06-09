@@ -137,10 +137,11 @@ function validateWidgetMetadata(metadata) {
     'description',
     'value',
     'belongTo',
+    'startPage',
     'placeholders',
     'enumOptions'
   ]);
-  const allowedModuleTypes = new Set(['danmu', 'stream', 'subtitle']);
+  const allowedModuleTypes = new Set(['list', 'danmu', 'stream', 'subtitle']);
   const allowedParamTypes = new Set(['input', 'constant', 'enumeration', 'count', 'page', 'offset', 'language']);
 
   const extraMetadataFields = Object.keys(metadata).filter((fieldName) => !allowedMetadataFields.has(fieldName));
