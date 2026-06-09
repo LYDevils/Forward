@@ -334,9 +334,7 @@ loadSiteCategories = async (params = {}) => {
         type: 'link',
         title,
         description: ['\u5e73\u53f0\u771f\u5b9e\u5165\u53e3', page > 1 ? '\u7b2c ' + page + ' \u9875' : ''].filter(Boolean).join(' | '),
-        link: 'category|' + targetUrl,
-        mediaType: 'movie',
-        playerType: 'system',
+        link: buildCategoryLink(targetUrl, title),
         source: SITE.title
       });
     });
@@ -372,7 +370,8 @@ getVideoDetail = async (params = {}) => {
 async function loadDetail(link) {
   const rawLink = String(link || '');
   if (rawLink.startsWith('category|')) {
-    return loadVideoList(rawLink.slice('category|'.length));
+    const category = parseCategoryLink(rawLink);
+    return createCategoryDetail(category.url, category.title);
   }
   const url = normalizeUrl(rawLink, SITE.baseUrl);
   let html;
@@ -422,6 +421,49 @@ async function loadDetail(link) {
     playerType: 'system',
     source: SITE.title
   };
+}
+
+function buildCategoryLink(categoryUrl, title) {
+  return 'category|' + encodeURIComponent(String(title || '')) + '|' + encodeURIComponent(String(categoryUrl || ''));
+}
+
+function parseCategoryLink(link) {
+  const payload = String(link || '').slice('category|'.length);
+  const parts = payload.split('|');
+  if (parts.length >= 2) {
+    return {
+      title: decodeComponentSafe(parts[0]),
+      url: decodeComponentSafe(parts.slice(1).join('|'))
+    };
+  }
+  return { title: '', url: payload };
+}
+
+async function createCategoryDetail(categoryUrl, categoryTitle) {
+  const url = normalizeUrl(categoryUrl, SITE.baseUrl);
+  const title = String(categoryTitle || '').trim() || SITE.title + ' 分类';
+  const childItems = await loadVideoList(url);
+  const items = Array.isArray(childItems) ? childItems : [];
+  const hasVideos = items.some((item) => item && item.type === 'link');
+  return {
+    id: hashId('category-detail|' + url),
+    type: 'detail',
+    title,
+    description: hasVideos ? '请选择下方视频查看详情/播放。' : '该分类暂时没有解析到视频，请换页或稍后重试。',
+    link: url,
+    childItems: items,
+    episodeItems: items,
+    mediaType: 'movie',
+    source: SITE.title
+  };
+}
+
+function decodeComponentSafe(value) {
+  try {
+    return decodeURIComponent(String(value || ''));
+  } catch (error) {
+    return String(value || '');
+  }
 }
 
 async function loadVideoList(url) {
