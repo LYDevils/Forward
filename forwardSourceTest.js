@@ -22,7 +22,10 @@ const INCLUDED_WIDGET_IDS = [
   'lydevils.youporn',
   'lydevils.tube8',
   'lydevils.livetv',
-  'lydevils.tvstations',
+  'lydevils.tvstations'
+];
+
+const PODCAST_WIDGET_IDS = [
   'lydevils.podcast'
 ];
 
@@ -39,21 +42,42 @@ async function run() {
   console.log(`   modules: ${inspection.metadata.modules.length}\n`);
 
   console.log('2. Generate source indexes');
-  const outputFiles = [
-    path.join(__dirname, 'widgets.fwd'),
-    path.join(__dirname, 'forward-widgets.fwd'),
-    path.join(__dirname, 'forward-widgets.json')
+  const outputTargets = [
+    {
+      outputFile: path.join(__dirname, 'widgets.fwd'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.'
+    },
+    {
+      outputFile: path.join(__dirname, 'forward-widgets.fwd'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.'
+    },
+    {
+      outputFile: path.join(__dirname, 'forward-widgets.json'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.'
+    },
+    {
+      outputFile: path.join(__dirname, 'podcast-only.fwd'),
+      includeWidgetIds: PODCAST_WIDGET_IDS,
+      title: 'LYDevils Podcast',
+      description: 'Podcast-only Forward module source.'
+    }
   ];
   let generation = null;
-  for (const outputFile of outputFiles) {
+  for (const target of outputTargets) {
     generation = await generateSourceIndex({
       widgetsDir,
-      outputFile,
+      outputFile: target.outputFile,
       baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
-      title: 'LYDevils Forward Widgets',
-      description: 'LYDevils Forward module source.',
+      title: target.title,
+      description: target.description,
       icon: 'https://github.com/LYDevils/Forward/raw/main/icon.png',
-      includeWidgetIds: INCLUDED_WIDGET_IDS
+      includeWidgetIds: target.includeWidgetIds
     });
     console.log(`   output: ${generation.outputFile}`);
     console.log(`   widgets: ${generation.index.widgets.length}`);
@@ -71,8 +95,8 @@ async function run() {
   });
   console.log(`   extracted title: ${metadata.metadata.title}`);
 
-  if (generation.index.widgets.length !== INCLUDED_WIDGET_IDS.length) {
-    throw new Error(`Expected ${INCLUDED_WIDGET_IDS.length} widgets, got ${generation.index.widgets.length}`);
+  if (sourceIndex.widgets.length !== INCLUDED_WIDGET_IDS.length) {
+    throw new Error(`Expected ${INCLUDED_WIDGET_IDS.length} widgets, got ${sourceIndex.widgets.length}`);
   }
 
   console.log('\n5. Placeholder scan');
@@ -91,7 +115,7 @@ async function run() {
       }
       throw error;
     }
-    if (!inspectionResult.metadata || !INCLUDED_WIDGET_IDS.includes(inspectionResult.metadata.id)) {
+    if (!inspectionResult.metadata || !INCLUDED_WIDGET_IDS.concat(PODCAST_WIDGET_IDS).includes(inspectionResult.metadata.id)) {
       continue;
     }
 

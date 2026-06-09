@@ -137,15 +137,6 @@
       "version": "1.0.6",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tv-stations.js"
-    },
-    {
-      "id": "lydevils.podcast",
-      "title": "播客",
-      "description": "RSS 播客源。",
-      "requiredVersion": "0.0.1",
-      "version": "1.0.7",
-      "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/podcast.js"
     }
   ]
 }

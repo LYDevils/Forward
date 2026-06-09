@@ -1,0 +1,16 @@
+{
+  "title": "LYDevils Podcast",
+  "description": "Podcast-only Forward module source.",
+  "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
+  "widgets": [
+    {
+      "id": "lydevils.podcast",
+      "title": "播客",
+      "description": "RSS 播客源。",
+      "requiredVersion": "0.0.1",
+      "version": "1.0.7",
+      "author": "LYDevils",
+      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/podcast.js"
+    }
+  ]
+}

@@ -16,31 +16,55 @@ const INCLUDED_WIDGET_IDS = [
   'lydevils.youporn',
   'lydevils.tube8',
   'lydevils.livetv',
-  'lydevils.tvstations',
+  'lydevils.tvstations'
+];
+
+const PODCAST_WIDGET_IDS = [
   'lydevils.podcast'
 ];
 
-function buildIndexOptions(outputFile) {
+function buildIndexOptions(outputFile, options = {}) {
   return {
     baseScriptUrl: 'https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets',
     widgetsDir: path.join(__dirname, 'widgets'),
     outputFile,
-    title: 'LYDevils Forward Widgets',
-    description: 'LYDevils Forward module source.',
+    title: options.title || 'LYDevils Forward Widgets',
+    description: options.description || 'LYDevils Forward module source.',
     icon: 'https://github.com/LYDevils/Forward/raw/main/icon.png',
-    includeWidgetIds: INCLUDED_WIDGET_IDS
+    includeWidgetIds: options.includeWidgetIds || INCLUDED_WIDGET_IDS
   };
 }
 
 async function main() {
   const outputs = [
-    path.join(__dirname, 'widgets.fwd'),
-    path.join(__dirname, 'forward-widgets.fwd'),
-    path.join(__dirname, 'forward-widgets.json')
+    {
+      outputFile: path.join(__dirname, 'widgets.fwd'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.'
+    },
+    {
+      outputFile: path.join(__dirname, 'forward-widgets.fwd'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.'
+    },
+    {
+      outputFile: path.join(__dirname, 'forward-widgets.json'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Widgets',
+      description: 'LYDevils Forward module source.'
+    },
+    {
+      outputFile: path.join(__dirname, 'podcast-only.fwd'),
+      includeWidgetIds: PODCAST_WIDGET_IDS,
+      title: 'LYDevils Podcast',
+      description: 'Podcast-only Forward module source.'
+    }
   ];
 
-  for (const outputFile of outputs) {
-    const result = await generateSourceIndex(buildIndexOptions(outputFile));
+  for (const options of outputs) {
+    const result = await generateSourceIndex(buildIndexOptions(options.outputFile, options));
     console.log(`Generated ${result.outputFile}`);
     console.log(`Widget count: ${result.index.widgets.length}`);
   }
