@@ -56,6 +56,12 @@ async function main() {
       description: 'LYDevils Forward module source.'
     },
     {
+      outputFile: path.join(__dirname, 'forward-widgets-clean.fwd'),
+      includeWidgetIds: INCLUDED_WIDGET_IDS,
+      title: 'LYDevils Forward Clean',
+      description: 'Clean 15-widget Forward module source.'
+    },
+    {
       outputFile: path.join(__dirname, 'podcast-only.fwd'),
       includeWidgetIds: PODCAST_WIDGET_IDS,
       title: 'LYDevils Podcast',
