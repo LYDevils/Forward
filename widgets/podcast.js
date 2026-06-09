@@ -3,7 +3,7 @@
   title: '播客',
   description: 'RSS 播客源。',
   author: 'LYDevils',
-  version: '1.0.8',
+  version: '1.0.7',
   requiredVersion: '0.0.1',
   detailCacheDuration:300,
   modules: [
@@ -12,7 +12,7 @@
       title: '播客列表',
       description: '加载真实 RSS 源。',
       functionName: 'loadFeed',
-      params: [{ name: 'feedUrl', title: 'RSS 链接', type: 'input', value: '' }]
+      params: [{ name: 'feedUrl', title: 'RSS 链接', type: 'input' }]
     }
   ]
 };

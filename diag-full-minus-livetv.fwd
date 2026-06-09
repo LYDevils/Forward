@@ -1,6 +1,6 @@
 {
-  "title": "LYDevils Forward Widgets",
-  "description": "LYDevils Forward module source.",
+  "title": "LYDevils Diagnostic Full - livetv",
+  "description": "Diagnostic Forward module source.",
   "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
   "widgets": [
     {
@@ -119,15 +119,6 @@
       "version": "1.0.18",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/tube8.js"
-    },
-    {
-      "id": "lydevils.livetv",
-      "title": "直播（电视+网络）",
-      "description": "真实 IPTV 直播源。",
-      "requiredVersion": "0.0.1",
-      "version": "1.0.6",
-      "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/live-tv.js"
     },
     {
       "id": "lydevils.tvstations",

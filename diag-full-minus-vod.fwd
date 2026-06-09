@@ -1,6 +1,6 @@
 {
-  "title": "LYDevils Forward Widgets",
-  "description": "LYDevils Forward module source.",
+  "title": "LYDevils Diagnostic Full - vod",
+  "description": "Diagnostic Forward module source.",
   "icon": "https://github.com/LYDevils/Forward/raw/main/icon.png",
   "widgets": [
     {
@@ -11,15 +11,6 @@
       "version": "1.0.7",
       "author": "LYDevils",
       "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/vodmax.js"
-    },
-    {
-      "id": "lydevils.vod",
-      "title": "VOD",
-      "description": "MacCMS VOD 真实可播放数据源。",
-      "requiredVersion": "0.0.1",
-      "version": "1.0.13",
-      "author": "LYDevils",
-      "url": "https://raw.githubusercontent.com/LYDevils/Forward/refs/heads/main/widgets/vod.js"
     },
     {
       "id": "lydevils.pornhub",

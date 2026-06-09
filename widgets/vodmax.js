@@ -80,7 +80,7 @@
 
 // 动态生成菜单选项
 const normalOptions = SOURCES.filter(s => s.group === "normal").map(s => ({ title: s.name, value: s.id }));
-const premiumOptions = SOURCES.filter(s => s.group === "premium").map(s => ({ title: s.name, value: s.id }));
+const premiumOptions = SOURCES.filter(s => s.group === "premium").map(s => ({ title: `🔥 ${s.name}`, value: s.id }));
 
 // ================= 2. 模块元数据定义 =================
 WidgetMetadata = {
@@ -88,40 +88,41 @@ WidgetMetadata = {
     title: "VodMax",
     description: "聚合点播数据源",
     author: "LYDevils",
-  version: "1.0.8",
+  version: "1.0.7",
     requiredVersion: "0.0.1",
     site: "https://t.me/MakkaPakkaOvO",
     detailCacheDuration:3600,
     modules: [
         {
-            id: "normal-cms-list",
-            title: "综合影视",
-            description: "选择普通采集源加载影片。",
-            functionName: "loadNormalCmsList",
+            id: "load-cms-list",
+            title: "资源列表",
+            functionName: "loadCmsList",
             cacheDuration:300,
             params: [
                 {
-                    name: "source",
+                    name: "group",
+                    title: "资源大区",
+                    type: "enumeration",
+                    value: "normal",
+                    enumOptions: [
+                        { title: "🟢 综合影视 (56个源)", value: "normal" },
+                        { title: "🔴 特色/福利 (22个源)", value: "premium" }
+                    ]
+                },
+                {
+                    name: "source_normal",
                     title: "选择普通源",
                     type: "enumeration",
                     value: normalOptions[0] ? normalOptions[0].value : "",
+                    belongTo: { paramName: "group", value: ["normal"] },
                     enumOptions: normalOptions
                 },
-                { name: "page", title: "页码", type: "page" }
-            ]
-        },
-        {
-            id: "premium-cms-list",
-            title: "特色/福利",
-            description: "选择特色采集源加载影片。",
-            functionName: "loadPremiumCmsList",
-            cacheDuration:300,
-            params: [
                 {
-                    name: "source",
+                    name: "source_premium",
                     title: "选择特色源",
                     type: "enumeration",
                     value: premiumOptions[0] ? premiumOptions[0].value : "",
+                    belongTo: { paramName: "group", value: ["premium"] },
                     enumOptions: premiumOptions
                 },
                 { name: "page", title: "页码", type: "page" }
@@ -131,24 +132,10 @@ WidgetMetadata = {
 };
 
 // ================= 3. 获取视频列表 (加入强制JSON与伪装头) =================
-async function loadNormalCmsList(params = {}) {
-    return loadCmsList(Object.assign({}, params, {
-        group: "normal",
-        source: params.source || params.source_normal
-    }));
-}
-
-async function loadPremiumCmsList(params = {}) {
-    return loadCmsList(Object.assign({}, params, {
-        group: "premium",
-        source: params.source || params.source_premium
-    }));
-}
-
 async function loadCmsList(params) {
     const page = params.page || 1;
     const group = params.group || "normal";
-    const sourceId = params.source || (group === "normal" ? params.source_normal : params.source_premium);
+    const sourceId = group === "normal" ? params.source_normal : params.source_premium;
     const siteConfig = SOURCES.find(s => s.id === sourceId) || SOURCES[0];
 
     try {
